@@ -1,0 +1,134 @@
+{
+  "status": "draft-for-review",
+  "synthetic": true,
+  "created": "2026-10-15",
+  "notice": "Fictional test documents, not official university guidance. Expected answers are proposed for learner review; no model has been run. TXT sources have excerpt/line references, never PDF pages.",
+  "defaultApplicant": {
+    "degreeLevel": "Master's",
+    "intendedProgram": "Artificial Intelligence",
+    "intake": "September 2026",
+    "applicantCategory": "International applicant"
+  },
+  "cases": [
+    {
+      "id": "S01-contradiction",
+      "documents": [
+        "S01-contradiction-A.txt",
+        "S01-contradiction-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Potential Contradiction",
+      "expectedReason": "The same context explicitly permits and rejects MOI substitution; both statements and the shared context must be cited.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": true
+    },
+    {
+      "id": "S02-program-conditions",
+      "documents": [
+        "S02-program-conditions-A.txt",
+        "S02-program-conditions-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Different Applicable Conditions",
+      "expectedReason": "Different named programs explain the MOI difference. For the Artificial Intelligence program, A is relevant; B's program rule is not. Do not call this a contradiction.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": false
+    },
+    {
+      "id": "S03-intake-conditions",
+      "documents": [
+        "S03-intake-conditions-A.txt",
+        "S03-intake-conditions-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Different Applicable Conditions",
+      "expectedReason": "The intakes differ. Explain A for September 2026 and the distinct January 2027 rule; do not invent a same-intake conflict.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": false
+    },
+    {
+      "id": "S04-category-conditions",
+      "documents": [
+        "S04-category-conditions-A.txt",
+        "S04-category-conditions-B.txt"
+      ],
+      "applicantOverride": {
+        "applicantCategory": "International applicant whose completed bachelor's degree was taught and assessed entirely in English"
+      },
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Different Applicable Conditions",
+      "expectedReason": "The categories are mutually distinct; identify which branch applies using the supplied category. Do not infer degree language from citizenship.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": false
+    },
+    {
+      "id": "S05-missing-evidence",
+      "documents": [
+        "S05-missing-evidence-A.txt",
+        "S05-missing-evidence-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Insufficient Evidence",
+      "expectedReason": "A identifies a relevant MOI topic but B provides no admissions evidence for it. Instruction language is not a waiver. Do not invent a B quote establishing acceptance/rejection.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": true
+    },
+    {
+      "id": "S06-ambiguous-applicability",
+      "documents": [
+        "S06-ambiguous-applicability-A.txt",
+        "S06-ambiguous-applicability-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Insufficient Evidence",
+      "expectedReason": "The apparent incompatibility cannot be established for this applicant because B's applicability is unknown. Name the missing program/intake/category evidence; do not promote it to Potential Contradiction.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": true
+    },
+    {
+      "id": "S07-reconciling-exception",
+      "documents": [
+        "S07-reconciling-exception-A.txt",
+        "S07-reconciling-exception-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Consistent",
+      "expectedReason": "The exception reconciles both documents. Explain conditional MOI acceptance; do not claim an applicant already holds the certificate or has an approved waiver.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": false
+    },
+    {
+      "id": "S08-empty",
+      "documents": [
+        "S08-empty-A.txt",
+        "S08-empty-B.txt"
+      ],
+      "applicantOverride": {},
+      "expectedTopic": null,
+      "expectedClassification": "No relevant requirements found",
+      "expectedReason": "No English-proficiency admissions topic occurs in either source. Return no findings, no clarification question, and zero metrics; do not fabricate agreement.",
+      "evidenceRule": "Use exact excerpts from these TXT sources and source identity; reference lines/excerpts, not PDF pages.",
+      "clarificationRequired": false
+    },
+    {
+      "id": "S09-unknown-category",
+      "documents": [
+        "S04-category-conditions-A.txt",
+        "S04-category-conditions-B.txt"
+      ],
+      "applicantOverride": {
+        "applicantCategory": "Not sure"
+      },
+      "expectedTopic": "MOI as a substitute for IELTS/TOEFL",
+      "expectedClassification": "Insufficient Evidence",
+      "expectedReason": "The source branches are explicit but the applicant's degree-language category is unknown. State the differing rules, but do not assert which applies. Under the approved PRD, unresolved applicability is Insufficient Evidence.",
+      "clarificationRequired": true
+    }
+  ]
+}

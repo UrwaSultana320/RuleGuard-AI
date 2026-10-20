@@ -1,0 +1,7 @@
+SYNTHETIC TEST DOCUMENT - NOT OFFICIAL UNIVERSITY GUIDANCE
+Fictional institution: RuleGuard Example University
+Fixture: S06-ambiguous-applicability; Source: B
+Prepared for benchmark review: 2026-10-15
+
+English admissions requirements: IELTS Academic or TOEFL iBT is mandatory and MOI is not accepted as a substitute. The program, intake, and applicant category to which this rule applies are unspecified.
+

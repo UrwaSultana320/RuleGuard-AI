@@ -1,0 +1,7 @@
+SYNTHETIC TEST DOCUMENT - NOT OFFICIAL UNIVERSITY GUIDANCE
+Fictional institution: RuleGuard Example University
+Fixture: S08-empty; Source: A
+Prepared for benchmark review: 2026-10-15
+
+Campus facilities: the university library provides quiet study spaces. Student clubs meet weekly. This document does not discuss admission requirements.
+

@@ -1,0 +1,8 @@
+SYNTHETIC TEST DOCUMENT - NOT OFFICIAL UNIVERSITY GUIDANCE
+Fictional institution: RuleGuard Example University
+Fixture: S05-missing-evidence; Source: A
+Prepared for benchmark review: 2026-10-15
+Scope: Master's in Artificial Intelligence; September 2026 intake; international applicants.
+
+An official MOI certificate confirming an English-taught bachelor's degree is accepted instead of IELTS or TOEFL.
+

@@ -1,0 +1,8 @@
+SYNTHETIC TEST DOCUMENT - NOT OFFICIAL UNIVERSITY GUIDANCE
+Fictional institution: RuleGuard Example University
+Fixture: S07-reconciling-exception; Source: A
+Prepared for benchmark review: 2026-10-15
+Scope: Master's in Artificial Intelligence; September 2026 intake; international applicants.
+
+IELTS Academic or TOEFL iBT is normally required. Exception: an official MOI certificate confirming that the completed bachelor's degree was taught and assessed entirely in English is accepted instead; a language test is not required for applicants supplying this evidence.
+

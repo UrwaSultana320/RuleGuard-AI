@@ -1,0 +1,207 @@
+{
+  "status": "candidates-for-review-not-final",
+  "retrievedOn": "2026-10-15",
+  "sourcePolicy": "Official university websites only; original PDFs inspected locally. No confidential or personal application documents. Publication/issue dates distinguished from PDF metadata and intake labels. Do not silently refresh a pinned benchmark PDF.",
+  "sources": [
+    {
+      "id": "TCD-POLICY",
+      "url": "https://www.tcd.ie/media/tcd/about/policies/pdfs/academic/english-language-policy.pdf",
+      "title": "English Language Policy",
+      "version": "1.1",
+      "issueDate": "2025-08-29",
+      "pages": 13,
+      "bytes": 321436,
+      "sha256": "5f319678b5fae9d39de381f68a478aa49561e5b5b0a79385a45fc14ab9a8614d",
+      "localResearchCopy": "tmp/pdfs/trinity-english-policy.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 4,
+          "printedPage": "4",
+          "section": "7.2"
+        },
+        {
+          "pdfPage": 9,
+          "printedPage": "9",
+          "section": "Appendix 1, item 5"
+        },
+        {
+          "pdfPage": 10,
+          "printedPage": "10",
+          "section": "English Language Requirements"
+        }
+      ],
+      "extraction": "Readable text; exemption passage checked against a rendered page."
+    },
+    {
+      "id": "TCD-PROSPECTUS",
+      "url": "https://www.tcd.ie/study/assets/PDF/Trinity-Postgraduate-Prospectus-2025.pdf",
+      "title": "Postgraduate Prospectus 2026",
+      "publicationDate": null,
+      "publicationDateNote": "No explicit publication date established. Document title/cover says 2026 despite the URL filename; PDF CreationDate is 2025-12-02, which is metadata, not a verified publication date.",
+      "pages": 107,
+      "bytes": 8572076,
+      "sha256": "b9ce87cb8d20f399d6291ad42ab2000fca77aaacb80855a371d581d047f84249",
+      "localResearchCopy": "tmp/pdfs/trinity-postgraduate-prospectus.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 19,
+          "printedPage": "35-36",
+          "section": "Postgraduate Admission Requirements / English Language Requirements"
+        },
+        {
+          "pdfPage": 61,
+          "printedPage": "119-120",
+          "section": "Computer Science - Intelligent Systems / Interactive Digital Media"
+        }
+      ],
+      "extraction": "Readable text, facing-page spreads and multiple columns; PDF page 19 inspected visually. Full original exceeds Vercel's researched 4.5 MB function-body limit."
+    },
+    {
+      "id": "KAIST-EARLY",
+      "url": "https://cee.kaist.ac.kr/boards/download_att/notice_en/1f66d15f2fb6f2f1aa4b621e16da925b9379801e",
+      "landingUrl": "https://cee.kaist.ac.kr/boards/view/notice_en/900",
+      "title": "International Graduate Application Guide, 2026 Fall Early Track",
+      "publicationDate": null,
+      "landingNoticeDate": "2025-09-23",
+      "publicationDateNote": "Landing notice has this date; individual PDF publication date is not separately stated. PDF modification metadata is 2025-09-23; intake is Fall 2026.",
+      "pages": 30,
+      "bytes": 2035118,
+      "sha256": "ecd0c4fa256099f5380bef9c8aa3188fa62a0a2a6ac5369eb89f8d0ef89d422c",
+      "localResearchCopy": "tmp/pdfs/kaist-2026-fall-early.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 5,
+          "printedPage": "3",
+          "section": "II Eligibility, C English Language Proficiency"
+        }
+      ],
+      "extraction": "Text-based, but pypdf and pdfplumber omit important bold/color text including logical connectives. Not approved as a happy-path source."
+    },
+    {
+      "id": "KAIST-REGULAR",
+      "url": "https://cee.kaist.ac.kr/boards/download_att/notice_en/f30a5146c6bd83210f1dcc01237c56447ba75e49",
+      "landingUrl": "https://cee.kaist.ac.kr/boards/view/notice_en/900",
+      "title": "International Graduate Application Guide, 2026 Fall Regular Track",
+      "publicationDate": null,
+      "landingNoticeDate": "2025-09-23",
+      "publicationDateNote": "Landing notice date only; PDF publication date not separately established. Intake is Fall 2026.",
+      "pages": 32,
+      "bytes": 2081152,
+      "sha256": "52c57c1f2ce5366028c39a85c1517c5f13a3b5a4290b89b8ecc4cd858d831a3a",
+      "localResearchCopy": "tmp/pdfs/kaist-2026-fall-regular.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 5,
+          "printedPage": "3",
+          "section": "II Eligibility, C English Language Proficiency"
+        }
+      ],
+      "extraction": "Same missing-connective issue; the original rendered PDF page 5 visibly contains OR and AND. No automatic applicability conclusion is safe from the incomplete extraction."
+    },
+    {
+      "id": "WAIKATO-PG",
+      "url": "https://www.waikato.ac.nz/assets/Uploads/Study-with-us/How-to-apply/Undergraduate/Postgraduate-English-Language-Entry-Requirements-30.04.26.pdf",
+      "title": "Postgraduate English Language Proficiency Requirements and English Language Equivalencies",
+      "updateDate": "2026-04-30",
+      "publicationDate": null,
+      "dateNote": "Explicit update date, not a separately established initial publication date.",
+      "pages": 9,
+      "localResearchCopy": "tmp/pdfs/waikato-pg-english-2026.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 3,
+          "section": "2. English Proficiency Tests"
+        },
+        {
+          "pdfPage": 5,
+          "section": "4. Prior Study in English; 4.1 English Language Programmes"
+        },
+        {
+          "pdfPage": 6,
+          "section": "4.2 Tertiary study in the Medium of English or te reo Maori"
+        },
+        {
+          "pdfPage": 8,
+          "section": "6. Waivers"
+        }
+      ],
+      "extraction": "All 9 pages return text with pypdf/pdfplumber; key pages 3 and 5 visually checked. No OCR used.",
+      "bytes": 334878,
+      "sha256": "bf5555afe8e8ac88516c776d870849d48941185fcee2af1661cb8bd121b9cf0f",
+      "retrievedOn": "2026-10-15"
+    },
+    {
+      "id": "WAIKATO-COLLEGE",
+      "url": "https://college.waikato.ac.nz/wp-content/uploads/uwc-english-prospectus-brochure-2026.pdf",
+      "title": "University of Waikato College Prospectus 2026",
+      "edition": "2026",
+      "publicationDate": null,
+      "dateNote": "Exact publication date not stated/established. PDF creation metadata 2026-01-19 and modification metadata 2026-06-03 are not publication dates.",
+      "pages": 8,
+      "localResearchCopy": "tmp/pdfs/waikato-college-english-2026.pdf",
+      "relevantLocations": [
+        {
+          "pdfPage": 4,
+          "printedPage": "4",
+          "section": "Our Programmes / English Programmes / Academic English"
+        }
+      ],
+      "extraction": "All 8 pages return text with pypdf/pdfplumber; Academic English page visually checked. No OCR used.",
+      "bytes": 943341,
+      "sha256": "f680ef78d324b47618f0e281a7148e2a1d11f1cff28a1a9337bce1cbe25c8c6a",
+      "retrievedOn": "2026-10-15"
+    }
+  ],
+  "pairs": [
+    {
+      "id": "REAL-03",
+      "sources": [
+        "WAIKATO-PG",
+        "WAIKATO-COLLEGE"
+      ],
+      "recommendation": "Learner-approved primary real-world benchmark candidate; model, architecture, and expected scoring answers remain unapproved.",
+      "proposedChecks": [
+        "English proficiency can be evidenced through different routes; an IELTS listing is not an IELTS-only rule.",
+        "Preserve the policy-specific grade/level and timing conditions; a brochure summary does not promise unconditional postgraduate eligibility.",
+        "The sources use differing certificate names; do not silently establish exact qualification equivalence when the supplied text does not establish it. Unresolved identity/applicability is Insufficient Evidence, not a fabricated contradiction.",
+        "College English-course entry evidence differs from postgraduate degree-entry requirements; never infer that the applicant has completed a pathway or earned a required grade."
+      ],
+      "limits": "No genuine contradiction established. Comparison taxonomy and expected topic-level gold answers need learner review. Provider token/latency budgets still untested.",
+      "status": "approved-primary-benchmark-candidate",
+      "approvedOn": "2026-10-15",
+      "learnerRequirements": [
+        "Distinguish standard English requirements from conditional Academic English pathways.",
+        "Do not infer certificate equivalence from similar names.",
+        "Completing any English course does not guarantee exemption.",
+        "Retain synthetic documents for contradictions, missing evidence, and applicant-specific exceptions."
+      ]
+    },
+    {
+      "id": "REAL-01",
+      "sources": [
+        "TCD-POLICY",
+        "TCD-PROSPECTUS"
+      ],
+      "recommendation": "Secondary robustness-test candidate, retained at learner request; no longer proposed as primary.",
+      "proposedChecks": [
+        "Preserve conditional exemption requests; do not claim automatic MOI acceptance.",
+        "Compare standard versus program-specific English bands only with relevant program context.",
+        "Do not interpret omission of an exemption in a summary as explicit rejection."
+      ],
+      "limits": "107-page, 8.57 MB prospectus is a large input. Do not silently truncate or relabel extracted pages as full originals. Upload/extraction approach must be agreed."
+    },
+    {
+      "id": "REAL-02",
+      "sources": [
+        "KAIST-EARLY",
+        "KAIST-REGULAR"
+      ],
+      "recommendation": "Extraction robustness candidate; not a clean first demonstration pair until extraction preserves connectives.",
+      "proposedChecks": [
+        "Do not misclassify track-specific validity dates as a same-context contradiction.",
+        "Preserve conditional MOI logic; where source extraction loses decisive conditions, mark unsupported applicability/insufficient evidence or reject affected analysis."
+      ],
+      "limits": "Different admission tracks, historical intake. A text layer does not guarantee faithful extraction. No OCR added to MVP."
+    }
+  ]
+}
