@@ -15,7 +15,7 @@ Current revision checkpoint: **degree-aware implementation mechanically verified
 
 ## Slices
 
-- [ ] **3. Approved degree-aware revision before release**
+- [x] **3. Approved degree-aware revision before release**
   Becomes usable: Explicit Bachelor's/Master's selection, per-document cited applicability checks, non-overridable mismatch blocking, mixed/general-policy scoping, and acknowledged uncertainty before preliminary findings.
   Why now: Approved October 20 extension reopens the completed local build before release; single combined generation and unrelated safeguards remain unchanged.
   PRD ref: `prd.md > Approved Degree-Aware Revision — 2026-10-20`
@@ -304,5 +304,7 @@ Exact revised files (no credentials, retained model responses or frozen benchmar
 - `tests/unit/evidence-diagnostics.test.ts`
 - `tests/unit/evidence-route.test.ts`
 - `tests/unit/quality.test.ts`
+
+Implementation checkpoint: `c768a25` — degree-aware local code and documentation committed after mechanical verification. The slice is implemented; the revised final-review box remains unchecked pending project-owner feedback. This is not revised 5-build release approval.
 
 Local review: http://127.0.0.1:3000/. New upstream calls and public release remain disabled. The revised feature is not marked release-ready. Timeline and remaining hosted/live limitations are recorded in spec.md.
