@@ -7,7 +7,7 @@ status: approved
 
 Build mode: fast implementation with an early local hands-on checkpoint and final review. Execution is explicitly authorized on October 20, 2026; the following order is derived from the approved scope/PRD/spec. The instruction to start implementation takes precedence over a further planning interview. This is not an authorization for Gemini calls or public deployment.
 
-Current checkpoint: slice one is implemented and mechanically verified; awaiting the project owner’s first local hands-on review and separate permission for live API verification. Do not rebuild completed functionality on resume; resolve this checkpoint first.
+Current checkpoint: slice one is implemented and mechanically verified; awaiting the project owner’s first local hands-on review. One synthetic live comparison is authorized for at most two additional Gemini requests, but its preflight is blocked by missing private Upstash configuration. Do not rebuild completed functionality on resume; resolve this checkpoint first.
 
 ## Slices
 
@@ -68,3 +68,14 @@ First local version implemented. Typecheck, lint, production build, 14 no-networ
 The real Gemini adapter is implemented but untested against Google during application development: no external Gemini request is authorized or dispatched. Cumulative benchmark usage remains 37. Upstash production connectivity and actual atomic execution remain untested. A live local smoke check needs private Upstash configuration and separate approval for at most two Gemini requests (one token-count utility and one generation), with no retries. Public deployment remains blocked.
 
 The development lint chain has five audit entries for the same unpatched braces issue; production audit reports zero vulnerabilities. No user content reaches glob tooling. Local source files are checkpointed with early hands-on feedback pending; slice one is not ticked complete before that checkpoint.
+
+
+## Authorized Local Smoke Check — Configuration Blocked
+
+On October 20, 2026, the project owner authorized exactly one synthetic comparison, at most two additional Gemini API requests: one token-count utility and one genuine generation, no retries. Cumulative ceiling: 39 including the prior 37. Public deployment remains blocked.
+
+Preflight observed only credential-presence flags, never displayed values: `.env.local` exists, is Git-ignored and untracked; GEMINI_API_KEY is populated; UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are missing; GEMINI_REQUESTS_ENABLED is false. Stopped immediately as instructed. No Upstash requests, Gemini utilities, generation requests or retries were sent.
+
+Exact additional Gemini requests used: **0**. Cumulative used: **37 of 39**. Outcome: **BLOCKED BEFORE EXECUTION**, not an AI pass/fail. The intended S01 synthetic outcome remains Potential Contradiction with shared scope and both source statements cited; classification, condition coverage, citations, quota execution and genuine dashboard rendering were not tested by this attempt. Do not claim that either the AI or quota integration passed.
+
+Next prerequisite: the project owner privately configures the Upstash REST URL/token in the ignored `.env.local` without sharing credentials in chat, then confirms readiness to resume. Existing authorization for one comparison remains unspent; do not retry this blocked attempt or make additional calls before configuration is confirmed. No application code, prompt, gold outcomes or billing settings changed.
