@@ -7,7 +7,7 @@ import type {
   Report,
   Source,
 } from "@/shared/contracts";
-import { AppError } from "./errors";
+import { AppError, type ValidationDiagnostic } from "./errors";
 
 export function buildReport(
   input: unknown,
@@ -16,36 +16,51 @@ export function buildReport(
   revision: number,
 ): Report {
   const parsed = rawSchema.safeParse(input);
-  if (!parsed.success || parsed.data.analysisStatus !== "complete")
+  if (!parsed.success)
     throw new AppError(
       "INCOMPLETE_ANALYSIS",
       "The AI response was incomplete or malformed. No current report was created. Review the sources or retry.",
+      undefined,
+      "ANALYSIS_SCHEMA_INVALID",
+    );
+  if (parsed.data.analysisStatus !== "complete")
+    throw new AppError(
+      "INCOMPLETE_ANALYSIS",
+      "The AI response was incomplete. No current report was created. Review the sources or retry.",
+      undefined,
+      "ANALYSIS_INCOMPLETE",
     );
   const raw = parsed.data;
   const sourceIds = new Set(sources.map((s) => s.id));
   if (
+    raw.sourceIds.length !== sourceIds.size ||
     new Set(raw.sourceIds).size !== sourceIds.size ||
     raw.sourceIds.some((id) => !sourceIds.has(id))
   )
     throw new AppError(
       "INCOMPLETE_ANALYSIS",
       "The AI did not acknowledge both documents. Review your sources or retry.",
+      undefined,
+      "SOURCE_SET_MISMATCH",
     );
   const registry = new Map(
     sources.flatMap((s) =>
       s.passages.map((p) => [p.id, { ...p, sourceName: s.name }] as const),
     ),
   );
-  function fail(): never {
+  function fail(diagnosticCode: ValidationDiagnostic): never {
     throw new AppError(
       "INVALID_EVIDENCE",
       "The AI returned unsupported or inconsistent source references. They were rejected. Your extracted sources are still available.",
+      undefined,
+      diagnosticCode,
     );
   }
   const rules = new Map<string, (typeof raw.rules)[number]>();
   for (const r of raw.rules) {
-    if (!r.ruleId.trim() || rules.has(r.ruleId) || !sourceIds.has(r.sourceId))
-      fail();
+    if (!r.ruleId.trim()) fail("RULE_ID_EMPTY");
+    if (rules.has(r.ruleId)) fail("RULE_ID_DUPLICATE");
+    if (!sourceIds.has(r.sourceId)) fail("RULE_SOURCE_UNKNOWN");
     rules.set(r.ruleId, r);
     for (const c of [
       r.requirement,
@@ -53,42 +68,46 @@ export function buildReport(
       ...r.conditions,
       ...r.exceptions,
     ]) {
-      if (!c.text.trim() || !c.passageIds.length) fail();
-      for (const id of c.passageIds)
-        if (registry.get(id)?.sourceId !== r.sourceId) fail();
+      if (!c.text.trim()) fail("CLAUSE_TEXT_EMPTY");
+      if (!c.passageIds.length) fail("CLAUSE_REFERENCES_EMPTY");
+      for (const id of c.passageIds) {
+        const passage = registry.get(id);
+        if (!passage) fail("CLAUSE_PASSAGE_UNKNOWN");
+        if (passage.sourceId !== r.sourceId) fail("CLAUSE_SOURCE_MISMATCH");
+      }
     }
   }
   const covered = new Set<string>();
   for (const c of raw.coverage) {
-    if (
-      !registry.has(c.passageId) ||
-      covered.has(c.passageId) ||
-      !c.reason.trim() ||
-      (c.disposition === "rules" && !c.ruleIds.length)
-    )
-      fail();
+    if (!registry.has(c.passageId)) fail("COVERAGE_PASSAGE_UNKNOWN");
+    if (covered.has(c.passageId)) fail("COVERAGE_PASSAGE_DUPLICATE");
+    if (!c.reason.trim()) fail("COVERAGE_REASON_EMPTY");
+    if (c.disposition === "rules" && !c.ruleIds.length)
+      fail("COVERAGE_RULES_EMPTY");
     covered.add(c.passageId);
     for (const id of c.ruleIds) {
       const r = rules.get(id);
+      if (!r) fail("COVERAGE_RULE_UNKNOWN");
       if (
-        !r ||
         ![r.requirement, r.scope, ...r.conditions, ...r.exceptions].some((x) =>
           x.passageIds.includes(c.passageId),
         )
       )
-        fail();
+        fail("COVERAGE_RULE_PASSAGE_MISMATCH");
     }
   }
-  if (covered.size !== registry.size) fail();
+  if (covered.size !== registry.size) fail("COVERAGE_INCOMPLETE");
   const topics = new Set<string>();
   const findings: Finding[] = raw.findings.map((f, index) => {
     const key = f.topic.trim().toLowerCase();
-    if (!key || topics.has(key) || !f.ruleIds.length || !f.explanation.trim())
-      fail();
+    if (!key) fail("FINDING_TOPIC_EMPTY");
+    if (topics.has(key)) fail("FINDING_TOPIC_DUPLICATE");
+    if (!f.ruleIds.length) fail("FINDING_RULES_EMPTY");
+    if (!f.explanation.trim()) fail("FINDING_EXPLANATION_EMPTY");
     topics.add(key);
     const rs = f.ruleIds.map((id) => {
       const r = rules.get(id);
-      if (!r) fail();
+      if (!r) fail("FINDING_RULE_UNKNOWN");
       return r;
     });
     const guardNotes: string[] = [];
@@ -119,7 +138,8 @@ export function buildReport(
       (classification === "Insufficient Evidence"
         ? `Could you clarify which requirements and conditions for ${f.topic} apply to the intended program and applicant context?`
         : "");
-    if (classification === "Potential Contradiction" && !question) fail();
+    if (classification === "Potential Contradiction" && !question)
+      fail("FINDING_QUESTION_EMPTY");
     return {
       id: `finding-${index + 1}`,
       topic: f.topic,

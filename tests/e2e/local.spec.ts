@@ -1,6 +1,16 @@
-import { existsSync } from 'node:fs';
+import { existsSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
+
+// Offline browser verification: permit the local app only, never cloud services.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/*", (route) => {
+    const host = new URL(route.request().url()).hostname;
+    return ["127.0.0.1", "localhost"].includes(host)
+      ? route.continue()
+      : route.abort();
+  });
+});
 
 test("actual backend reads both synthetic sources, retains work on AI-disabled error, and clears on refresh", async ({
   page,
@@ -39,7 +49,11 @@ test("actual backend reads both synthetic sources, retains work on AI-disabled e
 test("frontend validates PDF pages and the actual backend extracts all approved Waikato pages with no AI", async ({
   page,
 }) => {
-  test.skip(!existsSync("tmp/pdfs/waikato-pg-english-2026.pdf") || !existsSync("tmp/pdfs/waikato-college-english-2026.pdf"), "Download official Waikato sources as described in the README to run this PDF integration test.");
+  test.skip(
+    !existsSync("tmp/pdfs/waikato-pg-english-2026.pdf") ||
+      !existsSync("tmp/pdfs/waikato-college-english-2026.pdf"),
+    "Download official Waikato sources as described in the README to run this PDF integration test.",
+  );
   await page.goto("/");
   await page
     .locator("#file-0")
@@ -208,4 +222,43 @@ test("responsive layout and screenshot of the real input page", async ({
     path: "test-results/local-first-version.png",
     fullPage: true,
   });
+});
+
+test("shows a privacy-safe diagnostic without rendering rejected AI findings", async ({
+  page,
+}) => {
+  // Explicit test-only error transport; not a genuine model result.
+  await page.route("**/api/compare", async (route) => {
+    const form = route.request().postDataBuffer()!.toString();
+    const requestId = /name="requestId"\r\n\r\n([^\r]+)/.exec(form)![1];
+    const revision = Number(
+      /name="inputRevision"\r\n\r\n([^\r]+)/.exec(form)![1],
+    );
+    await route.fulfill({
+      status: 200,
+      contentType: "application/x-ndjson",
+      body:
+        JSON.stringify({
+          type: "error",
+          requestId,
+          revision,
+          code: "INVALID_EVIDENCE",
+          diagnosticCode: "CLAUSE_PASSAGE_UNKNOWN",
+          message: "Unsupported references were rejected.",
+        }) + "\n",
+    });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await page.getByRole("checkbox", { name: /I'm using public/ }).check();
+  await page
+    .getByRole("button", { name: "Compare Requirements", exact: true })
+    .click();
+  await expect(page.locator(".notice[role=alert]")).toContainText(
+    "Diagnostic code: CLAUSE_PASSAGE_UNKNOWN",
+  );
+  await expect(page).toHaveURL("http://127.0.0.1:3000/");
+  await expect(page.getByLabel("Intended program")).toHaveValue(
+    "Master's in Artificial Intelligence",
+  );
 });

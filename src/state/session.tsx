@@ -14,7 +14,12 @@ import type {
   Source,
 } from "@/shared/contracts";
 import { LIMITS } from "@/shared/limits";
-type WorkError = { message: string; code?: string; retryAfter?: number };
+type WorkError = {
+  message: string;
+  code?: string;
+  diagnosticCode?: string;
+  retryAfter?: number;
+};
 function useWork() {
   const [files, setFiles] = useState<(File | null)[]>([null, null]);
   const [fileErrors, setFileErrors] = useState<string[]>(["", ""]);

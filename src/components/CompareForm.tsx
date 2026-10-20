@@ -316,6 +316,9 @@ export function CompareForm() {
                   : "Comparison could not be completed"}
               </strong>
               <p>{s.error.message}</p>
+              {s.error.diagnosticCode && (
+                <p>Diagnostic code: {s.error.diagnosticCode}</p>
+              )}
               {s.error.retryAfter && (
                 <p>Retry in at least {s.error.retryAfter} seconds.</p>
               )}

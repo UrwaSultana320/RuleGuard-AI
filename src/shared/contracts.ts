@@ -59,5 +59,11 @@ export type Event = { requestId: string; revision: number } & (
   | { type: "stage"; stage: number }
   | { type: "sources"; sources: Source[] }
   | { type: "result"; report: Report }
-  | { type: "error"; code: string; message: string; retryAfter?: number }
+  | {
+      type: "error";
+      code: string;
+      message: string;
+      diagnosticCode?: string;
+      retryAfter?: number;
+    }
 );

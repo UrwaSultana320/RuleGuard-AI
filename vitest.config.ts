@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     include: ["tests/unit/**/*.test.ts"],
     maxWorkers: 1,
+    setupFiles: ["tests/offline-setup.ts"],
     environment: "node",
     restoreMocks: true,
   },
