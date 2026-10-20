@@ -1,17 +1,19 @@
 ---
 doc: checklist
 status: approved
+build_status: complete
+build_completed: 2026-10-20
 ---
 
 # RuleGuard AI Build Checklist
 
 Build mode: fast implementation with an early local hands-on checkpoint and final review. Execution is explicitly authorized on October 20, 2026; the following order is derived from the approved scope/PRD/spec. The instruction to start implementation takes precedence over a further planning interview. This is not an authorization for Gemini calls or public deployment.
 
-Current checkpoint: genuine S01 end-to-end connectivity is accepted, with partial AI reasoning quality and 40 cumulative Gemini requests. The focused offline quality/release-preparation phase is authorized. Live access remains disabled; public deployment, further Gemini requests and 6-ship remain blocked pending separate explicit approval. Final hands-on UI feedback and release checks remain open; historical failures below are retained as history.
+Current checkpoint: **5-build complete** under the project owner's explicit conditional instruction to mark completion once final checks pass. All final Node 24 checks passed; cumulative Gemini usage remains 40 and live access is disabled. The accepted release claim is the human-reviewed, source-traceable MVP with disclosed partial AI reasoning quality. 6-ship, public deployment, new Gemini requests and billing changes remain unauthorized. Historical stage records below are retained as history; the final wrap-up record supersedes older pending-checkpoint notes.
 
 ## Slices
 
-- [ ] **1. Compare two documents through the real application pipeline locally**
+- [x] **1. Compare two documents through the real application pipeline locally**
   Becomes usable: Polished input journey, PDF/TXT reading and full-source inspection, genuine Gemini adapter with server-controlled live-call permission gate, evidence validation, preliminary dashboard, review choices and clarification drafts. Disabled/unavailable AI produces an honest error, never a simulated report.
   Why now: Puts the comparison kernel and extraction/evidence risks in the first usable version instead of postponing them behind UI scaffolding.
   PRD ref: `prd.md > The Core Journey`, `Evidence and Next Steps`, `Human Review and Full Extracted Sources`
@@ -21,7 +23,7 @@ Current checkpoint: genuine S01 end-to-end connectivity is accepted, with partia
   Learner check: Open localhost, inspect the design, load two public/synthetic documents and inspect full extracted sources. After separate permission, verify the real AI journey. Report usability problems before expanding the build.
   Commit: `Build local document comparison and human review workflow`
 
-- [ ] **2. Verify the complete local journey and prepare a reproducible judge-ready build**
+- [x] **2. Verify the complete local journey and prepare a reproducible judge-ready build**
   Becomes usable: Tested recovery, staleness, responsive evidence/review, sample provenance and documented local startup; readiness evidence for later authorized deployment.
   Why now: Real workflow feedback can guide fixes; the deployable application needs verified boundaries, not more features.
   PRD ref: `prd.md > Key Acceptance Criteria`, `Error Recovery and Incomplete Analysis`, `Outdated Reports and Reanalysis`
@@ -33,24 +35,24 @@ Current checkpoint: genuine S01 end-to-end connectivity is accepted, with partia
 
 ## Hands-on Checkpoints
 
-- [ ] Early local version explored after slice one; feedback recorded
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early behavior reviewed through accepted S01 integration and local test/screenshot evidence; no separate owner-operated browser session is claimed.
+- [x] Final review closed through accepted improvements/preflight and the explicit instruction to finish once final checks pass; separate human-operated exploration is not claimed.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and project owner confirms readiness
+- [x] Final review complete — agreed fixes verified; project owner explicitly authorized completion conditional on passing final checks, now satisfied.
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — trace one comparison through actual code
-- [ ] Optional edit and transfer reflection addressed
-- [ ] `devpost/app-map.html` generated from finished code, checked and shown
+- [x] Learning wrap-up complete — focused recap of the shared S01 investigation, evidence validation and reasoning-quality distinction; not a separate guided tour.
+- [x] Optional edit/reflection addressed — no additional exercise introduced for this requested concise closure; no personal reflection or mastery is attributed.
+- [x] `devpost/app-map.html` generated from finished code; paths, symbols and script-free source checked; file-panel opening requested and link provided. Embedded-browser file rendering was blocked by URL policy.
 
-Activity and evidence: Pending actual hands-on feedback.
-Route and stops: To be grounded in finished code.
-Edit outcome: Not yet offered.
-Reflection: Not yet offered; personal answers remain outside Git.
-Activity mode: Local app and editor.
+Activity and evidence: Focused recap based on the observed S01 rejection, privacy-safe diagnostic regressions, accepted genuine connectivity pass with partial reasoning, and final offline quality checks. No new exercise or learner-operated action is claimed.
+Route and stops: Reference route POST in src/app/api/compare/route.ts, buildReport in src/server/evidence.ts, FindingCard/emailText in src/components/ResultsDashboard.tsx. Map source snapshot 0c368f5; implementation unchanged in the wrap-up.
+Edit outcome: Not applicable; the requested wrap-up adds no application feature or dependency change.
+Reflection: No extra reflection question asked; the shared technical distinction is recapped without inventing personal learning testimony.
+Activity mode: Evidence-based recap, source-checked offline app map and running local app. Browser preview of file URLs was unavailable; no workaround or browser-rendered map check is claimed.
 
 ## Revisions
 
@@ -163,9 +165,9 @@ Responsive/React audit: inspected real input and recorded-response screenshots o
 - [x] Responsive and keyboard checks: 320/375/390/768/1366/1920px input and expanded result views, no page overflow, 44px important mobile controls, visible keyboard focus and focusable full-source region. Desktop/mobile screenshots inspected. This is a targeted audit, not a complete assistive-technology certification.
 - [x] Local production startup: latest build served HTML and actual complete synthetic sources, returned AI_NOT_ENABLED with no generated report. Production test server stopped afterward; development preview remains at http://127.0.0.1:3000 with live access disabled.
 - [x] Privacy/security boundaries preserved: no new storage, accounts, dependencies, logging or cloud calls; reference/coverage validators unchanged. Recorded responses stay private and Git-ignored. Cumulative Gemini usage remains **40**.
-- [ ] Project-owner final hands-on UI review and readiness confirmation; learning wrap-up/app map remain outstanding within 5-build. 6-ship is not authorized.
+- [x] Final 5-build readiness condition satisfied under the explicit wrap-up authorization; evidence-based recap and source-checked app map complete. No separate owner-operated session is claimed. 6-ship remains unauthorized.
 - [ ] Deployment/runtime validation: Node 24.19.0 now passes the final offline clean-install, test and production checks recorded below; hosted Linux validation remains pending. Vercel environment setup, deployed upload/time limits, Redis global lease/concurrency behavior and judging-period availability remain unverified. Actual single-attempt Upstash admission/release already succeeded; it is not a load/race test. Free-tier capacity is a planning target, not a guarantee. Previously accepted Hobby eligibility uncertainty remains documented.
-- [ ] Dependency release review: initial production audit was clean; the known development-only braces advisory remains recorded in README. No new online vulnerability audit or package changes were performed in this offline phase.
+- [x] Dependency release review completed in the subsequently authorized read-only follow-up: 0 known production vulnerabilities; the development-only braces advisory remains documented and accepted. No dependency change.
 - [ ] Public deployment requires separate explicit authorization. No additional live generation, revised-prompt accuracy check, paid service or billing change is authorized. The normal token-count-plus-generation path would need a separately approved request budget before another live test.
 
 Readiness assessment: no failing local automated check remains. The implementation is ready for final hands-on review, while public release remains gated by deployment approval and actual hosted/runtime validation. The revised prompt's reasoning improvement is **unmeasured**; offline safeguards prevent overstating the saved output but do not repair its semantics or establish model reliability. Six calendar days remain before October 26; prioritize hosted validation and fixes once authorized, leaving a buffer before the 5:00 PM Eastern submission deadline. No deadline guarantee or judging-period uptime guarantee is implied.
@@ -215,3 +217,29 @@ Official documentation checks:
 - [Hobby plan](https://vercel.com/docs/plans/hobby): free included usage and personal/non-commercial restriction are confirmed by docs. Limits can suspend service; they do not guarantee judging-period availability. The previously approved hackathon/prize eligibility uncertainty is preserved, not declared resolved. No trial, upgrade or account inspection was performed.
 
 Remaining actions: complete final 5-build hands-on readiness/wrap-up, then obtain explicit 6-ship authorization. Deployment still needs its own authorization; project-specific free-plan/Fluid/Node/environment configuration, anonymous access, Linux PDF assets, actual upload limits and Upstash multi-instance/outage/expiry behavior remain to be checked at that time. A live production comparison separately requires an approved Gemini request budget; there is no current allowance beyond 40. The revised prompt's reasoning quality remains unmeasured. Documentation-only follow-up does not invalidate the previously passed Node 24 installation, 46 unit tests, 6 production browser tests, lint, typecheck and build; no application behavior or dependencies changed in this follow-up.
+
+
+## Final 5-build Completion — October 20, 2026
+
+**Stage: COMPLETE.** The project owner accepted the technical GO and development-tooling risk and explicitly instructed completion once final checks pass. That condition is met. Earlier acceptance and observed automated/browser evidence are used for this closure; no new owner-operated hands-on session or separate learning exercise is invented. This closes 5-build only, not 6-ship.
+
+Approved functional MVP review:
+
+- Two readable PDF/TXT uploads with frontend/backend size/page validation, safe combined request bound, clear unreadable/capacity errors and no silent truncation: CompareForm, documents.ts and POST route. Samples and approved official-source links remain available; unsupported formats/OCR/URL ingestion remain excluded.
+- Applicant-context comparison through the real backend Gemini adapter, four preliminary categories, explicit unknowns and meaningful processing events: gemini.ts, prompt/schema, POST and ResultsDashboard. Normal operation uses one token-count request plus one combined generation, each separately reserved, with no automatic retry. The current live flag remains false; the accepted prior S01 is genuine integration evidence, not a new request.
+- Backend-owned passage IDs and exact source quotations with PDF pages/TXT lines, strict reference/coverage rejection, full extracted text including uncited passages, explicit extraction limitations and Insufficient Evidence applicability safeguards: documents.ts, evidence.ts and FullSourceView. Reference integrity is not semantic entailment or exhaustive coverage.
+- Responsive navy/violet/cyan dashboard, clearly qualified AI condition/exception organization, independent Accept/Reject/Uncertain choices and review counts, category metrics, clarification copy/edit/mailto flows and zero-findings state: ResultsDashboard and RuleInterpretation. Rejection disables clarification actions; acceptance never certifies correctness.
+- Active-session retention, explicit retry and duplicate-submit prevention, outdated reports/reviews after edits, successful reanalysis reset and refresh/close clearing: session.tsx and CompareForm. No accounts, permanent content storage, automatic email sending, unsupported confidence/accuracy score or canned runtime fallback.
+- Privacy acknowledgment, unofficial admissions notice, separate Google Free Tier policy disclosure, backend-only credentials and metadata-only atomic Upstash caps remain implemented. Daily/per-minute/concurrency/token controls are unchanged. Local runtime guard failures are covered offline; hosted service behavior is not newly certified.
+
+Final verification: Node **24.19.0**, previously clean-installed credential-free checkout, **46/46 unit/integration tests**, **6/6 browser tests against its actual production server**, typecheck, lint and production build all passed again. Saved synthetic/PDF cases ran rather than skipping. Production dependency-trace check passed (530 files, 56,761,268 bytes). Application source matches the clean tested checkout byte-for-byte. Browser checks cover input and expanded results at 320/375/390/768/1366/1920px. A fresh Node 24 dev server was started in the actual project at **http://127.0.0.1:3000/** and returned the application successfully, with GEMINI_REQUESTS_ENABLED=false. The separate temporary production test server is stopped after checks; no public deployment occurred.
+
+Git/privacy verification: tracked files and all-ref patch history were searched for actual current environment credentials, generated secret canaries and credential-shaped Gemini keys; none found. Private environment, learner profile, saved model responses, ledgers, temporary workspaces and browser artifacts are not tracked. Deliberately non-authentic unit-test placeholders remain test data, not working secrets. The pre-existing untracked human-review-changes.diff is preserved and excluded from this commit. No credentials or raw model output are embedded in the app map.
+
+Known risks: the fresh read-only production audit reports 0 known vulnerabilities; one unpatched braces development-tooling advisory propagates into five high-severity audit package entries. It remains documented and explicitly accepted; no forced downgrade, suppression or dependency upgrade. Original S06/S09/Waikato reasoning failures remain failures. The revised prompt has no new live accuracy result; the working release is a preliminary human-review tool, not an autonomous completeness/eligibility decision system.
+
+Wrap-up/map: devpost/app-map.html provides the three-stop reference route, real data lifetime/external services, change pointers, commands and the reusable practice demonstrated by S01. Paths and anchors match actual source. It contains no scripts, external assets or private profile/document content. The embedded browser refused local file URLs; source checks passed and a file-panel open was requested (queued). The link is provided for reopening; browser-rendered map verification is not claimed. Optional edit/reflection was not expanded into another interview, and no personal learning claim is recorded.
+
+Remaining hosted-only verification, not blockers to local 5-build completion: actual Vercel Node 24/Linux native PDF loading and bundle, Fluid duration/whole-upload limits, HTTPS/origin behavior, anonymous judge access, production secret/free-plan configuration, Upstash connectivity and multi-instance race/expiry/outage behavior, shared free-tier availability and judging-period uptime. The already accepted Hobby eligibility uncertainty remains unresolved by technical testing. All require later authorized hosting work; a genuine production AI smoke also needs a separately approved Gemini request budget. Cumulative requests remain **40**, with **0 new requests** in this wrap-up.
+
+A later explicit **6-ship authorization** permits beginning submission preparation: recheck readiness/current submission requirements; audit and prepare the repository/technical setup information; assist demo-recording mechanics and verify supplied video/repository links; help identify gaps in owner-written Devpost/exit-survey answers (grammar/spelling feedback, not ghostwriting). It does **not** by itself authorize publishing/creating a public repository or pushing publicly, public deployment, paid services/billing, new Gemini requests, sending email or submitting/posting on the owner's behalf. Each protected publication/deployment/submission action needs explicit scope-specific approval; the current no-deployment/no-API restrictions persist. No 6-ship actions or submission materials were begun here; its instructions were inspected only to describe that future authorization boundary accurately.
