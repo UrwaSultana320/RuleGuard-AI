@@ -3,11 +3,13 @@ import { rawSchema } from "@/shared/schemas";
 import type {
   Applicant,
   Evidence,
+  DegreeAssessment,
   Finding,
   Report,
   Source,
 } from "@/shared/contracts";
 import { AppError, type ValidationDiagnostic } from "./errors";
+import { degreeGate } from "@/shared/applicability";
 
 export function buildReport(
   input: unknown,
@@ -65,6 +67,7 @@ export function buildReport(
     for (const c of [
       r.requirement,
       r.scope,
+      r.degreeEvidence,
       ...r.conditions,
       ...r.exceptions,
     ]) {
@@ -77,6 +80,74 @@ export function buildReport(
       }
     }
   }
+  const assessmentIds = raw.documentAssessments.map((a) => a.sourceId);
+  if (
+    assessmentIds.length !== sourceIds.size ||
+    new Set(assessmentIds).size !== sourceIds.size ||
+    assessmentIds.some((id) => !sourceIds.has(id))
+  )
+    fail("DEGREE_ASSESSMENT_SET_MISMATCH");
+  const assessments: DegreeAssessment[] = raw.documentAssessments.map((a) => {
+    const ids = new Set<string>();
+    for (const clause of a.evidence) {
+      if (!clause.text.trim() || !clause.passageIds.length)
+        fail("DEGREE_EVIDENCE_INVALID");
+      for (const id of clause.passageIds) {
+        const p = registry.get(id);
+        if (!p || p.sourceId !== a.sourceId) fail("DEGREE_EVIDENCE_INVALID");
+        ids.add(id);
+      }
+    }
+    if (a.status !== "uncertain" && !ids.size) fail("DEGREE_EVIDENCE_MISSING");
+    const sourceRules = raw.rules.filter((r) => r.sourceId === a.sourceId);
+    const guardNotes: string[] = [];
+    if (a.conflictingEvidence || a.missingInformation.length)
+      guardNotes.push(
+        "The response declares conflicting scope evidence or missing degree information.",
+      );
+    if (
+      a.status === "other_degree" &&
+      (!a.exclusivelyOtherDegree ||
+        sourceRules.some((r) => r.degreeMatch !== "other"))
+    )
+      guardNotes.push(
+        "Exclusive other-degree scope is not consistently established in the response.",
+      );
+    if (a.status !== "other_degree" && a.exclusivelyOtherDegree)
+      guardNotes.push("The proposed scope and exclusivity flag disagree.");
+    if (
+      ["selected", "multiple", "general"].includes(a.status) &&
+      sourceRules.some((r) => r.degreeMatch === "unknown")
+    )
+      guardNotes.push(
+        "At least one extracted rule has unresolved degree scope.",
+      );
+    if (
+      ["selected", "multiple", "general"].includes(a.status) &&
+      sourceRules.length &&
+      !sourceRules.some((r) => ["selected", "general"].includes(r.degreeMatch))
+    )
+      guardNotes.push(
+        "The proposed applicable document has no supported selected/general rule branch.",
+      );
+    const status = guardNotes.length ? "uncertain" : a.status;
+    return {
+      sourceId: a.sourceId,
+      modelStatus: a.status,
+      status,
+      explanation: a.explanation,
+      evidence: [...ids].map((id) => registry.get(id) as Evidence),
+      missingInformation: a.missingInformation.length
+        ? a.missingInformation
+        : status === "uncertain"
+          ? [
+              "Confirm whether the selected degree and intended program are covered by this policy.",
+            ]
+          : [],
+      guardNotes,
+    };
+  });
+  const applicability = { assessments, gate: degreeGate(assessments) };
   const covered = new Set<string>();
   for (const c of raw.coverage) {
     if (!registry.has(c.passageId)) fail("COVERAGE_PASSAGE_UNKNOWN");
@@ -89,9 +160,13 @@ export function buildReport(
       const r = rules.get(id);
       if (!r) fail("COVERAGE_RULE_UNKNOWN");
       if (
-        ![r.requirement, r.scope, ...r.conditions, ...r.exceptions].some((x) =>
-          x.passageIds.includes(c.passageId),
-        )
+        ![
+          r.requirement,
+          r.scope,
+          r.degreeEvidence,
+          ...r.conditions,
+          ...r.exceptions,
+        ].some((x) => x.passageIds.includes(c.passageId))
       )
         fail("COVERAGE_RULE_PASSAGE_MISMATCH");
     }
@@ -110,12 +185,15 @@ export function buildReport(
       if (!r) fail("FINDING_RULE_UNKNOWN");
       return r;
     });
+    if (rs.some((r) => r.degreeMatch === "other"))
+      fail("FINDING_OTHER_DEGREE_RULE");
     const guardNotes: string[] = [];
     if (f.classification !== "Insufficient Evidence") {
       if (new Set(rs.map((r) => r.sourceId)).size !== 2)
         guardNotes.push("Both sources do not support this comparison.");
       if (
         f.unknowns.some((u) => u.blocksComparison) ||
+        rs.some((r) => r.degreeMatch === "unknown") ||
         rs.some((r) => r.scopeMatch === "unknown")
       )
         guardNotes.push("A decisive source or applicant context is unknown.");
@@ -151,9 +229,13 @@ export function buildReport(
       guardNotes,
       rules: rs.map((r) => {
         const ids = new Set(
-          [r.requirement, r.scope, ...r.conditions, ...r.exceptions].flatMap(
-            (c) => c.passageIds,
-          ),
+          [
+            r.requirement,
+            r.scope,
+            r.degreeEvidence,
+            ...r.conditions,
+            ...r.exceptions,
+          ].flatMap((c) => c.passageIds),
         );
         return {
           id: r.ruleId,
@@ -162,6 +244,7 @@ export function buildReport(
           scope: r.scope.text,
           scopeMatch: r.scopeMatch,
           conditionStatus: r.conditionStatus,
+          degreeMatch: r.degreeMatch,
           conditions: r.conditions.map((c) => c.text),
           exceptions: r.exceptions.map((c) => c.text),
           evidence: Array.from(ids).map((id) => registry.get(id) as Evidence),
@@ -173,6 +256,9 @@ export function buildReport(
     id: randomUUID(),
     revision,
     applicant,
+    applicability,
+    degreeVerification:
+      applicability.gate === "allowed" ? "supported" : "unverified",
     findings,
     limitations: [
       ...raw.limitations,

@@ -1,5 +1,9 @@
 // Static codes only: never include model text, identifiers, filenames or credentials.
 export type ValidationDiagnostic =
+  | "DEGREE_ASSESSMENT_SET_MISMATCH"
+  | "DEGREE_EVIDENCE_MISSING"
+  | "DEGREE_EVIDENCE_INVALID"
+  | "FINDING_OTHER_DEGREE_RULE"
   | "ANALYSIS_INCOMPLETE"
   | "SOURCE_SET_MISMATCH"
   | "RULE_ID_EMPTY"

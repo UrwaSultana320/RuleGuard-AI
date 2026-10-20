@@ -8,12 +8,14 @@ import {
 } from "react";
 import type {
   Applicant,
+  Applicability,
   Event,
   Report,
   Review,
   Source,
 } from "@/shared/contracts";
 import { LIMITS } from "@/shared/limits";
+import { canReveal } from "@/shared/applicability";
 type WorkError = {
   message: string;
   code?: string;
@@ -23,8 +25,10 @@ type WorkError = {
 function useWork() {
   const [files, setFiles] = useState<(File | null)[]>([null, null]);
   const [fileErrors, setFileErrors] = useState<string[]>(["", ""]);
-  const [applicant, setApplicant] = useState<Applicant>({
-    degree: "Master's",
+  const [applicant, setApplicant] = useState<
+    Omit<Applicant, "degree"> & { degree: Applicant["degree"] | "" }
+  >({
+    degree: "",
     program: "",
     intake: "Not sure",
     category: "Not sure",
@@ -37,6 +41,11 @@ function useWork() {
   const [reportSources, setReportSources] = useState<Source[]>([]);
   const latestSources = useRef<Source[]>([]);
   const [report, setReport] = useState<Report | null>(null);
+  const [pendingReport, setPendingReport] = useState<Report | null>(null);
+  const [applicability, setApplicability] = useState<Applicability | null>(
+    null,
+  );
+  const [degreeAcknowledged, setDegreeAcknowledged] = useState(false);
   const [reviews, setReviews] = useState<Record<string, Review>>({});
   const [processing, setProcessing] = useState(false);
   const busy = useRef(false);
@@ -48,8 +57,14 @@ function useWork() {
     revisionRef.current++;
     setRevision(revisionRef.current);
     setError(null);
+    setPendingReport(null);
+    setApplicability(null);
+    setDegreeAcknowledged(false);
+    setReviews({});
   };
   const setField = (key: keyof Applicant, value: string) => {
+    if (key === "degree" && !["", "Bachelor's", "Master's"].includes(value))
+      return;
     change();
     setApplicant((a) => ({ ...a, [key]: value }));
   };
@@ -62,19 +77,21 @@ function useWork() {
     if (busy.current) return false;
     if (
       !files.every(Boolean) ||
+      !applicant.degree ||
       fileErrors.some(Boolean) ||
       !applicant.program.trim() ||
       !consent
     ) {
       setError({
         message:
-          "Add both supported documents, enter the intended program and acknowledge the privacy notice.",
+          "Select a degree, add both supported documents, enter the intended program and acknowledge the privacy notice.",
       });
       return false;
     }
     busy.current = true;
     setProcessing(true);
     setError(null);
+    setDegreeAcknowledged(false);
     setStage(0);
     const id = crypto.randomUUID();
     current.current = id;
@@ -108,8 +125,10 @@ function useWork() {
       setProcessing(false);
       return false;
     }
-    let completed = false,
-      terminal = false;
+    let terminal = false;
+    const completion: {
+      event: Extract<Event, { type: "result" | "applicability" }> | null;
+    } = { event: null };
     try {
       const response = await fetch("/api/compare", {
         method: "POST",
@@ -131,6 +150,10 @@ function useWork() {
           e.revision !== revisionRef.current
         )
           return;
+        if (terminal)
+          throw new Error(
+            "The response contained conflicting completion events. No new report was created.",
+          );
         if (e.type === "stage") setStage(e.stage);
         if (e.type === "sources") {
           if (
@@ -145,10 +168,18 @@ function useWork() {
         if (e.type === "result") {
           if (e.report.revision !== rev)
             throw new Error("The report belongs to older inputs.");
-          setReport(e.report);
-          setReportSources(latestSources.current);
-          setReviews({});
-          completed = true;
+          if (
+            !e.report.applicability ||
+            e.report.applicability.assessments.length !== 2
+          )
+            throw new Error(
+              "The document degree assessments were incomplete. No findings were opened.",
+            );
+          completion.event = e;
+          terminal = true;
+        }
+        if (e.type === "applicability") {
+          completion.event = e;
           terminal = true;
         }
         if (e.type === "error") {
@@ -168,6 +199,24 @@ function useWork() {
         throw new Error(
           "The connection ended before analysis completed. Your inputs are retained; please retry.",
         );
+      // Commit only after a clean terminal transfer. A trailing/truncated frame
+      // must never leave a revealable report behind an error message.
+      if (
+        completion.event &&
+        current.current === id &&
+        revisionRef.current === rev
+      ) {
+        const outcome = completion.event;
+        setPendingReport(outcome.type === "result" ? outcome.report : null);
+        setApplicability(
+          outcome.type === "result"
+            ? outcome.report.applicability
+            : outcome.applicability,
+        );
+        setReport(null);
+        setReviews({});
+        setDegreeAcknowledged(false);
+      }
     } catch (e) {
       setError({
         message:
@@ -180,7 +229,21 @@ function useWork() {
       setProcessing(false);
       setStage(-1);
     }
-    return completed;
+    return false;
+  }
+  function revealComparison() {
+    if (
+      processing ||
+      !pendingReport ||
+      pendingReport.revision !== revisionRef.current ||
+      !canReveal(pendingReport.applicability, degreeAcknowledged)
+    )
+      return false;
+    setReport(pendingReport);
+    setReportSources(latestSources.current);
+    setPendingReport(null);
+    setReviews({});
+    return true;
   }
   const review = (findingId: string, value: Review) => {
     if (report?.revision !== revision) return;
@@ -190,6 +253,11 @@ function useWork() {
     reviews[`${report?.id}:${findingId}`] ?? "Pending";
   return {
     reportSources,
+    applicability,
+    degreeAcknowledged,
+    setDegreeAcknowledged,
+    revealComparison,
+    hasPendingComparison: !!pendingReport,
     files,
     fileErrors,
     setFile,

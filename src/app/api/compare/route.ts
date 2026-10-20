@@ -178,7 +178,12 @@ export async function POST(request: Request) {
           emit({ type: "stage", stage: 3 } as Event);
           // Source identity, applicability prerequisites and counts were checked locally, not separate AI calls.
           emit({ type: "stage", stage: 4 } as Event);
-          emit({ type: "result", report } as Event);
+          if (report.applicability.gate === "blocked")
+            emit({
+              type: "applicability",
+              applicability: report.applicability,
+            } as Event);
+          else emit({ type: "result", report } as Event);
         } catch (error) {
           uncertainUpstream =
             error instanceof AppError && error.code === "UPSTREAM_UNCERTAIN";

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CATEGORIES } from "./limits";
 export const applicantSchema = z
   .object({
-    degree: z.literal("Master's"),
+    degree: z.enum(["Bachelor's", "Master's"]),
     program: z.string().trim().min(1, "Enter the intended program.").max(120),
     intake: z.string().trim().min(1).max(80),
     category: z.string().trim().min(1).max(120),
@@ -16,6 +16,25 @@ export const rawSchema = z
     analysisStatus: z.enum(["complete", "incomplete"]),
     sourceIds: z.array(z.string()),
     limitations: z.array(z.string()),
+    documentAssessments: z.array(
+      z
+        .object({
+          sourceId: z.string(),
+          status: z.enum([
+            "selected",
+            "other_degree",
+            "multiple",
+            "general",
+            "uncertain",
+          ]),
+          explanation: z.string().trim().min(1),
+          evidence: z.array(clause),
+          missingInformation: z.array(z.string().trim().min(1)),
+          exclusivelyOtherDegree: z.boolean(),
+          conflictingEvidence: z.boolean(),
+        })
+        .strict(),
+    ),
     rules: z.array(
       z
         .object({
@@ -23,6 +42,8 @@ export const rawSchema = z
           sourceId: z.string(),
           requirement: clause,
           scope: clause,
+          degreeMatch: z.enum(["selected", "general", "other", "unknown"]),
+          degreeEvidence: clause,
           scopeMatch: z.enum(["matches", "does_not_match", "unknown"]),
           conditionStatus: z.enum([
             "met",

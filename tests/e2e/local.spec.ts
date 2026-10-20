@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
+import { displayAssessments } from "../fixtures/degree";
 import { mkdir } from "node:fs/promises";
 
 // Offline browser verification: permit the local app only, never cloud services.
@@ -16,7 +17,11 @@ test("actual backend reads both synthetic sources, retains work on AI-disabled e
   page,
 }) => {
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await expect(page.getByLabel("Intended program")).toHaveValue(
+    /Artificial Intelligence/,
+  );
   await expect(page.getByLabel("Intended program")).toHaveValue(
     "Master's in Artificial Intelligence",
   );
@@ -55,6 +60,7 @@ test("frontend validates PDF pages and the actual backend extracts all approved 
     "Download official Waikato sources as described in the README to run this PDF integration test.",
   );
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   await page
     .locator("#file-0")
     .setInputFiles("tmp/pdfs/waikato-pg-english-2026.pdf");
@@ -104,7 +110,7 @@ test("review/evidence/email controls and stale-state behavior work with explicit
       id,
       hash: "test-only",
       name: `Test-${id}.txt`,
-      kind: "TXT",
+      kind: "TXT" as const,
       bytes: 30,
       pages: [
         { number: 1, text: "SYNTHETIC: source evidence with conditions." },
@@ -121,6 +127,8 @@ test("review/evidence/email controls and stale-state behavior work with explicit
       ],
     }));
     const report = {
+      applicability: { assessments: displayAssessments(ss), gate: "allowed" },
+      degreeVerification: "supported",
       id: "test-only-intercept",
       revision,
       applicant: {
@@ -165,10 +173,17 @@ test("review/evidence/email controls and stale-state behavior work with explicit
     await route.fulfill({ contentType: "application/x-ndjson", body: lines });
   });
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await expect(page.getByLabel("Intended program")).toHaveValue(
+    /Artificial Intelligence/,
+  );
   await page.getByRole("checkbox", { name: /I'm using public/ }).check();
   await page
     .getByRole("button", { name: "Compare Requirements", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "View preliminary comparison", exact: true })
     .click();
   await expect(page).toHaveURL("/results");
   await expect(
@@ -205,6 +220,7 @@ test("responsive layout and screenshot of the real input page", async ({
   page,
 }) => {
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   for (const width of [320, 375, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     const layout = await page.evaluate(() => ({
@@ -257,7 +273,11 @@ test("shows a privacy-safe diagnostic without rendering rejected AI findings", a
     });
   });
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await expect(page.getByLabel("Intended program")).toHaveValue(
+    /Artificial Intelligence/,
+  );
   await page.getByRole("checkbox", { name: /I'm using public/ }).check();
   await page
     .getByRole("button", { name: "Compare Requirements", exact: true })
@@ -271,7 +291,7 @@ test("shows a privacy-safe diagnostic without rendering rejected AI findings", a
   );
 });
 
-test("recorded S01 offline replay shows honest structure, preserves evidence and works across screen sizes", async ({
+test("historical S01 findings with an explicitly constructed uncertain gate preserve quality notices across screen sizes", async ({
   page,
 }) => {
   test.skip(
@@ -292,7 +312,29 @@ test("recorded S01 offline replay shows honest structure, preserves evidence and
     );
     const events = [
       { type: "sources", sources: manifest.sources },
-      { type: "result", report: { ...saved, revision } },
+      // Only the old findings are replayed. The gate below is a NEW offline
+      // fixture, never claimed to be in the genuine saved response.
+      {
+        type: "result",
+        report: {
+          ...saved,
+          revision,
+          applicability: {
+            gate: "uncertain",
+            assessments: displayAssessments(manifest.sources).map((a) => ({
+              ...a,
+              status: "uncertain",
+              modelStatus: "uncertain",
+              explanation:
+                "OFFLINE TEST ONLY: legacy response did not assess degree applicability.",
+              missingInformation: [
+                "Selected degree scope was not assessed in this old response.",
+              ],
+            })),
+          },
+          degreeVerification: "unverified",
+        },
+      },
     ];
     await route.fulfill({
       contentType: "application/x-ndjson",
@@ -303,10 +345,23 @@ test("recorded S01 offline replay shows honest structure, preserves evidence and
     });
   });
   await page.goto("/");
+  await page.getByLabel("Degree level").selectOption("Master's");
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await expect(page.getByLabel("Intended program")).toHaveValue(
+    /Artificial Intelligence/,
+  );
   await page.getByRole("checkbox", { name: /I'm using public/ }).check();
   await page
     .getByRole("button", { name: "Compare Requirements", exact: true })
+    .click();
+  await page
+    .getByRole("checkbox", { name: /I acknowledge the unresolved/ })
+    .check();
+  await page
+    .getByRole("button", {
+      name: "Continue to preliminary comparison",
+      exact: true,
+    })
     .click();
   await expect(page).toHaveURL("/results");
   await page.locator(".evidence summary").click();

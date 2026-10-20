@@ -4,6 +4,7 @@ import { buildReport } from "@/server/evidence";
 import { safeError } from "@/server/errors";
 import type { RawAnalysis } from "@/shared/schemas";
 import type { Applicant } from "@/shared/contracts";
+import { rawAssessments } from "../fixtures/degree";
 
 // Constructed offline contract fixture, NOT the unavailable S01 Gemini response.
 const applicant: Applicant = {
@@ -25,9 +26,15 @@ async function fixture() {
     analysisStatus: "complete",
     sourceIds: ["A", "B"],
     limitations: [],
+    documentAssessments: rawAssessments(sources),
     rules: sources.map((s) => ({
       ruleId: s.id,
       sourceId: s.id,
+      degreeMatch: "selected",
+      degreeEvidence: {
+        text: "Selected degree.",
+        passageIds: [s.passages[0].id],
+      },
       requirement: {
         text: "A rule is stated.",
         passageIds: [s.passages[0].id],

@@ -15,7 +15,6 @@ export function requestContents(sources: Source[], applicant: Applicant) {
             applicant,
             sources: sources.map((s) => ({
               sourceId: s.id,
-              filename: s.name,
               kind: s.kind,
               passages: s.passages.map((p) => ({
                 passageId: p.id,

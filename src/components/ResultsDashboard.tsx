@@ -8,6 +8,7 @@ import { useSession } from "@/state/session";
 import { FullSourceView } from "./FullSourceView";
 import { Icon } from "./Icons";
 import { RuleInterpretation, UncertaintyNotes } from "./RuleInterpretation";
+import { DegreeAssessments } from "./DegreeApplicability";
 export function emailText(f: Finding, program: string) {
   const refs = Array.from(
     new Set(
@@ -298,6 +299,18 @@ export function ResultsDashboard() {
           </p>
         </div>
       </div>
+      <section className="panel">
+        <h2>
+          {report.degreeVerification === "unverified"
+            ? "Degree applicability unverified"
+            : "Degree applicability — preliminary AI assessment"}
+        </h2>
+        <p>
+          These scope interpretations require human review. Traceable quotations
+          do not guarantee correct degree identification.
+        </p>
+        <DegreeAssessments assessments={report.applicability.assessments} />
+      </section>
       <div className="metrics">
         <div>
           <span>AI-suggested requirements compared</span>

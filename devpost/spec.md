@@ -7,11 +7,36 @@ approval_gate: approved-with-documented-hobby-uncertainty
 
 # RuleGuard AI — Technical Specification
 
+## Approved Degree-Aware Revision — 2026-10-20
+
+Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
+
+Select the degree explicitly before uploading two readable PDF/TXT documents; neither degree is preselected. Retain program, intake and applicant category. Examine the complete supported extracted content of both documents, not filenames, titles or isolated keywords. Display a separate preliminary applicability assessment for each source, with backend-reconstructed quotations and PDF page / TXT line references: applicable to selected degree, explicitly another degree, multiple degrees, general policy applicable to selected degree, or uncertain.
+
+A clear, exclusively other-degree document with supporting references blocks comparison and requires replacement; acknowledgment cannot override it. Weak, ambiguous or conflicting mismatch evidence is uncertain. Mixed-degree documents are accepted only where the selected branch is supported; compare selected-degree rules and applicable general rules, conditions and exceptions only. Inventory other-degree rules for coverage, but do not include them in comparison findings. A genuinely general policy needs no degree-specific title. Never inherit rules across degrees or assume every postgraduate statement applies to every Master's program.
+
+For uncertainty, show **Degree applicability could not be confirmed**, available evidence and missing information before revealing findings. Require an explicit acknowledgment and Continue action. Reuse the same validated response in session memory, without another AI call; mark the resulting preliminary report **Degree applicability unverified**. Scope, condition satisfaction and contradiction remain separate concepts. Unknown rule-degree scope yields Insufficient Evidence. Human review and acknowledgment do not certify correctness, completeness, official status, authenticity or publication currency.
+
+Every degree or document edit invalidates the applicability decision, acknowledgment, previous comparison and related review decisions. Full extracted sources remain inspectable, without a guarantee of extraction fidelity. Preserve original quotes, four finding categories, dashboard totals for AI-identified findings only, Accept/Reject/Uncertain controls, clarification drafts, privacy/session handling, all upload limits, backend-only credentials and free-tier global quotas. Existing Master's-only samples remain labeled Master's; provide separately labeled Bachelor's samples rather than relabeling them.
+
+Acceptance checks cover both matching degrees; opposite-only mismatches in either direction; mixed sections; general policy; uncertainty and explicit continuation; non-overridable mismatch; invalid/cross-source applicability references; stale degree edits; degree-specific conditions/exceptions; and retained Master's behavior. Offline tests verify implementation and guards, not live Gemini degree reasoning. The revised feature is not release-ready solely because offline tests pass; local UI review and separately authorized live validation remain outstanding.
+
+### Degree Assessment Contract and Gate
+
+Extend the existing single combined generation response, not the request count. Required `documentAssessments` contains exactly one entry per current source: `sourceId`, `status` (`selected`, `other_degree`, `multiple`, `general`, `uncertain`), `explanation`, cited `evidence` clauses, `missingInformation`, `exclusivelyOtherDegree`, and `conflictingEvidence`. Evidence clauses use existing passage IDs, never generated quotations or page numbers. Non-uncertain conclusions require evidence. Each rule adds `degreeMatch` (`selected`, `general`, `other`, `unknown`) and a same-source cited `degreeEvidence` clause. Conditions and exceptions must belong to the rule's selected-degree/general branch; do not merge exceptions across branches.
+
+Validate the entire response and existing passage coverage before creating any current outcome. Reject missing/duplicate source assessments, malformed fields, invented/stale/cross-source applicability references and findings referencing other-degree rules. Downgrade internally inconsistent assessment claims, declared conflicts or missing decisive information to uncertain; a supported exclusive mismatch has priority over uncertainty. These structural checks cannot independently establish semantic entailment or detect every omission. Preserve raw proposed assessment status separately from the guarded status.
+
+The backend returns an `applicability` terminal event containing assessments and `gate: blocked` for a clear mismatch, with no findings/report payload. Otherwise the existing `result` carries validated assessments and report with `degreeVerification: supported | unverified`. The client holds that report privately in active session state, displays assessments first and reveals it only after an explicit View comparison action (plus uncertainty acknowledgment where needed). There is no extra endpoint, persistent storage or model call. Input revision binding invalidates held results and acknowledgment. An outdated historical report remains visibly outdated on input edits; old review choices are invalidated.
+
+Gemini remains `gemini-3.1-flash-lite` in its constrained preliminary role. Normal live operation still reserves a token-count utility request and one combined generation separately, with existing limits and no automatic retry. Live access remains disabled. Original model benchmarks and the earlier S01 response predate this required contract and are not evidence that the revised response passes. Do not alter retained raw responses or frozen benchmark expectations.
+
+
 The project owner explicitly approved the final 4-spec on 2026-10-20, including the documented Vercel Hobby eligibility uncertainty, and authorized 5-build. Markdown is canonical; spec.html is its offline companion. The approved architecture is now the build baseline. Historical planning/benchmark records below retain their dates and failed outcomes. Any earlier DRAFT/handoff prohibition is superseded only for application implementation by this approval. No additional live Gemini request or public deployment is authorized; each requires separate permission. The Hobby terms question remains disclosed, not resolved by approval.
 
 ## How This Works, In Plain Language
 
-An applicant selects two public university documents or labeled synthetic samples and enters nonsensitive Master's applicant context. One Next.js application provides both the React interface and backend. The backend reads each document page by page and gives every passage an identifier.
+An applicant first explicitly selects Bachelor's or Master's, then supplies two public university documents or degree-labeled synthetic samples and nonsensitive applicant context. One Next.js application provides both the React interface and backend. The backend reads each document page by page and gives every passage an identifier.
 
 For the initial benchmark, one combined Gemini call examines the complete supported text: requirements, conditions, exceptions, applicability, comparisons, and clarification questions. The AI selects passage identifiers rather than writing its own quotations or page numbers. Backend checks reject invalid references and retrieve the actual evidence from the source text.
 
@@ -25,7 +50,7 @@ Successful processing produces preliminary AI suggestions requiring human review
 
 ## Approved Decisions and Boundaries
 
-- English-language proficiency for international Master's applicants; exactly two readable PDF/TXT documents. MOI versus IELTS/TOEFL is evidence-led, not hardcoded.
+- English-language proficiency for international Bachelor's and Master's applicants; exactly two readable PDF/TXT documents. MOI versus IELTS/TOEFL is evidence-led, not hardcoded.
 - Next.js, React, TypeScript; one application containing frontend and backend. The stack choice includes learning these technologies rather than staying fully within familiar C#/.NET.
 - Single combined AI call as the initial benchmark design. A three-call pipeline is considered only if benchmark evidence shows meaningful quality improvement. Preserve the same pipeline interface so changing the implementation does not require rewriting the UI or evidence system.
 - Application-controlled citations, independently tested from AI reasoning.
@@ -43,15 +68,15 @@ Successful processing produces preliminary AI suggestions requiring human review
 
 Implements `prd.md > The Core Journey`.
 
-1. Open the first screen: brand, purpose, public/synthetic-only privacy notice, session-loss notice, two upload cards, applicant context, and Compare Requirements.
-2. Select documents and supply Master's (fixed), intended program (required), intake/category (or Not sure). Browser checks metadata and parsed PDF page count, with local inline errors.
+1. Open the first screen: brand, purpose, explicit degree selector before upload, public/synthetic-only privacy notice, session-loss notice, two upload cards, applicant context, and Compare Requirements.
+2. Explicitly select Bachelor's / Undergraduate or Master's / Postgraduate (no preselection), then select documents and supply intended program (required), intake/category (or Not sure). Browser checks metadata and parsed PDF page count, with local inline errors.
 3. Explicitly start comparison. Send the raw files, bounded context, input revision and privacy acknowledgment to the backend. Disable duplicate submission. Do not auto-run after edits.
 4. Backend independently validates request/file/page/text budgets, reads text, retains page mappings, creates passage IDs, and reserves available API capacity.
 5. After complete extraction/capacity validation, send both canonical source snapshots in a revision-bound sources event for browser-memory inspection. The selected pipeline performs one combined structured Gemini call for preliminary suggestions. Source documents are untrusted data, never instructions to execute. This describes future runtime behavior; no call is authorized now.
 6. Backend validates response structure, references, known applicability/evidence guards, and classification/count consistency; rebuilds evidence from source text.
-7. Only complete processing success (including a valid empty outcome) transitions to the dedicated results dashboard of preliminary suggestions. It does not establish complete requirement coverage. Show the report notice, AI-suggested totals, full-source access and independent review controls; render explanations as text and eligible preliminary clarification actions without sending messages.
+7. Only complete processing success (including a valid empty outcome), followed by the document applicability gate and explicit continuation, opens the dedicated results dashboard of preliminary suggestions. It does not establish complete requirement coverage. Show the report notice, AI-suggested totals, full-source access and independent review controls; render explanations as text and eligible preliminary clarification actions without sending messages.
 8. Return to inputs through in-app navigation with data intact. Any edit immediately marks the old report Outdated — Reanalysis Required.
-9. Reanalysis requires an explicit click. Retain an old report as outdated during processing/failure. Only a complete new success replaces it. Ignore results arriving for a superseded input revision.
+9. Reanalysis requires an explicit click. Retain an old report as outdated during processing/failure. Only a complete new outcome replaces it: a blocked outcome removes current findings, while an allowed/uncertain report is held behind the applicability gate until explicit continuation. Ignore results arriving for a superseded input revision.
 10. Refresh or closing the page clears active work; no document recovery or report history is promised.
 
 ## Stack and Runtime
@@ -132,7 +157,7 @@ Carry forward premium dark navy with restrained violet/cyan accents, refined car
 
 Use a system font stack initially to avoid a font service or network dependency. Desktop upload/evidence panels can sit side by side; stack when available width is insufficient. Give every category a text label/icon in addition to color. Use visible focus, semantic form labels, comfortable touch controls, reduced-motion support, and live status announcements.
 
-Check all screens and states at 375, 768, 1366, and 1920 px: first screen, navigation, inputs, progress, dashboard, finding/evidence expansion, clarification, errors, outdated reports and empty results. No clipping, tiny type, overlap, or horizontal page scrolling. The three first-screen journey labels remain Upload Documents → Applicant Context → AI Analysis.
+Check all screens and states at 375, 768, 1366, and 1920 px: first screen, navigation, inputs, progress, dashboard, finding/evidence expansion, clarification, errors, outdated reports and empty results. No clipping, tiny type, overlap, or horizontal page scrolling. The three first-screen journey labels are Select Degree → Upload and Context → Applicability and Comparison; the document assessments gate findings after the same combined AI call.
 
 ## Components
 
@@ -142,7 +167,7 @@ Implements `prd.md > Document Input and Applicant Context`, `Revise and Compare 
 
 A React session provider above the input/results views owns files, context, request state, input revision, and the last completed report. Keep it mounted across in-app navigation. No document/applicant/report content in localStorage, sessionStorage, IndexedDB, a service worker cache, URL query strings, or cookies. A refresh creates a fresh session.
 
-Master's is fixed; intended program is required; intake/category allow Not sure. Any relevant edit increments the input revision and marks the retained report outdated immediately. Disable repeated submission and abort or ignore superseded responses. Abort is best effort and does not establish that Google stopped processing or quota was refunded.
+Degree selection is explicit (Bachelor's or Master's), with no preselection; intended program is required; intake/category allow Not sure. Any relevant edit increments the input revision and marks the retained report outdated immediately. Disable repeated submission and abort or ignore superseded responses. Abort is best effort and does not establish that Google stopped processing or quota was refunded.
 
 Display: “Your work stays in this open session. Refreshing or closing this page clears uploads and results.”
 
@@ -408,7 +433,7 @@ Measured results and proposed constrained scope: [final evaluation report](../ev
 ### Application Acceptance Checks
 
 - Both validation layers reject oversized/over-page/invalid inputs; valid Waikato pair fits; no silent truncation.
-- Required Master's/program/two files validated; Not sure accepted and uncertainty preserved.
+- Required explicit degree/program/two files validated; Not sure accepted and uncertainty preserved.
 - Actual progress and duplicate prevention; structured combined call; privacy acknowledgment before transfer.
 - Four categories, one topic/primary classification, correct three count equations; no similarity/confidence percentages.
 - Correct PDF page/filename and TXT excerpt references, exact evidence, explicit source gaps and accessible expansion.
@@ -444,7 +469,7 @@ RuleGuard-AI/
       globals.css               # Navy/violet/cyan tokens and accessible base styles
     components/
       DocumentUpload.tsx        # Both file cards, client checks and inline errors
-      ApplicantForm.tsx         # Fixed Master's, program, optional context
+      ApplicantForm.tsx         # Explicit degree, program, optional context
       PrivacyNotice.tsx         # Public/synthetic acknowledgment and disclosure
       SessionNotice.tsx         # Refresh/close loss warning
       AnalysisProgress.tsx      # Honest five-label progress with shared AI helper
@@ -537,7 +562,7 @@ Routine details (module filenames, CSS tokens, schema implementation and readabl
 
 This specification is **APPROVED** on 2026-10-20, including the documented Hobby eligibility uncertainty. 5-build/local implementation is explicitly authorized. Follow devpost/checklist.md; no paid services or extra scope. Live Gemini requests and public deployment remain blocked pending separate authorization. Benchmark failures, privacy safeguards, human-review limitations and later production checks remain in force.
 
-Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. The technical specification remains DRAFT; no additional Gemini requests, application development, 5-build or deployment are authorized.
+Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. At that amendment handoff, the technical specification remained DRAFT and implementation was not yet authorized. Final 4-spec approval and local 5-build authorization followed on October 20; additional Gemini calls and public deployment still require separate approval.
 
 
 ### Final 4-spec Readiness — 2026-10-20
@@ -554,3 +579,19 @@ No Gemini requests, benchmark rerun, application code, resource creation, billin
 ### Final Approval and Build Authorization — 2026-10-20
 
 4-spec is **APPROVED** by the project owner, including the documented Vercel Hobby eligibility uncertainty. Starting 5-build and local application implementation/testing is explicitly authorized. No new features, paid services, additional live Gemini calls or public deployment are authorized. Credentials stay private in ignored environment files and later secure host settings. Earlier planning status statements are historical, not a renewed approval gate. Follow devpost/checklist.md for implementation progress; live-call permission and public-deployment permission remain separate.
+
+## Degree-Aware Local Verification — 2026-10-20
+
+Approved degree-aware extension implemented locally without changing the single combined generation, model, quotas, file limits, privacy, free hosting architecture or human-review role. Explicit degree selection has no default. The same supported complete source content is sent with the selected degree; filenames are omitted from model input to avoid filename cues, while display names and exact source references remain backend-owned. No university-specific classifier, answer table or runtime fixture fallback was added.
+
+Validated assessments appear separately for both documents before findings. An exclusive supported mismatch returns the blocked applicability event without a report; acknowledgment cannot override it. Mixed/general documents compare selected/general rule branches only; findings referencing other-degree rules are rejected. Unknown rule scope is guarded to Insufficient Evidence. Declared conflicting/missing degree evidence makes document scope uncertain. The same validated response is held in memory until explicit continuation, with acknowledgment required for uncertainty and an unverified-degree report notice. Edits clear held decisions/acknowledgment/reviews and mark an existing report outdated. A failed retry retains the last complete outcome.
+
+Offline regression found and reproduced a truncated-transfer defect: a terminal result followed by an incomplete frame could leave reveal controls available despite an error. The client now commits a new outcome only after a clean, single-terminal stream; the regression passes. No citation, coverage or security predicate was relaxed.
+
+Mechanical verification on Node 24.19.0: **62 unit/integration tests and 15 browser tests passed**, plus lint, typecheck, production build and PDF function-trace verification (530 files, 56,766,177 bytes on Windows). Browser tests ran against the actual local production server, with genuine local extraction/AI-disabled error handling and explicitly intercepted test-only outputs for gate/dashboard scenarios. Both approved Waikato PDFs remain readable in the local extraction test. Main input, uncertain assessment and expanded results were checked at desktop/mobile widths spanning 320–1920 px; no horizontal page overflow was detected. Canonical content of scope/PRD/spec HTML matches Markdown; existing companion CSS and JavaScript remain unchanged. File-URL browser preview remains unavailable; no browser-rendered companion check is claimed.
+
+Coverage includes matching Bachelor's and Master's, opposite-degree mismatches in both directions, mixed sections and general policy, acknowledgment and non-overridable mismatch, invalid/cross-source applicability citations, stale degree changes before/after continuation, degree-specific conditions/exceptions, retained Master's review/email/quality behavior, legacy-contract rejection, interrupted transport and retry recovery. Outputs used by these regressions are offline fixtures; they are not measured Gemini reasoning results. Original saved S01 response and frozen model-selection fixtures remain unchanged. A historical S01 UI replay explicitly adds an offline uncertain gate rather than attributing new fields to the genuine old response.
+
+**Local review ready; revised release readiness pending.** No new Gemini calls were made; cumulative usage remains **40** and live access is disabled. The new response schema/prompt's provider compatibility, degree reasoning, mixed-branch/exception completeness, token use and latency have not been checked live. Existing model reasoning failures remain disclosed. No offline test proves semantic entailment, complete/accurate extraction or degree identification, document authenticity, official status or publication currency. Separately authorized live validation and project-owner local review remain required before calling this revision release-ready. Hosted Linux packaging, environment setup, anonymous public access, actual request/duration limits, real Upstash concurrency/outage behavior and availability during judging remain hosted-only checks. The accepted development-tooling advisory and Hobby eligibility uncertainty are unchanged.
+
+Timeline: implementation and offline checks are complete on October 20, six calendar days before the October 26 submission date. No new infrastructure or additional model call per comparison is needed. Delivery remains feasible subject to prompt local review, separately approved live validation and the existing hosted release checks; the deadline and judging availability are not guaranteed. 6-ship, public deployment, publishing, Devpost submission, billing and additional Gemini requests remain blocked pending separate approval.

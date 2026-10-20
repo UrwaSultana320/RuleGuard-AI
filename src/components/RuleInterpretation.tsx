@@ -7,6 +7,9 @@ export function RuleInterpretation({ rule: r }: { rule: Rule }) {
       <p className="rule-context">
         <strong>AI-proposed scope:</strong> {r.scope}
         <br />
+        <strong>AI-proposed degree scope:</strong>{" "}
+        {r.degreeMatch ?? "Not assessed in this historical output"}
+        <br />
         <strong>Applicability:</strong>{" "}
         {r.scopeMatch === "matches"
           ? "AI suggests scope matches"

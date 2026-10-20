@@ -1,7 +1,7 @@
 ---
 doc: checklist
 status: approved
-build_status: complete
+build_status: revision-awaiting-local-review
 build_completed: 2026-10-20
 ---
 
@@ -9,9 +9,21 @@ build_completed: 2026-10-20
 
 Build mode: fast implementation with an early local hands-on checkpoint and final review. Execution is explicitly authorized on October 20, 2026; the following order is derived from the approved scope/PRD/spec. The instruction to start implementation takes precedence over a further planning interview. This is not an authorization for Gemini calls or public deployment.
 
-Current checkpoint: **5-build complete** under the project owner's explicit conditional instruction to mark completion once final checks pass. All final Node 24 checks passed; cumulative Gemini usage remains 40 and live access is disabled. The accepted release claim is the human-reviewed, source-traceable MVP with disclosed partial AI reasoning quality. 6-ship, public deployment, new Gemini requests and billing changes remain unauthorized. Historical stage records below are retained as history; the final wrap-up record supersedes older pending-checkpoint notes.
+Historical original checkpoint: **5-build complete** under the project owner's explicit conditional instruction to mark completion once final checks pass. All final Node 24 checks passed; cumulative Gemini usage remains 40 and live access is disabled. The accepted release claim is the human-reviewed, source-traceable MVP with disclosed partial AI reasoning quality. 6-ship, public deployment, new Gemini requests and billing changes remain unauthorized. Historical stage records below are retained as history; the final wrap-up record supersedes older pending-checkpoint notes.
+
+Current revision checkpoint: **degree-aware implementation mechanically verified; revised local review and live reasoning validation pending**. The original completion remains historical, not approval of this extension for release.
 
 ## Slices
+
+- [ ] **3. Approved degree-aware revision before release**
+  Becomes usable: Explicit Bachelor's/Master's selection, per-document cited applicability checks, non-overridable mismatch blocking, mixed/general-policy scoping, and acknowledged uncertainty before preliminary findings.
+  Why now: Approved October 20 extension reopens the completed local build before release; single combined generation and unrelated safeguards remain unchanged.
+  PRD ref: `prd.md > Approved Degree-Aware Revision — 2026-10-20`
+  Spec ref: `spec.md > Degree Assessment Contract and Gate`
+  Build: Reconcile scope/PRD/spec and HTML first; extend schema, generic prompt, backend gate and session UI; invalidate stale degree decisions and reviews; retain accurately labeled samples.
+  Verify (mechanical): Complete offline unit/integration and browser suite, typecheck, lint, production build, desktop/mobile review. No upstream calls. Do not claim live degree reasoning passed.
+  Learner check: Select either degree, inspect samples and source views; review applicability/gate UI using disclosed offline test evidence. Revised local UI review and separately approved live validation remain pending.
+  Commit: `Add degree-aware document applicability and comparison gates`
 
 - [x] **1. Compare two documents through the real application pipeline locally**
   Becomes usable: Polished input journey, PDF/TXT reading and full-source inspection, genuine Gemini adapter with server-controlled live-call permission gate, evidence validation, preliminary dashboard, review choices and clarification drafts. Disabled/unavailable AI produces an honest error, never a simulated report.
@@ -39,6 +51,8 @@ Current checkpoint: **5-build complete** under the project owner's explicit cond
 - [x] Final review closed through accepted improvements/preflight and the explicit instruction to finish once final checks pass; separate human-operated exploration is not claimed.
 
 ## Final Review
+
+- [ ] Degree-aware revision reviewed locally by the project owner; no live degree-reasoning validation or release approval is claimed.
 
 - [x] Final review complete — agreed fixes verified; project owner explicitly authorized completion conditional on passing final checks, now satisfied.
 
@@ -243,3 +257,52 @@ Wrap-up/map: devpost/app-map.html provides the three-stop reference route, real 
 Remaining hosted-only verification, not blockers to local 5-build completion: actual Vercel Node 24/Linux native PDF loading and bundle, Fluid duration/whole-upload limits, HTTPS/origin behavior, anonymous judge access, production secret/free-plan configuration, Upstash connectivity and multi-instance race/expiry/outage behavior, shared free-tier availability and judging-period uptime. The already accepted Hobby eligibility uncertainty remains unresolved by technical testing. All require later authorized hosting work; a genuine production AI smoke also needs a separately approved Gemini request budget. Cumulative requests remain **40**, with **0 new requests** in this wrap-up.
 
 A later explicit **6-ship authorization** permits beginning submission preparation: recheck readiness/current submission requirements; audit and prepare the repository/technical setup information; assist demo-recording mechanics and verify supplied video/repository links; help identify gaps in owner-written Devpost/exit-survey answers (grammar/spelling feedback, not ghostwriting). It does **not** by itself authorize publishing/creating a public repository or pushing publicly, public deployment, paid services/billing, new Gemini requests, sending email or submitting/posting on the owner's behalf. Each protected publication/deployment/submission action needs explicit scope-specific approval; the current no-deployment/no-API restrictions persist. No 6-ship actions or submission materials were begun here; its instructions were inspected only to describe that future authorization boundary accurately.
+
+
+## Degree-Aware Revision Verification and Changed Files
+
+Mechanical verification on Node 24.19.0: **62 unit/integration tests and 15 browser tests passed**, plus lint, typecheck, production build and PDF function-trace verification (530 files, 56,766,177 bytes on Windows). Browser tests ran against the actual local production server, with genuine local extraction/AI-disabled error handling and explicitly intercepted test-only outputs for gate/dashboard scenarios. Both approved Waikato PDFs remain readable in the local extraction test. Main input, uncertain assessment and expanded results were checked at desktop/mobile widths spanning 320–1920 px; no horizontal page overflow was detected. Canonical content of scope/PRD/spec HTML matches Markdown; existing companion CSS and JavaScript remain unchanged. File-URL browser preview remains unavailable; no browser-rendered companion check is claimed.
+
+Coverage includes matching Bachelor's and Master's, opposite-degree mismatches in both directions, mixed sections and general policy, acknowledgment and non-overridable mismatch, invalid/cross-source applicability citations, stale degree changes before/after continuation, degree-specific conditions/exceptions, retained Master's review/email/quality behavior, legacy-contract rejection, interrupted transport and retry recovery. Outputs used by these regressions are offline fixtures; they are not measured Gemini reasoning results. Original saved S01 response and frozen model-selection fixtures remain unchanged. A historical S01 UI replay explicitly adds an offline uncertain gate rather than attributing new fields to the genuine old response.
+
+**Local review ready; revised release readiness pending.** No new Gemini calls were made; cumulative usage remains **40** and live access is disabled. The new response schema/prompt's provider compatibility, degree reasoning, mixed-branch/exception completeness, token use and latency have not been checked live. Existing model reasoning failures remain disclosed. No offline test proves semantic entailment, complete/accurate extraction or degree identification, document authenticity, official status or publication currency. Separately authorized live validation and project-owner local review remain required before calling this revision release-ready. Hosted Linux packaging, environment setup, anonymous public access, actual request/duration limits, real Upstash concurrency/outage behavior and availability during judging remain hosted-only checks. The accepted development-tooling advisory and Hobby eligibility uncertainty are unchanged.
+
+
+Exact revised files (no credentials, retained model responses or frozen benchmark expectations):
+
+- `README.md`
+- `devpost/app-map.html`
+- `devpost/checklist.md`
+- `devpost/prd.html`
+- `devpost/prd.md`
+- `devpost/scope.html`
+- `devpost/scope.md`
+- `devpost/spec.html`
+- `devpost/spec.md`
+- `public/samples/README.txt`
+- `public/samples/bachelor-synthetic-A.txt`
+- `public/samples/bachelor-synthetic-B.txt`
+- `src/app/api/compare/route.ts`
+- `src/app/globals.css`
+- `src/components/CompareForm.tsx`
+- `src/components/DegreeApplicability.tsx`
+- `src/components/ResultsDashboard.tsx`
+- `src/components/RuleInterpretation.tsx`
+- `src/server/errors.ts`
+- `src/server/evidence.ts`
+- `src/server/gemini.ts`
+- `src/server/prompt.ts`
+- `src/shared/applicability.ts`
+- `src/shared/contracts.ts`
+- `src/shared/schemas.ts`
+- `src/state/session.tsx`
+- `tests/e2e/degree.spec.ts`
+- `tests/e2e/local.spec.ts`
+- `tests/fixtures/degree.ts`
+- `tests/unit/core.test.ts`
+- `tests/unit/degree.test.ts`
+- `tests/unit/evidence-diagnostics.test.ts`
+- `tests/unit/evidence-route.test.ts`
+- `tests/unit/quality.test.ts`
+
+Local review: http://127.0.0.1:3000/. New upstream calls and public release remain disabled. The revised feature is not marked release-ready. Timeline and remaining hosted/live limitations are recorded in spec.md.

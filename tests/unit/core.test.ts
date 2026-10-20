@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync } from "node:fs";
 import { afterEach, describe, it, expect, vi } from "vitest";
 import { readFile } from "node:fs/promises";
 import { extractDocument } from "@/server/documents";
@@ -7,6 +7,7 @@ import { analyze } from "@/server/gemini";
 import { acquire, providerDay } from "@/server/quota";
 import { POST } from "@/app/api/compare/route";
 import type { Applicant, Event, Source } from "@/shared/contracts";
+import { rawAssessments } from "../fixtures/degree";
 
 const applicant: Applicant = {
   degree: "Master's",
@@ -34,9 +35,15 @@ function raw(ss: Source[]) {
     analysisStatus: "complete",
     sourceIds: ss.map((s) => s.id),
     limitations: [],
+    documentAssessments: rawAssessments(ss),
     rules: ss.map((s) => ({
       ruleId: s.id,
       sourceId: s.id,
+      degreeMatch: "selected",
+      degreeEvidence: {
+        text: "Selected-degree scope.",
+        passageIds: [s.passages[0].id],
+      },
       requirement: {
         text: "An IELTS threshold is stated.",
         passageIds: [s.passages[0].id],
@@ -141,18 +148,22 @@ describe("Complete extraction and reference validation", () => {
     r.findings = [];
     expect(buildReport(r, ss, applicant, 0).findings).toEqual([]);
   });
-  it.skipIf(!existsSync("tmp/pdfs/waikato-pg-english-2026.pdf"))("extracts the complete approved Waikato research pair when present locally", async () => {
-    const bytes = await readFile("tmp/pdfs/waikato-pg-english-2026.pdf");
-    const s = await extractDocument(
-      new File([new Uint8Array(bytes)], "Waikato.pdf"),
-      "A",
-    );
-    expect(s.pages.length).toBe(9);
-    expect(s.passages.map((p) => p.text).join("")).toBe(
-      s.pages.map((p) => p.text).join(""),
-    );
-    expect(s.pages[7].text.toLowerCase()).toContain("waiver");
-  }, 30000);
+  it.skipIf(!existsSync("tmp/pdfs/waikato-pg-english-2026.pdf"))(
+    "extracts the complete approved Waikato research pair when present locally",
+    async () => {
+      const bytes = await readFile("tmp/pdfs/waikato-pg-english-2026.pdf");
+      const s = await extractDocument(
+        new File([new Uint8Array(bytes)], "Waikato.pdf"),
+        "A",
+      );
+      expect(s.pages.length).toBe(9);
+      expect(s.passages.map((p) => p.text).join("")).toBe(
+        s.pages.map((p) => p.text).join(""),
+      );
+      expect(s.pages[7].text.toLowerCase()).toContain("waiver");
+    },
+    30000,
+  );
 });
 describe("No accidental external requests and quota safety", () => {
   it("never contacts Google while live calls are disabled", async () => {

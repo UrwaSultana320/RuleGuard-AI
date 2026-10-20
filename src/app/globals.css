@@ -517,7 +517,8 @@ small {
   color: #d9e2f0;
 }
 .form-grid input,
-.form-grid select {
+.form-grid select,
+.degree-selection select {
   width: 100%;
   background: #0a1424;
   color: var(--text);
@@ -1665,4 +1666,64 @@ blockquote {
 }
 .source-scroll:focus-visible {
   outline: 2px solid var(--cyan);
+}
+.degree-selection label {
+  display: block;
+  max-width: 480px;
+}
+.degree-selection select {
+  width: 100%;
+  min-height: 48px;
+}
+.degree-assessments {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 22px 0;
+}
+.degree-card {
+  min-width: 0;
+  border: 1px solid #34435e;
+  border-radius: 12px;
+  padding: 20px;
+  background: #0c1729;
+  overflow-wrap: anywhere;
+}
+.degree-card h3 {
+  margin: 12px 0;
+}
+.degree-card > strong {
+  color: #8ee4e9;
+}
+.degree-other_degree > strong,
+.degree-uncertain > strong {
+  color: #f3cc91;
+}
+.degree-card blockquote {
+  margin: 18px 0 0;
+  border-left: 2px solid #8f78da;
+  padding: 0 0 0 12px;
+}
+.degree-card pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.degree-card .source-ref {
+  font-size: 11px;
+  color: #a9bad2;
+}
+.applicability-review .primary-button {
+  min-height: 48px;
+  white-space: normal;
+}
+@media (max-width: 800px) {
+  .degree-assessments {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .degree-card {
+    padding: 16px;
+  }
 }

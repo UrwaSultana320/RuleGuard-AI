@@ -5,7 +5,22 @@ status: approved
 
 # RuleGuard AI
 
-Context-aware comparison of requirements across documents, with evidence and transparent uncertainty. English-language proficiency for international Master's applicants is the first hackathon demonstration scenario.
+## Approved Degree-Aware Revision — 2026-10-20
+
+Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
+
+Select the degree explicitly before uploading two readable PDF/TXT documents; neither degree is preselected. Retain program, intake and applicant category. Examine the complete supported extracted content of both documents, not filenames, titles or isolated keywords. Display a separate preliminary applicability assessment for each source, with backend-reconstructed quotations and PDF page / TXT line references: applicable to selected degree, explicitly another degree, multiple degrees, general policy applicable to selected degree, or uncertain.
+
+A clear, exclusively other-degree document with supporting references blocks comparison and requires replacement; acknowledgment cannot override it. Weak, ambiguous or conflicting mismatch evidence is uncertain. Mixed-degree documents are accepted only where the selected branch is supported; compare selected-degree rules and applicable general rules, conditions and exceptions only. Inventory other-degree rules for coverage, but do not include them in comparison findings. A genuinely general policy needs no degree-specific title. Never inherit rules across degrees or assume every postgraduate statement applies to every Master's program.
+
+For uncertainty, show **Degree applicability could not be confirmed**, available evidence and missing information before revealing findings. Require an explicit acknowledgment and Continue action. Reuse the same validated response in session memory, without another AI call; mark the resulting preliminary report **Degree applicability unverified**. Scope, condition satisfaction and contradiction remain separate concepts. Unknown rule-degree scope yields Insufficient Evidence. Human review and acknowledgment do not certify correctness, completeness, official status, authenticity or publication currency.
+
+Every degree or document edit invalidates the applicability decision, acknowledgment, previous comparison and related review decisions. Full extracted sources remain inspectable, without a guarantee of extraction fidelity. Preserve original quotes, four finding categories, dashboard totals for AI-identified findings only, Accept/Reject/Uncertain controls, clarification drafts, privacy/session handling, all upload limits, backend-only credentials and free-tier global quotas. Existing Master's-only samples remain labeled Master's; provide separately labeled Bachelor's samples rather than relabeling them.
+
+Acceptance checks cover both matching degrees; opposite-only mismatches in either direction; mixed sections; general policy; uncertainty and explicit continuation; non-overridable mismatch; invalid/cross-source applicability references; stale degree edits; degree-specific conditions/exceptions; and retained Master's behavior. Offline tests verify implementation and guards, not live Gemini degree reasoning. The revised feature is not release-ready solely because offline tests pass; local UI review and separately authorized live validation remain outstanding.
+
+
+Context-aware comparison of requirements across documents, with evidence and transparent uncertainty. English-language proficiency for international Bachelor's and Master's applicants is the first hackathon demonstration scenario.
 
 ## The Real-World Problem
 International applicants must interpret requirements scattered across official websites, PDFs, and admission guidelines. Apparent conflicts and unclear exceptions can lead to costly application mistakes. They need to know what applies to them and what requires official confirmation.
@@ -14,10 +29,10 @@ International applicants must interpret requirements scattered across official w
 Context-aware comparison of requirements across documents, with evidence-based explanations and transparency when the AI is uncertain. The system compares the requirements and applicable conditions found in the supplied documents. English-language proficiency is the first demonstration scenario; MOI versus IELTS/TOEFL is an example, not hardcoded product logic.
 
 ## Who It's For
-An international student applying for a Master's program who needs to understand English-language proficiency requirements, especially whether a Medium of Instruction (MOI) certificate is accepted or IELTS/TOEFL is required.
+An international student applying for a Bachelor's or Master's program who needs to understand English-language proficiency requirements, especially whether a Medium of Instruction (MOI) certificate is accepted or IELTS/TOEFL is required.
 
 ## The Core Loop
-The applicant uploads two relevant documents and provides basic context such as degree level, intended program, intake, and applicant category. RuleGuard AI extracts and compares requirements in that context, then presents a simple visual report with evidence and questions the applicant can send to the university.
+The applicant explicitly selects degree level, then uploads two relevant documents and provides basic context such as degree level, intended program, intake, and applicant category. RuleGuard AI extracts and compares requirements in that context, then presents a simple visual report with evidence and questions the applicant can send to the university.
 
 Preliminary AI findings suggest agreements, potential contradictions, different applicable conditions, and requirements that cannot be verified. Users inspect cited evidence and the full extracted source text, then accept, reject, or mark each suggestion as uncertain. These review choices do not establish accuracy, applicant eligibility, or complete requirement coverage. The applicant leaves with clearer requirements and knows what needs official confirmation.
 
@@ -46,11 +61,11 @@ These are planned input conditions and expected outcomes, not results from docum
 3. **Missing or ambiguous evidence:** A readable document omits MOI eligibility or does not clearly identify the applicable program, intake, or applicant category. **Pass:** identify what cannot be verified, cite the available relevant evidence, make the missing information or ambiguity explicit, and suggest a targeted clarification question. Do not invent evidence or assert an unsupported contradiction or agreement.
 
 ## The POC Boundary
-Demonstrate the core comparison capability through one narrow scenario: English-language proficiency requirements for international Master's applicants. Use two official documents and applicant context covering program, intake, and applicant category. MOI acceptance versus IELTS/TOEFL requirements is an example to compare using the document evidence, not hardcoded product logic. Present exact supporting evidence and distinguish potential contradictions from differences in applicable conditions. The three demonstration cases validate this same journey; they do not add other requirement domains to the MVP.
+Demonstrate the core comparison capability through one narrow scenario: English-language proficiency requirements for international Bachelor's and Master's applicants. Use two official documents and applicant context covering program, intake, and applicant category. MOI acceptance versus IELTS/TOEFL requirements is an example to compare using the document evidence, not hardcoded product logic. Present exact supporting evidence and distinguish potential contradictions from differences in applicable conditions. The three demonstration cases validate this same journey; they do not add other requirement domains to the MVP.
 
 Accept two uploaded documents in PDF or TXT format. PDFs must contain readable text. Extract text while preserving source references, including page numbers for PDFs. If a document cannot be read, show a clear error rather than generate unreliable results. Prioritize accurate AI comparison and evidence-based explanations over broad format support.
 
-Include an in-session full extracted-text view and per-finding review choices. Keep the existing narrow English-language Master's comparison scenario, two documents, and all format boundaries. Do not add a manual rules editor, document annotation platform, report history or additional requirement domains.
+Include an in-session full extracted-text view and per-finding review choices. Keep the existing narrow English-language Bachelor's/Master's comparison scenario, two documents, and all format boundaries. Do not add a manual rules editor, document annotation platform, report history or additional requirement domains.
 
 ## Later
 Additional types of admission and scholarship requirements can be considered after the hackathon.
@@ -66,6 +81,6 @@ Automatically deciding which conflicting document is correct: provide evidence, 
 The approved University of Waikato pair is the primary real-world benchmark candidate; labeled synthetic cases are retained and Trinity remains secondary. Provenance and page mappings are recorded in `spec.md > Approved Test Inputs and Provenance`.
 
 ## Approval & Handoff
-I approved this scope on 2026-10-14. The official Devpost Learn `2-scope` stage is complete. I will begin `3-prd` in a new Codex chat; do not start it or coding in this chat.
+Original approval and handoff (2026-10-14): scope approved and `2-scope` complete; `3-prd` and coding were deferred at that time. Subsequent PRD/spec approvals and the October 20 approved degree-aware revision govern current local implementation.
 
-Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. The technical specification remains DRAFT; no additional Gemini requests, application development, 5-build or deployment are authorized.
+Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. At that amendment handoff, the technical specification remained DRAFT and implementation was not yet authorized. Final 4-spec approval and local 5-build authorization followed on October 20; additional Gemini calls and public deployment still require separate approval.

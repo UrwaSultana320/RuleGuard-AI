@@ -1,8 +1,9 @@
 import type { CATEGORIES } from "./limits";
 export type Category = (typeof CATEGORIES)[number];
 export type Review = "Pending" | "Accepted" | "Rejected" | "Uncertain";
+export type Degree = "Bachelor's" | "Master's";
 export type Applicant = {
-  degree: "Master's";
+  degree: Degree;
   program: string;
   intake: string;
   category: string;
@@ -25,6 +26,25 @@ export type Source = {
   passages: Passage[];
 };
 export type Evidence = Passage & { sourceName: string };
+export type DegreeStatus =
+  | "selected"
+  | "other_degree"
+  | "multiple"
+  | "general"
+  | "uncertain";
+export type DegreeAssessment = {
+  sourceId: string;
+  status: DegreeStatus;
+  modelStatus: DegreeStatus;
+  explanation: string;
+  evidence: Evidence[];
+  missingInformation: string[];
+  guardNotes: string[];
+};
+export type Applicability = {
+  assessments: DegreeAssessment[];
+  gate: "allowed" | "uncertain" | "blocked";
+};
 export type Rule = {
   id: string;
   sourceId: string;
@@ -32,6 +52,7 @@ export type Rule = {
   scope: string;
   scopeMatch: string;
   conditionStatus: string;
+  degreeMatch: "selected" | "general" | "other" | "unknown";
   conditions: string[];
   exceptions: string[];
   evidence: Evidence[];
@@ -51,6 +72,8 @@ export type Report = {
   id: string;
   revision: number;
   applicant: Applicant;
+  applicability: Applicability;
+  degreeVerification: "supported" | "unverified";
   findings: Finding[];
   limitations: string[];
   model: string;
@@ -59,6 +82,7 @@ export type Event = { requestId: string; revision: number } & (
   | { type: "stage"; stage: number }
   | { type: "sources"; sources: Source[] }
   | { type: "result"; report: Report }
+  | { type: "applicability"; applicability: Applicability }
   | {
       type: "error";
       code: string;

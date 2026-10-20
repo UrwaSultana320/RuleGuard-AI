@@ -6,6 +6,7 @@ import { LIMITS, PRIVACY, STAGES } from "@/shared/limits";
 import { Icon } from "./Icons";
 import { FullSourceView } from "./FullSourceView";
 import Link from "next/link";
+import { ApplicabilityReview } from "./DegreeApplicability";
 
 async function validateFile(file: File) {
   if (!file.size || file.size > LIMITS.fileBytes)
@@ -66,14 +67,15 @@ function Upload({ index }: { index: number }) {
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          if (!s.processing) void select(e.dataTransfer.files[0]);
+          if (!s.processing && s.applicant.degree)
+            void select(e.dataTransfer.files[0]);
         }}
       >
         <input
           id={"file-" + index}
           type="file"
           accept=".pdf,.txt"
-          disabled={s.processing || checking}
+          disabled={s.processing || checking || !s.applicant.degree}
           onChange={(e) => void select(e.target.files?.[0])}
         />
         <span className="upload-icon">
@@ -107,18 +109,29 @@ export function CompareForm() {
   const [sampleError, setSampleError] = useState("");
   async function loadSample() {
     setSampleError("");
+    if (!s.applicant.degree) {
+      setSampleError(
+        "Select a degree first to load accurately labeled samples.",
+      );
+      return;
+    }
     try {
       const results = await Promise.all(
         ["A", "B"].map(async (id) => {
-          const r = await fetch(`/samples/synthetic-${id}.txt`);
+          const prefix = s.applicant.degree === "Bachelor's" ? "bachelor-" : "";
+          const r = await fetch(`/samples/${prefix}synthetic-${id}.txt`);
           if (!r.ok) throw Error();
-          return new File([await r.text()], `Synthetic-policy-${id}.txt`, {
-            type: "text/plain",
-          });
+          return new File(
+            [await r.text()],
+            `${prefix}Synthetic-policy-${id}.txt`,
+            {
+              type: "text/plain",
+            },
+          );
         }),
       );
       results.forEach((f, i) => s.setFile(i, f));
-      s.setField("program", "Master's in Artificial Intelligence");
+      s.setField("program", `${s.applicant.degree} in Artificial Intelligence`);
       s.setField("intake", "September 2026");
       s.setField("category", "International applicant");
     } catch {
@@ -153,15 +166,15 @@ export function CompareForm() {
       </div>
       <div className="journey-line">
         <span className="current">
-          <b>1</b>Upload documents
+          <b>1</b>Select degree
         </span>
         <i />
         <span>
-          <b>2</b>Applicant context
+          <b>2</b>Upload and context
         </span>
         <i />
         <span>
-          <b>3</b>AI analysis
+          <b>3</b>Applicability and comparison
         </span>
       </div>
       <form
@@ -170,6 +183,32 @@ export function CompareForm() {
           if (await s.compare()) router.push("/results");
         }}
       >
+        <section className="panel degree-selection">
+          <div className="section-heading">
+            <div>
+              <h2>Start with your degree</h2>
+              <p>
+                Document scope is assessed for this selection before findings
+                are shown.
+              </p>
+            </div>
+          </div>
+          <label>
+            Degree level <span className="required">Required</span>
+            <select
+              value={s.applicant.degree}
+              required
+              disabled={s.processing}
+              onChange={(e) => s.setField("degree", e.target.value)}
+            >
+              <option value="">Select a degree level</option>
+              <option value="Bachelor's">
+                Bachelor&apos;s / Undergraduate
+              </option>
+              <option value="Master's">Master&apos;s / Postgraduate</option>
+            </select>
+          </label>
+        </section>
         <section className="panel">
           <div className="section-heading">
             <span className="section-icon">
@@ -193,7 +232,7 @@ export function CompareForm() {
             <button
               type="button"
               className="text-button"
-              disabled={s.processing}
+              disabled={s.processing || !s.applicant.degree}
               onClick={() => void loadSample()}
             >
               Use synthetic samples <Icon name="arrow" size={16} />
@@ -222,12 +261,6 @@ export function CompareForm() {
             </div>
           </div>
           <div className="form-grid">
-            <label>
-              Degree level
-              <select value={s.applicant.degree} disabled>
-                <option>Master&apos;s</option>
-              </select>
-            </label>
             <label>
               Intended program <span className="required">Required</span>
               <input
@@ -265,6 +298,11 @@ export function CompareForm() {
             conditions apply.
           </p>
         </section>
+        <ApplicabilityReview
+          onContinue={() => {
+            if (s.revealComparison()) router.push("/results");
+          }}
+        />
         <section className="privacy">
           <div className="privacy-heading">
             <Icon name="shield" />

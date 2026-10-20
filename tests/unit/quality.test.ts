@@ -9,7 +9,7 @@ import {
 import { buildReport } from "@/server/evidence";
 import type { RawAnalysis } from "@/shared/schemas";
 import type { Source } from "@/shared/contracts";
-import type { Rule, Finding } from "@/shared/contracts";
+import type { Rule, Finding, Report } from "@/shared/contracts";
 const rule: Rule = {
   id: "r",
   sourceId: "A",
@@ -17,6 +17,7 @@ const rule: Rule = {
   scope: "International postgraduate applicants",
   scopeMatch: "matches",
   conditionStatus: "unknown",
+  degreeMatch: "selected",
   conditions: [],
   exceptions: ["No exemptions are allowed."],
   evidence: [],
@@ -80,7 +81,13 @@ it.skipIf(!existsSync("tmp/smoke40-model-response.json"))(
     );
     const m = JSON.parse(readFileSync("tmp/smoke40-input.json", "utf8"));
     const before = structuredClone(raw);
-    const report = buildReport(raw, m.sources, m.applicant, 0);
+    // The genuine old response has no degree-assessment contract. Reject it as a
+    // new analysis; use the unchanged historical validated report only for the
+    // original rendering regression. No new degree reasoning is attributed to it.
+    expect(() => buildReport(raw, m.sources, m.applicant, 0)).toThrow();
+    const report: Report = JSON.parse(
+      readFileSync("tmp/smoke40-validated-report.json", "utf8"),
+    );
     expect(raw.rules.every((r) => r.conditions.length === 0)).toBe(true);
     expect(raw.rules[1].exceptions[0].text).toContain(
       "no waivers or exceptions",

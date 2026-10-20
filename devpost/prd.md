@@ -5,19 +5,34 @@ status: approved
 
 # RuleGuard AI — Product Requirements
 
-Context-aware comparison of English-language proficiency requirements for international Master's applicants, supported by verifiable evidence and visible uncertainty.
+## Approved Degree-Aware Revision — 2026-10-20
 
-Final product definition, approved by the learner on 2026-10-14. Markdown is canonical; `prd.html` is its offline visual review companion. All consequential product choices below come from the approved scope or the learner interview. The official Devpost Learn `3-prd` stage is complete. The learner will begin `4-spec` in a new Codex chat. Do not start `4-spec` or application coding in this chat.
+Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
+
+Select the degree explicitly before uploading two readable PDF/TXT documents; neither degree is preselected. Retain program, intake and applicant category. Examine the complete supported extracted content of both documents, not filenames, titles or isolated keywords. Display a separate preliminary applicability assessment for each source, with backend-reconstructed quotations and PDF page / TXT line references: applicable to selected degree, explicitly another degree, multiple degrees, general policy applicable to selected degree, or uncertain.
+
+A clear, exclusively other-degree document with supporting references blocks comparison and requires replacement; acknowledgment cannot override it. Weak, ambiguous or conflicting mismatch evidence is uncertain. Mixed-degree documents are accepted only where the selected branch is supported; compare selected-degree rules and applicable general rules, conditions and exceptions only. Inventory other-degree rules for coverage, but do not include them in comparison findings. A genuinely general policy needs no degree-specific title. Never inherit rules across degrees or assume every postgraduate statement applies to every Master's program.
+
+For uncertainty, show **Degree applicability could not be confirmed**, available evidence and missing information before revealing findings. Require an explicit acknowledgment and Continue action. Reuse the same validated response in session memory, without another AI call; mark the resulting preliminary report **Degree applicability unverified**. Scope, condition satisfaction and contradiction remain separate concepts. Unknown rule-degree scope yields Insufficient Evidence. Human review and acknowledgment do not certify correctness, completeness, official status, authenticity or publication currency.
+
+Every degree or document edit invalidates the applicability decision, acknowledgment, previous comparison and related review decisions. Full extracted sources remain inspectable, without a guarantee of extraction fidelity. Preserve original quotes, four finding categories, dashboard totals for AI-identified findings only, Accept/Reject/Uncertain controls, clarification drafts, privacy/session handling, all upload limits, backend-only credentials and free-tier global quotas. Existing Master's-only samples remain labeled Master's; provide separately labeled Bachelor's samples rather than relabeling them.
+
+Acceptance checks cover both matching degrees; opposite-only mismatches in either direction; mixed sections; general policy; uncertainty and explicit continuation; non-overridable mismatch; invalid/cross-source applicability references; stale degree edits; degree-specific conditions/exceptions; and retained Master's behavior. Offline tests verify implementation and guards, not live Gemini degree reasoning. The revised feature is not release-ready solely because offline tests pass; local UI review and separately authorized live validation remain outstanding.
+
+
+Context-aware comparison of English-language proficiency requirements for international Bachelor's and Master's applicants, supported by verifiable evidence and visible uncertainty.
+
+Final product definition, approved by the learner on 2026-10-14. Markdown is canonical; `prd.html` is its offline visual review companion. All consequential product choices below come from the approved scope or the learner interview. The official Devpost Learn `3-prd` stage is complete. Its original handoff deferred `4-spec` and coding; final spec approval and local build authorization followed on October 20. The approved degree-aware revision above governs this controlled local extension.
 
 ## The Core Journey
 
 Source: `scope.md > The Core Loop` and `The POC Boundary`.
 
-1. Open the first screen: branding, purpose, two upload cards, applicant context, and **Compare Requirements**.
-2. Supply two readable PDF/TXT documents; confirm Master's degree level and provide intended program. Supply intake and applicant category or choose **Not sure**.
+1. Open the first screen and explicitly select degree level before uploading documents; retain branding, purpose, applicant context, and **Compare Requirements**.
+2. Explicitly select Bachelor's / Undergraduate or Master's / Postgraduate first, then upload documents and provide intended program. Supply intake and applicant category or choose **Not sure**.
 3. Select **Compare Requirements**. Validate required inputs and both documents, showing helpful inline messages for problems.
 4. Watch the five actual analysis stages. Prevent duplicate requests while processing.
-5. On successful processing completion, automatically transition to the dedicated dashboard with the applicant profile, explained AI-suggested totals, and four preliminary finding categories requiring human review; this does not establish complete requirement coverage.
+5. After complete processing, display both document applicability assessments first. Block an exclusive supported mismatch; require explicit acknowledgment and continuation for uncertainty. After the gate, open the dedicated dashboard with the applicant profile, explained AI-suggested totals, and four preliminary finding categories requiring human review; this does not establish complete requirement coverage.
 6. Expand a preliminary finding and select **View Evidence** to inspect verified source excerpts and context-aware reasoning. Inspect either complete extracted source, including uncited passages, and accept, reject or mark the suggestion uncertain without implying independently verified correctness.
 7. For potential contradictions or insufficient evidence that are not Rejected, review a preliminary clarification question, copy it or the email text, or open an editable draft in the default email application; review its assertions before use.
 8. Return to inputs without restarting. Changing a document or context immediately marks the previous report **Outdated — Reanalysis Required**.
@@ -37,7 +52,7 @@ Source: `scope.md > The Core Loop`. Learner decision recorded on 2026-10-14.
 - Two elegant document upload cards: side by side on desktop and stacked on mobile. Accept PDF and TXT, subject to the approved readable-text PDF boundary.
 - An integrated applicant information section for degree level, intended program, intake, and applicant category.
 - A prominent **Compare Requirements** button.
-- A subtle three-stage progress indicator: **Upload Documents → Applicant Context → AI Analysis**. This is the overall journey indicator, distinct from the five processing stages. No clickable wizard or additional screen is required by this decision.
+- A subtle three-stage progress indicator: **Select Degree → Upload and Context → Applicability and Comparison**. This is the overall journey indicator, distinct from the five processing stages. No clickable wizard or additional screen is required by this decision.
 
 ### Results Dashboard
 
@@ -90,7 +105,7 @@ Source: `scope.md > The POC Boundary` and `The Core Loop`.
 
 Accept two uploaded documents in PDF or TXT format. PDFs must contain readable text. Collect only context needed for reliable comparison:
 
-- **Degree level:** Required and fixed to Master's for the hackathon MVP.
+- **Degree level:** Required explicit Bachelor's / Undergraduate or Master's / Postgraduate selection, with no preselection.
 - **Intended program:** Required.
 - **Intake:** Allow **Not sure**.
 - **Applicant category:** Allow **Not sure**.
@@ -99,7 +114,7 @@ Validate required fields and both uploaded documents before comparison. Show hel
 
 When intake or applicant category is unknown, compare using the available context. Never invent missing applicant details or assume a requirement applies. Clearly identify findings whose applicability cannot be determined. If missing information prevents a reliable conclusion, classify the finding as **Insufficient Evidence** and explain which applicant detail is needed.
 
-The demonstration remains English-language requirements for international Master's applicants. These rules develop `scope.md > The Core Loop` and `Three Testable Demonstration Cases`, with learner decisions recorded on 2026-10-14.
+The demonstration remains English-language requirements for international Bachelor's and Master's applicants. These rules develop `scope.md > The Core Loop` and `Three Testable Demonstration Cases`, with learner decisions recorded on 2026-10-14.
 
 ### Context-Aware Comparison
 
@@ -200,7 +215,7 @@ Show a polished, smooth loading screen with these meaningful stages:
 4. Comparing requirements.
 5. Preparing the evidence-based report.
 
-Stage changes must reflect actual processing. Do not simulate progress with fake stage animations. Automatically transition to the dedicated results dashboard when analysis completes, retaining the established visual theme.
+Stage changes must reflect actual processing. Do not simulate progress with fake stage animations. Show both document applicability assessments when analysis completes; open the dedicated results dashboard only after the gate and explicit continuation, retaining the established visual theme.
 
 ### Error Recovery and Incomplete Analysis
 
@@ -249,7 +264,7 @@ Review choices stay with their report in active-session memory across navigation
 - **Active session:** Preserve inputs during errors and retries within the active browser session. Accounts and permanent document storage are not required.
 - **Missing or ambiguous evidence:** Explicitly identify what cannot be verified; do not invent evidence or assert an unsupported agreement or contradiction.
 - **Unknown applicant context:** Intake and applicant category may be **Not sure**. Continue with available information; where missing context prevents a reliable conclusion, label the finding **Insufficient Evidence** and name the applicant detail needed. Never invent details or assume applicability.
-- **Incomplete required inputs:** Validate Master's degree level, intended program, and both documents before comparison. Present helpful inline messages rather than generic errors.
+- **Incomplete required inputs:** Validate explicit degree selection, intended program, and both documents before comparison. Present helpful inline messages rather than generic errors.
 - **Accessibility and responsive layout:** Apply the Responsive Layout and Accessibility criteria throughout the application, including readable evidence, comfortable touch controls, accessible contrast, visible keyboard focus, and checks at 375px, 768px, 1366px, and 1920px.
 
 ## Key Acceptance Criteria
@@ -259,13 +274,13 @@ These are requirements for later development validation, not claims that the app
 ### Input and Context Validation
 
 - With either document absent, an unsupported/unreadable document, or intended program missing, comparison does not begin and the affected input has a helpful inline message.
-- Degree level is required and fixed to Master's. **Not sure** is accepted for intake and applicant category without blocking an otherwise valid comparison.
+- Degree level requires explicit Bachelor's / Undergraduate or Master's / Postgraduate selection, with no preselection. **Not sure** is accepted for intake and applicant category without blocking an otherwise valid comparison.
 - Unknown context is not invented. A finding needing that context is **Insufficient Evidence**, names the missing detail, and does not assert applicability or an established contradiction.
 
 ### Analysis and Results
 
 - With two valid documents and required context, a single comparison request displays the five specified stages based on actual processing; repeated activation during processing does not create duplicate requests.
-- Successful analysis transitions to a dedicated dashboard showing the applicant profile, three explained metrics, all four categories, and expandable finding cards with name, classification, explanation, status indicator, and **View Evidence**.
+- Successful analysis followed by the applicability gate and explicit continuation opens a dedicated dashboard showing the applicant profile, three explained metrics, all four categories, and expandable finding cards with name, classification, explanation, status indicator, and **View Evidence**.
 - Every distinct topic has one primary classification. The dashboard satisfies the metric equations under **Finding Classification and Dashboard Counts**.
 - Contradictions are visually prominent but categories remain readable through labels as well as restrained visual indicators. Similarity percentages, overall accuracy scores, and unsupported confidence scores are absent.
 
@@ -333,11 +348,11 @@ Source: `scope.md > Three Testable Demonstration Cases` and `What "Working" Look
 - Make potential contradictions immediately noticeable using restrained category indicators.
 - Exclude similarity percentages, an overall AI-generated accuracy score, and unsupported confidence scores.
 - Show actual processing through five meaningful analysis stages; do not fake progress.
-- Automatically transition to a dedicated results dashboard with applicant profile and finding summary cards at the top.
+- Show document applicability assessments first; after the gate and explicit continuation, open a dedicated results dashboard with applicant profile and finding summary cards at the top.
 - Use expandable finding cards and side-by-side verified evidence, with relevant statements highlighted and plain-language explanations.
 - Display clarification questions for potential contradictions or uncertain findings.
 - Support returning to retained uploads, editing applicant context, and comparing again within the application.
-- Keep degree level required and fixed to Master's; require intended program; allow **Not sure** for intake and applicant category.
+- Require explicit Bachelor's / Undergraduate or Master's / Postgraduate selection with no preselection; require intended program; allow **Not sure** for intake and applicant category.
 - Compare with available context, explicitly mark unresolved applicability, and classify findings as **Insufficient Evidence** when missing context prevents a reliable conclusion. Identify the needed detail without making assumptions.
 - Validate required fields and both documents before comparison using helpful inline messages.
 - Preserve progress during errors and retries within the active browser session, without accounts or permanent document storage.
@@ -399,7 +414,7 @@ The approved University of Waikato pair is the primary real-world benchmark cand
 
 Reviewed against the approved `scope.md` on 2026-10-14.
 
-- **The Unique Kernel / The POC Boundary:** Preserved. Comparison remains context-aware and evidence-led within English-language requirements for international Master's applicants. MOI versus IELTS/TOEFL is illustrative, not hardcoded.
+- **The Unique Kernel / The POC Boundary:** Preserved. Comparison remains context-aware and evidence-led within English-language requirements for international Bachelor's and Master's applicants. MOI versus IELTS/TOEFL is illustrative, not hardcoded.
 - **The Core Loop:** Preserved and made concrete through two uploads, applicant context, actual processing stages, a dedicated report, evidence review, and clarification handoff.
 - **What "Working" Looks Like:** Preserved through PDF page references, exact evidence, uncertainty, no automatic authority decision, and the one-minute demo criterion.
 - **Three Testable Demonstration Cases:** Fully restated as acceptance criteria, including separate program/intake/category variations. The approved Waikato pair and labeled synthetic fixtures supply the test inputs; benchmark failures remain recorded in spec.md.
@@ -418,6 +433,6 @@ No unresolved conflict with the approved scope was found. Demonstration inputs a
 
 The learner explicitly approved this PRD on 2026-10-14 after reviewing the Markdown and visual HTML companion. The official Devpost Learn `3-prd` stage is complete. All agreed product decisions, acceptance criteria, and approved-scope boundaries remain in force.
 
-The learner will begin `4-spec` in a new Codex chat. Do not start `4-spec` or application coding in this chat. At the original handoff, privacy details and demonstration-document preparation were downstream work; those decisions are now recorded in spec.md, including the approved Waikato pair. This records the later decisions without claiming that production processing has been validated.
+The original handoff deferred `4-spec` and coding. Final spec approval and local build authorization followed on October 20; the approved degree-aware revision governs this extension. At the original handoff, privacy details and demonstration-document preparation were downstream work; those decisions are now recorded in spec.md, including the approved Waikato pair. This records the later decisions without claiming that production processing has been validated.
 
-Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. The technical specification remains DRAFT; no additional Gemini requests, application development, 5-build or deployment are authorized.
+Human-review amendment approved on 2026-10-19: [approved amendment](human-review-amendment.md). This records approval of the amendment separately from the original document approval. At that amendment handoff, the technical specification remained DRAFT and implementation was not yet authorized. Final 4-spec approval and local 5-build authorization followed on October 20; additional Gemini calls and public deployment still require separate approval.
