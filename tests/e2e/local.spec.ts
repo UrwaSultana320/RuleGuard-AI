@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
@@ -205,13 +205,21 @@ test("responsive layout and screenshot of the real input page", async ({
   page,
 }) => {
   await page.goto("/");
-  for (const width of [375, 768, 1366, 1920]) {
+  for (const width of [320, 375, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
+    const layout = await page.evaluate(() => ({
+      width: innerWidth,
+      scroll: document.documentElement.scrollWidth,
+      outside: Array.from(document.querySelectorAll("body *"))
+        .filter((e) => e.getBoundingClientRect().right > innerWidth + 1)
+        .map((e) => ({
+          tag: e.tagName,
+          cls: String(e.className),
+          right: e.getBoundingClientRect().right,
+        }))
+        .slice(0, 12),
+    }));
+    expect(layout.scroll, JSON.stringify(layout)).toBeLessThanOrEqual(width);
     await expect(
       page.getByRole("button", { name: "Compare Requirements", exact: true }),
     ).toBeVisible();
@@ -261,4 +269,120 @@ test("shows a privacy-safe diagnostic without rendering rejected AI findings", a
   await expect(page.getByLabel("Intended program")).toHaveValue(
     "Master's in Artificial Intelligence",
   );
+});
+
+test("recorded S01 offline replay shows honest structure, preserves evidence and works across screen sizes", async ({
+  page,
+}) => {
+  test.skip(
+    !existsSync("tmp/smoke40-validated-report.json") ||
+      !existsSync("tmp/smoke40-input.json"),
+    "Optional private synthetic replay artifacts are absent; no cloud fallback is allowed.",
+  );
+  const saved = JSON.parse(
+    readFileSync("tmp/smoke40-validated-report.json", "utf8"),
+  );
+  const manifest = JSON.parse(readFileSync("tmp/smoke40-input.json", "utf8"));
+  // Test-only transport of the saved synthetic response; no new generation or runtime fallback.
+  await page.route("**/api/compare", async (route) => {
+    const body = route.request().postDataBuffer()!.toString();
+    const requestId = /name="requestId"\r\n\r\n([^\r]+)/.exec(body)![1];
+    const revision = Number(
+      /name="inputRevision"\r\n\r\n([^\r]+)/.exec(body)![1],
+    );
+    const events = [
+      { type: "sources", sources: manifest.sources },
+      { type: "result", report: { ...saved, revision } },
+    ];
+    await route.fulfill({
+      contentType: "application/x-ndjson",
+      body:
+        events
+          .map((e) => JSON.stringify({ ...e, requestId, revision }))
+          .join("\n") + "\n",
+    });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Use synthetic samples" }).click();
+  await page.getByRole("checkbox", { name: /I'm using public/ }).check();
+  await page
+    .getByRole("button", { name: "Compare Requirements", exact: true })
+    .click();
+  await expect(page).toHaveURL("/results");
+  await page.locator(".evidence summary").click();
+  await expect(
+    page.getByText("Conditions: not established", { exact: true }),
+  ).toHaveCount(2);
+  await expect(
+    page.getByText("Review required · structure unverified", { exact: true }),
+  ).toHaveCount(2);
+  await expect(page.getByText(/A prohibition is not an exception/)).toHaveCount(
+    2,
+  );
+  await expect(
+    page.getByText(/The AI has not established whether the applicant holds/),
+  ).toBeVisible();
+  await expect(page.locator(".unknowns")).toContainText(
+    saved.findings[0].unknowns[0],
+  );
+  const quotes = page.locator(".evidence blockquote pre");
+  for (let i = 0; i < 2; i++)
+    expect(await quotes.nth(i).textContent()).toBe(
+      manifest.sources[i].passages[0].text,
+    );
+  await page.getByRole("button", { name: "Draft Email", exact: true }).click();
+  for (const width of [320, 375, 390, 768, 1366, 1920]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const layout = await page.evaluate(() => ({
+      width: innerWidth,
+      scroll: document.documentElement.scrollWidth,
+      outside: Array.from(document.querySelectorAll("body *"))
+        .filter((e) => e.getBoundingClientRect().right > innerWidth + 1)
+        .map((e) => ({
+          tag: e.tagName,
+          cls: String(e.className),
+          right: e.getBoundingClientRect().right,
+        }))
+        .slice(0, 12),
+    }));
+    expect(layout.scroll, JSON.stringify(layout)).toBeLessThanOrEqual(width);
+    for (const name of ["Accept", "Reject", "Uncertain"]) {
+      const control = page.getByRole("button", { name, exact: true });
+      await expect(control).toBeVisible();
+      if (width <= 390)
+        expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(
+          44,
+        );
+    }
+    await expect(page.getByLabel("Email draft text")).toBeVisible();
+    if (width === 375 || width === 1366) {
+      await page.screenshot({
+        path: `test-results/quality-replay-${width}.png`,
+        fullPage: true,
+      });
+      await page
+        .locator(".structure-review")
+        .first()
+        .screenshot({ path: `test-results/quality-structure-${width}.png` });
+    }
+  }
+  const sourceRegion = page.getByRole("region", {
+    name: "Extracted source text",
+  });
+  await sourceRegion.focus();
+  await expect(sourceRegion).toBeFocused();
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Draft Email", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Uncertain", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Draft Email", exact: true }),
+  ).toBeEnabled();
+  await page.getByRole("link", { name: "Edit inputs" }).click();
+  await page.getByLabel("Intake", { exact: true }).fill("2028");
+  await page.getByRole("link", { name: "View outdated report" }).click();
+  await expect(
+    page.getByRole("button", { name: "Accept", exact: true }),
+  ).toBeDisabled();
 });

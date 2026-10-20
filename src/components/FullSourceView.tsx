@@ -47,7 +47,12 @@ export function FullSourceView({ forReport = false }: { forReport?: boolean }) {
         </span>
         <span>{source.passages.length} source passages</span>
       </div>
-      <div className="source-scroll">
+      <div
+        className="source-scroll"
+        role="region"
+        aria-label="Extracted source text"
+        tabIndex={0}
+      >
         {source.pages.map((page) => (
           <section key={page.number} className="source-page">
             <h3>

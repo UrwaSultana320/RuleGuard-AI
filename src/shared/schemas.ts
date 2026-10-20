@@ -30,8 +30,16 @@ export const rawSchema = z
             "unknown",
             "not_applicable",
           ]),
-          conditions: z.array(clause),
-          exceptions: z.array(clause),
+          conditions: z
+            .array(clause)
+            .describe(
+              "Every source-stated prerequisite, including evidence possession/submission, completion, achievement, timing and approval; include cited clauses even when also mentioned in requirement. Empty does not prove absence.",
+            ),
+          exceptions: z
+            .array(clause)
+            .describe(
+              "Only clauses allowing a departure from a general rule. Prohibitions, mandatory rules and no-exception statements are not exceptions. Preserve uncertain structure in requirement and limitations.",
+            ),
         })
         .strict(),
     ),
@@ -54,7 +62,11 @@ export const rawSchema = z
           unknowns: z.array(
             z
               .object({
-                detail: z.string(),
+                detail: z
+                  .string()
+                  .describe(
+                    "The precise fact that is unknown and why it matters. For condition satisfaction, identify unknown evidence possession, achievement, completion or approval. Do not merely restate a policy disagreement or infer applicant achievements.",
+                  ),
                 kind: z.enum([
                   "source_scope",
                   "applicant_selector",

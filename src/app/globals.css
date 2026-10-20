@@ -1594,3 +1594,75 @@ blockquote {
     transition: none !important;
   }
 }
+
+/* AI organization is always a proposal; these notices do not certify semantics. */
+.structure-review {
+  border: 1px solid #514538;
+  border-radius: 7px;
+  background: #191d29;
+  padding: 13px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.structure-status {
+  color: var(--warning);
+  font-size: 11px;
+  font-weight: 600;
+}
+.structure-review h4 {
+  color: #e0d4ff;
+  font-size: 12px;
+}
+.structure-review p,
+.unknowns p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 8px 0;
+}
+.structure-review .structure-footer {
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+}
+.finding,
+.unknowns,
+.email-draft {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 500px) {
+  .review-controls button,
+  .action-row button,
+  .text-button,
+  .email-draft button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 800px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    min-width: 0;
+  }
+  .sidebar nav {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 360px) {
+  .nav-item small {
+    display: none;
+  }
+  .journey-line {
+    flex-wrap: wrap;
+  }
+  .journey-line i {
+    display: none;
+  }
+}
+
+.structure-review li {
+  font-size: 12px;
+}
+.source-scroll:focus-visible {
+  outline: 2px solid var(--cyan);
+}

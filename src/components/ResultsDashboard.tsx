@@ -7,6 +7,7 @@ import { CATEGORIES } from "@/shared/limits";
 import { useSession } from "@/state/session";
 import { FullSourceView } from "./FullSourceView";
 import { Icon } from "./Icons";
+import { RuleInterpretation, UncertaintyNotes } from "./RuleInterpretation";
 export function emailText(f: Finding, program: string) {
   const refs = Array.from(
     new Set(
@@ -83,16 +84,7 @@ function FindingCard({ finding: f }: { finding: Finding }) {
           </ul>
         </div>
       )}
-      {f.unknowns.length > 0 && (
-        <div className="unknowns">
-          <strong>What remains unclear</strong>
-          <ul>
-            {f.unknowns.map((u, i) => (
-              <li key={i}>{u}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <UncertaintyNotes finding={f} />
       <fieldset className="review-controls" disabled={s.outdated}>
         <legend>Your review · not independent verification</legend>
         {(["Accepted", "Rejected", "Uncertain"] as Review[]).map((value) => (
@@ -150,45 +142,7 @@ function FindingCard({ finding: f }: { finding: Finding }) {
                     <section key={r.id}>
                       <h4>AI summary · check against source</h4>
                       <p>{r.description}</p>
-                      <p className="rule-context">
-                        <strong>Scope:</strong> {r.scope}
-                        <br />
-                        <strong>Applicant context:</strong>{" "}
-                        {r.scopeMatch === "matches"
-                          ? "Scope matches"
-                          : r.scopeMatch === "unknown"
-                            ? "Uncertain applicability"
-                            : "Different scope"}
-                        <br />
-                        <strong>Condition satisfaction:</strong>{" "}
-                        {r.conditionStatus.replaceAll("_", " ")}
-                      </p>
-                      {r.conditions.length > 0 && (
-                        <>
-                          <strong>Conditions identified</strong>
-                          <ul>
-                            {r.conditions.map((c, i) => (
-                              <li key={i}>{c}</li>
-                            ))}
-                          </ul>
-                        </>
-                      )}
-                      {r.exceptions.length > 0 ? (
-                        <>
-                          <strong>Exceptions identified</strong>
-                          <ul>
-                            {r.exceptions.map((e, i) => (
-                              <li key={i}>{e}</li>
-                            ))}
-                          </ul>
-                        </>
-                      ) : (
-                        <p className="muted">
-                          The AI identified no separate exception clauses here.
-                          Important exceptions may still be present in the full
-                          source.
-                        </p>
-                      )}
+                      <RuleInterpretation rule={r} />
                       {r.evidence.map((e) => (
                         <blockquote key={e.id}>
                           <div className="quote-source">
