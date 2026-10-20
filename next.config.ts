@@ -1,10 +1,14 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  turbopack: { root: process.cwd() },
+  outputFileTracingRoot: process.cwd(),
   serverExternalPackages: ["pdfjs-dist"],
   outputFileTracingIncludes: {
     "/api/compare": [
       "./node_modules/pdfjs-dist/standard_fonts/**/*",
       "./node_modules/pdfjs-dist/cmaps/**/*",
+      "./node_modules/@napi-rs/canvas/**/*",
+      "./node_modules/@napi-rs/canvas-*/**/*",
     ],
   },
   poweredByHeader: false,

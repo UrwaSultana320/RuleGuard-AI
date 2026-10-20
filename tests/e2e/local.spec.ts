@@ -265,7 +265,7 @@ test("shows a privacy-safe diagnostic without rendering rejected AI findings", a
   await expect(page.locator(".notice[role=alert]")).toContainText(
     "Diagnostic code: CLAUSE_PASSAGE_UNKNOWN",
   );
-  await expect(page).toHaveURL("http://127.0.0.1:3000/");
+  await expect(page).toHaveURL("/");
   await expect(page.getByLabel("Intended program")).toHaveValue(
     "Master's in Artificial Intelligence",
   );

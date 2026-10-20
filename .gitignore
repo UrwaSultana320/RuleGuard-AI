@@ -17,3 +17,5 @@ test-results/
 /skills-lock.json
 
 /public/pdf.worker.min.mjs
+
+/public/licenses/
