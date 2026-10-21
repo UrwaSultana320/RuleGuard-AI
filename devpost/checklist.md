@@ -15,7 +15,7 @@ Current revision checkpoint: **degree-aware implementation mechanically verified
 
 ## Slices
 
-- [ ] **4. Approved editorial light redesign**
+- [x] **4. Approved editorial light redesign**
   Becomes usable: A welcoming, evidence-first ivory/emerald interface with compact navigation, prominent degree choices, refined uploads and a readable comparison/review dashboard.
   Why now: October 21 visual feedback explicitly supersedes the previous navy dashboard without changing business logic.
   PRD ref: `prd.md > Approved Visual Revision — 2026-10-21`
@@ -353,5 +353,7 @@ Exact visual revision files:
 - `tests/e2e/editorial.spec.ts`
 - `tests/e2e/local.spec.ts`
 - `tests/fixtures/editorial.ts`
+
+Visual implementation checkpoint: `784c3b6`. Presentation and offline verification are complete; the project-owner visual-review box remains unchecked. This does not mark 5-build final review or release approval complete.
 
 Local review: http://127.0.0.1:3000/. The revised visual-review box and degree live-validation gate remain pending; no release approval is implied.
