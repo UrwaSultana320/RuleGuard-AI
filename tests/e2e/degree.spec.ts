@@ -126,7 +126,7 @@ async function intercept(
     });
   });
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption(degree);
+  await page.getByRole("radio", { name: new RegExp("^" + degree) }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -142,9 +142,11 @@ test("degree is never preselected; accurately labeled undergraduate samples pass
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByLabel("Degree level")).toHaveValue("");
+  await expect(page.getByRole("radio", { checked: true })).toHaveCount(0);
   await expect(page.locator("#file-0")).toBeDisabled();
-  await page.getByLabel("Degree level").selectOption("Bachelor's");
+  await page
+    .getByRole("radio", { name: new RegExp("^" + "Bachelor's") })
+    .check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -224,7 +226,7 @@ test("uncertainty requires acknowledgment, uses same response, and degree change
   await page.getByRole("button", { name: "Accept", exact: true }).click();
   await expect(page.getByText("Accepted by you")).toBeVisible();
   await page.getByRole("link", { name: "Edit inputs" }).click();
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await expect(
     page.getByRole("heading", { name: "Review document applicability" }),
   ).toHaveCount(0);
@@ -301,7 +303,9 @@ test("editing the degree while uncertainty is held clears acknowledgment and all
   await page
     .getByRole("checkbox", { name: /I acknowledge the unresolved/ })
     .check();
-  await page.getByLabel("Degree level").selectOption("Bachelor's");
+  await page
+    .getByRole("radio", { name: new RegExp("^" + "Bachelor's") })
+    .check();
   await expect(
     page.getByRole("checkbox", { name: /I acknowledge the unresolved/ }),
   ).toHaveCount(0);

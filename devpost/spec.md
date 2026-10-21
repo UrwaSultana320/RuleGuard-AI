@@ -62,7 +62,7 @@ Successful processing produces preliminary AI suggestions requiring human review
 - Public URL without judge installation, registration, or keys. Public GitHub repository with installation/testing instructions and short demo video remain required deliverables.
 - Target 20 completed comparisons/day plus retry/testing reserve; not guaranteed capacity. No paid services without explicit project owner approval.
 - Waikato pair approved as primary real-world benchmark candidate; synthetic cases retained; Trinity secondary robustness and KAIST extraction stress candidates.
-- Premium navy/violet/cyan responsive UI and all approved PRD behavior remain in force.
+- Premium responsive editorial light UI (October 21 visual amendment) and all approved PRD behavior remain in force.
 
 ## The Core Journey Through the System
 
@@ -151,9 +151,18 @@ The judge URL needs no keys; a person running the repository backup locally need
 
 ## Look and Feel
 
+### Approved Visual Revision — 2026-10-21
+
+The project owner approved a substantial local visual redesign after reviewing the previous interface. This supersedes the dark navy/violet/cyan presentation only: use a premium light editorial product design, with warm ivory #F8F7F4, white surfaces, charcoal #202925, deep emerald #176B5B and restrained terracotta #C87855. Refine semantic status colors for accessible contrast; never rely on color alone. Remove the oversized sidebar, orbit graphics, purple gradients, glows and excessive badges. Use compact horizontal Compare/Findings navigation, a visible session-loss notice, deliberate serif/sans-serif typography, a consistent spacing system, readable text and comfortable controls. Use local system fonts without a font-service dependency.
+
+Keep the hero compact: “Compare the policies. See the evidence.” Explain Bachelor's/Master's support and preliminary AI review clearly. Make explicit, unselected degree options prominent; adapt the intended-program example to the selected degree. Style uploads, context, privacy, progress, errors and applicability gates consistently. Prioritize exact source quotations in the findings layout, visually distinguish AI interpretation from extracted evidence, retain side-by-side evidence where space permits, and keep review choices and clarification/email actions easy to understand. All conditions, disclaimers, full-source access and review safeguards remain available.
+
+This is presentation and related UX/copy only. Model/single-call behavior, degree validation and blocking, uncertainty acknowledgment, backend evidence verification, review state, privacy, session lifetime, quota guards and upload limits are unchanged. No new AI feature, service, live request, publication, billing or deployment is authorized; cumulative Gemini usage remains 40. Test the existing workflows and responsive states at 320, 375, 768, 1366 and 1920 px using offline report fixtures. Visible focus, reduced motion, readable text, contrast and touch targets are acceptance criteria. Revised live degree reasoning and hosted release checks remain outstanding.
+
+
 Implements `prd.md > Look and Feel`, `Screens and Layout`, and `Responsive Layout and Accessibility`.
 
-Carry forward premium dark navy with restrained violet/cyan accents, refined cards, readable evidence, subtle borders/gradients, and minimal motion. Suggested implementation tokens: navy #08111F, elevated surface #111D32, primary text #F4F7FB, muted text #B8C4D7, violet #A78BFA, cyan #67E8F9. Treat these hex values as implementation defaults; verify contrast in actual combinations.
+Implement the approved October 21 light editorial design: warm ivory #F8F7F4, white #FFFFFF surfaces, charcoal #202925 text, deep emerald #176B5B primary actions, muted terracotta #C87855 accents and subtle warm gray borders. Use darker text variants where required for contrast. Compact horizontal navigation replaces the sidebar; no purple gradients, orbit graphics, glass effects or excessive shadows. Prioritize source quotations, clearly separated AI interpretations, semantic warnings and readable review/email controls. Verify contrast in actual combinations.
 
 Use a system font stack initially to avoid a font service or network dependency. Desktop upload/evidence panels can sit side by side; stack when available width is insufficient. Give every category a text label/icon in addition to color. Use visible focus, semantic form labels, comfortable touch controls, reduced-motion support, and live status announcements.
 
@@ -466,7 +475,7 @@ RuleGuard-AI/
       page.tsx                  # First screen/input journey
       results/page.tsx          # Results from active session; redirect if absent
       api/compare/route.ts      # Node multipart validation + progress/result response
-      globals.css               # Navy/violet/cyan tokens and accessible base styles
+      globals.css               # Ivory/emerald editorial tokens and accessible base styles
     components/
       DocumentUpload.tsx        # Both file cards, client checks and inline errors
       ApplicantForm.tsx         # Explicit degree, program, optional context
@@ -595,3 +604,15 @@ Coverage includes matching Bachelor's and Master's, opposite-degree mismatches i
 **Local review ready; revised release readiness pending.** No new Gemini calls were made; cumulative usage remains **40** and live access is disabled. The new response schema/prompt's provider compatibility, degree reasoning, mixed-branch/exception completeness, token use and latency have not been checked live. Existing model reasoning failures remain disclosed. No offline test proves semantic entailment, complete/accurate extraction or degree identification, document authenticity, official status or publication currency. Separately authorized live validation and project-owner local review remain required before calling this revision release-ready. Hosted Linux packaging, environment setup, anonymous public access, actual request/duration limits, real Upstash concurrency/outage behavior and availability during judging remain hosted-only checks. The accepted development-tooling advisory and Hobby eligibility uncertainty are unchanged.
 
 Timeline: implementation and offline checks are complete on October 20, six calendar days before the October 26 submission date. No new infrastructure or additional model call per comparison is needed. Delivery remains feasible subject to prompt local review, separately approved live validation and the existing hosted release checks; the deadline and judging availability are not guaranteed. 6-ship, public deployment, publishing, Devpost submission, billing and additional Gemini requests remain blocked pending separate approval.
+
+## Editorial UI Verification — 2026-10-21
+
+The approved visual revision is implemented locally: light ivory/white surfaces, charcoal text, deep emerald actions, restrained terracotta accents, editorial serif/sans-serif typography, compact horizontal navigation and a persistent session-loss notice. The oversized sidebar and orbit decoration are removed. Native degree-choice cards retain the same explicit selection and state handler; program placeholders adapt to degree. Upload, context, privacy, progress, error, mismatch, uncertainty, empty-result and email states share the new readable presentation.
+
+Findings show exact source quotations before AI interpretations, open the first finding's evidence by default, and retain readable two-column evidence on wide screens with a single-column mobile layout. Applicability evidence uses native expandable controls; source text and existing missing-information/guard notices remain available. Review choices, full-source jumps, editable drafts, stale-report guards and all disclaimers remain intact. No backend, shared schema, model/prompt, session-state, quota, dependency or service configuration changed. This is not a new reasoning or deployment validation.
+
+Verification on Node 24.19.0: **62 unit/integration tests and 17 browser tests passed**, plus typecheck, lint, production build and the unchanged PDF trace check. Final browser tests ran against the actual local production build with live Gemini explicitly disabled. Real local extraction/AI-disabled handling remains covered. New UI tests use isolated synthetic transport fixtures, test unselected and keyboard-operable degree choices, adaptive placeholders, exact quotation retention and ordering, review/email behavior, loading/error/empty recovery and full-source access. Main input, gate and expanded result layouts were checked at 320, 375, 768, 1366 and 1920 px (existing tests also cover 390). No horizontal document overflow was found. Tested text/background pairs meet a 4.5:1 contrast ratio; key touch targets are at least 44 px and native degree choices show keyboard focus. This is targeted testing, not a claim of complete accessibility certification. No known blocking visual/accessibility issue remains in the tested states; project-owner visual review remains pending.
+
+Production-build screenshots are local, ignored artifacts: `test-results/editorial-home-1366.png`, `editorial-home-375.png`, `editorial-findings-1366.png`, `editorial-findings-375.png`, and their viewport/evidence variants. Dashboard screenshots are explicitly **offline design fixtures**, not new Gemini findings. The application has no fixture fallback. Both PRD/spec HTML companions contain the complete synchronized canonical Markdown; their existing document-viewer CSS/JavaScript is retained. The product's old dark design is superseded by the October 21 amendment, not by a technical architecture revision.
+
+No Gemini requests were made; cumulative usage remains **40** and access is disabled. No billing, public deployment, repository publication, Devpost submission or 6-ship occurred. Existing live degree-reasoning/provider-contract and hosted-only checks remain pending, along with the accepted tooling advisory and Hobby eligibility uncertainty. Local implementation and offline design review are complete on October 21; this adds no infrastructure or new API calls to the approved comparison workflow. The October 26 release target remains subject to the existing approval and verification gates.

@@ -17,7 +17,7 @@ test("actual backend reads both synthetic sources, retains work on AI-disabled e
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -60,7 +60,7 @@ test("frontend validates PDF pages and the actual backend extracts all approved 
     "Download official Waikato sources as described in the README to run this PDF integration test.",
   );
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page
     .locator("#file-0")
     .setInputFiles("tmp/pdfs/waikato-pg-english-2026.pdf");
@@ -173,7 +173,7 @@ test("review/evidence/email controls and stale-state behavior work with explicit
     await route.fulfill({ contentType: "application/x-ndjson", body: lines });
   });
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -201,7 +201,8 @@ test("review/evidence/email controls and stale-state behavior work with explicit
   await expect(
     page.getByRole("link", { name: "Open editable email draft" }),
   ).toHaveAttribute("href", /^mailto:/);
-  await page.locator(".evidence summary").click();
+  if ((await page.locator(".evidence").getAttribute("open")) === null)
+    await page.locator(".evidence summary").click();
   await expect(
     page
       .getByText("Source match verified · reasoning remains preliminary")
@@ -220,7 +221,7 @@ test("responsive layout and screenshot of the real input page", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   for (const width of [320, 375, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     const layout = await page.evaluate(() => ({
@@ -273,7 +274,7 @@ test("shows a privacy-safe diagnostic without rendering rejected AI findings", a
     });
   });
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -345,7 +346,7 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
     });
   });
   await page.goto("/");
-  await page.getByLabel("Degree level").selectOption("Master's");
+  await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
   await expect(page.getByLabel("Intended program")).toHaveValue(
     /Artificial Intelligence/,
@@ -364,7 +365,8 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
     })
     .click();
   await expect(page).toHaveURL("/results");
-  await page.locator(".evidence summary").click();
+  if ((await page.locator(".evidence").getAttribute("open")) === null)
+    await page.locator(".evidence summary").click();
   await expect(
     page.getByText("Conditions: not established", { exact: true }),
   ).toHaveCount(2);

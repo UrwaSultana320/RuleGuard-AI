@@ -42,25 +42,34 @@ export function DegreeAssessments({
               </ul>
             </>
           )}
-          {a.evidence.length ? (
-            a.evidence.map((e) => (
-              <blockquote key={e.id}>
-                <p className="source-ref">
-                  {e.sourceName} ·{" "}
-                  {e.page === null
-                    ? `lines ${e.lineStart}–${e.lineEnd}`
-                    : `PDF page ${e.page}`}{" "}
-                  · {e.id}
-                </p>
-                <pre>{e.text}</pre>
-              </blockquote>
-            ))
-          ) : (
-            <p>
-              No supporting degree-scope passage was identified. Inspect the
-              full sources.
-            </p>
-          )}
+          <details className="degree-evidence">
+            <summary>
+              View applicability evidence{" "}
+              <span>
+                {a.evidence.length} cited passage
+                {a.evidence.length === 1 ? "" : "s"}
+              </span>
+            </summary>
+            {a.evidence.length ? (
+              a.evidence.map((e) => (
+                <blockquote key={e.id}>
+                  <p className="source-ref">
+                    {e.sourceName} ·{" "}
+                    {e.page === null
+                      ? `lines ${e.lineStart}–${e.lineEnd}`
+                      : `PDF page ${e.page}`}{" "}
+                    · {e.id}
+                  </p>
+                  <pre>{e.text}</pre>
+                </blockquote>
+              ))
+            ) : (
+              <p>
+                No supporting degree-scope passage was identified. Inspect the
+                full sources.
+              </p>
+            )}
+          </details>
         </article>
       ))}
     </div>

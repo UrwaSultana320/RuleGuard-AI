@@ -22,7 +22,13 @@ export function emailText(f: Finding, program: string) {
   );
   return `Dear Admissions Team,\n\nI am reviewing English-language requirements for ${program}. I would appreciate clarification on the following preliminary question:\n\n${f.clarificationQuestion}\n\nSources I am reviewing:\n${refs.map((r) => "- " + r).join("\n")}\n\nCould you confirm the applicable conditions and any relevant exceptions? I am seeking official guidance rather than assuming an exemption or a conflict.\n\nThank you.`;
 }
-function FindingCard({ finding: f }: { finding: Finding }) {
+function FindingCard({
+  finding: f,
+  index,
+}: {
+  finding: Finding;
+  index: number;
+}) {
   const s = useSession();
   const review = s.reviewOf(f.id);
   const [copyState, setCopyState] = useState("");
@@ -61,6 +67,9 @@ function FindingCard({ finding: f }: { finding: Finding }) {
     >
       <div className="finding-top">
         <div>
+          <span className="finding-number">
+            Finding {String(index + 1).padStart(2, "0")}
+          </span>
           <span className="category-label">{f.classification}</span>
           <span className="preliminary-label">Preliminary AI finding</span>
           <h3>{f.topic}</h3>
@@ -85,6 +94,64 @@ function FindingCard({ finding: f }: { finding: Finding }) {
           </ul>
         </div>
       )}
+      <details className="evidence" open={index === 0}>
+        <summary>
+          <Icon name="eye" size={17} />
+          View Evidence<span>Source text & conditions</span>
+        </summary>
+        <div className="evidence-grid">
+          {["A", "B"].map((sourceId) => {
+            const rules = f.rules.filter((r) => r.sourceId === sourceId);
+            return (
+              <div className="evidence-source" key={sourceId}>
+                <div className="source-title">Document {sourceId}</div>
+                {!rules.length ? (
+                  <p>
+                    No supporting rule was identified in this source. Do not
+                    assume agreement or absence.
+                  </p>
+                ) : (
+                  rules.map((r) => (
+                    <section key={r.id}>
+                      {r.evidence.map((e) => (
+                        <blockquote key={e.id}>
+                          <div className="quote-source">
+                            <Icon name="file" size={15} />
+                            <span>
+                              {e.sourceName} ·{" "}
+                              {e.page
+                                ? `PDF page ${e.page}`
+                                : `Lines ${e.lineStart}–${e.lineEnd}`}
+                            </span>
+                          </div>
+                          <pre>{e.text}</pre>
+                          <button
+                            type="button"
+                            className="text-button"
+                            onClick={() => jump(e.id, e.sourceId)}
+                          >
+                            View full extracted source{" "}
+                            <Icon name="arrow" size={14} />
+                          </button>
+                          <small>
+                            Source match verified · reasoning remains
+                            preliminary
+                          </small>
+                        </blockquote>
+                      ))}
+                      <div className="ai-interpretation">
+                        <h4>AI interpretation · check against source</h4>
+                        <p>{r.description}</p>
+                        <RuleInterpretation rule={r} />
+                      </div>
+                    </section>
+                  ))
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </details>
       <UncertaintyNotes finding={f} />
       <fieldset className="review-controls" disabled={s.outdated}>
         <legend>Your review · not independent verification</legend>
@@ -122,62 +189,6 @@ function FindingCard({ finding: f }: { finding: Finding }) {
           </button>
         )}
       </fieldset>
-      <details className="evidence">
-        <summary>
-          <Icon name="eye" size={17} />
-          View Evidence<span>Source text & conditions</span>
-        </summary>
-        <div className="evidence-grid">
-          {["A", "B"].map((sourceId) => {
-            const rules = f.rules.filter((r) => r.sourceId === sourceId);
-            return (
-              <div className="evidence-source" key={sourceId}>
-                <div className="source-title">Document {sourceId}</div>
-                {!rules.length ? (
-                  <p>
-                    No supporting rule was identified in this source. Do not
-                    assume agreement or absence.
-                  </p>
-                ) : (
-                  rules.map((r) => (
-                    <section key={r.id}>
-                      <h4>AI summary · check against source</h4>
-                      <p>{r.description}</p>
-                      <RuleInterpretation rule={r} />
-                      {r.evidence.map((e) => (
-                        <blockquote key={e.id}>
-                          <div className="quote-source">
-                            <Icon name="file" size={15} />
-                            <span>
-                              {e.sourceName} ·{" "}
-                              {e.page
-                                ? `PDF page ${e.page}`
-                                : `Lines ${e.lineStart}–${e.lineEnd}`}
-                            </span>
-                          </div>
-                          <pre>{e.text}</pre>
-                          <button
-                            type="button"
-                            className="text-button"
-                            onClick={() => jump(e.id, e.sourceId)}
-                          >
-                            View full extracted source{" "}
-                            <Icon name="arrow" size={14} />
-                          </button>
-                          <small>
-                            Source match verified · reasoning remains
-                            preliminary
-                          </small>
-                        </blockquote>
-                      ))}
-                    </section>
-                  ))
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </details>
       {canClarify && (
         <div className="clarification">
           <div className="privacy-heading">
@@ -257,15 +268,11 @@ export function ResultsDashboard() {
   ).length;
   return (
     <>
-      <div className="page-kicker">
-        <span className="dot" /> YOUR COMPARISON
-      </div>
+      <div className="page-kicker">YOUR DOCUMENT REVIEW</div>
       <div className="results-heading">
         <div>
           <h1>
-            Findings to inspect.
-            <br />
-            <span>A clearer next step.</span>
+            Your evidence, <span>side by side.</span>
           </h1>
           <p className="hero-copy">
             {report.applicant.program} · {report.applicant.degree} ·{" "}
@@ -299,7 +306,8 @@ export function ResultsDashboard() {
           </p>
         </div>
       </div>
-      <section className="panel">
+      <section className="panel report-applicability">
+        <div className="report-section-label">01 / DOCUMENT RELEVANCE</div>
         <h2>
           {report.degreeVerification === "unverified"
             ? "Degree applicability unverified"
@@ -311,6 +319,17 @@ export function ResultsDashboard() {
         </p>
         <DegreeAssessments assessments={report.applicability.assessments} />
       </section>
+      <div className="report-section-heading">
+        <div>
+          <div className="report-section-label">
+            02 / PRELIMINARY COMPARISON
+          </div>
+          <h2>What the AI identified</h2>
+        </div>
+        <a className="text-link" href="#sources">
+          Inspect full sources <Icon name="arrow" size={16} />
+        </a>
+      </div>
       <div className="metrics">
         <div>
           <span>AI-suggested requirements compared</span>
@@ -380,8 +399,8 @@ export function ResultsDashboard() {
               Number(b.classification === "Potential Contradiction") -
               Number(a.classification === "Potential Contradiction"),
           )
-          .map((f) => (
-            <FindingCard key={report.id + f.id} finding={f} />
+          .map((f, index) => (
+            <FindingCard key={report.id + f.id} finding={f} index={index} />
           ))}
       </div>
       {report.limitations.length > 0 && (

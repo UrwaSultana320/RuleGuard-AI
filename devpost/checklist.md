@@ -1,7 +1,7 @@
 ---
 doc: checklist
 status: approved
-build_status: revision-awaiting-local-review
+build_status: visual-revision-awaiting-review
 build_completed: 2026-10-20
 ---
 
@@ -14,6 +14,16 @@ Historical original checkpoint: **5-build complete** under the project owner's e
 Current revision checkpoint: **degree-aware implementation mechanically verified; revised local review and live reasoning validation pending**. The original completion remains historical, not approval of this extension for release.
 
 ## Slices
+
+- [ ] **4. Approved editorial light redesign**
+  Becomes usable: A welcoming, evidence-first ivory/emerald interface with compact navigation, prominent degree choices, refined uploads and a readable comparison/review dashboard.
+  Why now: October 21 visual feedback explicitly supersedes the previous navy dashboard without changing business logic.
+  PRD ref: `prd.md > Approved Visual Revision — 2026-10-21`
+  Spec ref: `spec.md > Look and Feel`
+  Build: Redesign presentation components and styles; preserve existing handlers, state, gates, quotas and evidence. Update dynamic program placeholders and matching UI tests only.
+  Verify (mechanical): Full unit/integration and browser suites, typecheck, lint, production build; offline desktop/mobile screenshots and keyboard/contrast checks. No Gemini calls or deployment.
+  Learner check: Review the new local input page and disclosed offline dashboard screenshots; provide visual feedback. Live degree reasoning remains unverified.
+  Commit: `Redesign RuleGuard as an editorial light document review product`
 
 - [x] **3. Approved degree-aware revision before release**
   Becomes usable: Explicit Bachelor's/Master's selection, per-document cited applicability checks, non-overridable mismatch blocking, mixed/general-policy scoping, and acknowledged uncertainty before preliminary findings.
@@ -51,6 +61,8 @@ Current revision checkpoint: **degree-aware implementation mechanically verified
 - [x] Final review closed through accepted improvements/preflight and the explicit instruction to finish once final checks pass; separate human-operated exploration is not claimed.
 
 ## Final Review
+
+- [ ] October 21 editorial visual revision reviewed by the project owner.
 
 - [ ] Degree-aware revision reviewed locally by the project owner; no live degree-reasoning validation or release approval is claimed.
 
@@ -308,3 +320,38 @@ Exact revised files (no credentials, retained model responses or frozen benchmar
 Implementation checkpoint: `c768a25` — degree-aware local code and documentation committed after mechanical verification. The slice is implemented; the revised final-review box remains unchecked pending project-owner feedback. This is not revised 5-build release approval.
 
 Local review: http://127.0.0.1:3000/. New upstream calls and public release remain disabled. The revised feature is not marked release-ready. Timeline and remaining hosted/live limitations are recorded in spec.md.
+
+
+## Editorial UI Verification — 2026-10-21
+
+The approved visual revision is implemented locally: light ivory/white surfaces, charcoal text, deep emerald actions, restrained terracotta accents, editorial serif/sans-serif typography, compact horizontal navigation and a persistent session-loss notice. The oversized sidebar and orbit decoration are removed. Native degree-choice cards retain the same explicit selection and state handler; program placeholders adapt to degree. Upload, context, privacy, progress, error, mismatch, uncertainty, empty-result and email states share the new readable presentation.
+
+Findings show exact source quotations before AI interpretations, open the first finding's evidence by default, and retain readable two-column evidence on wide screens with a single-column mobile layout. Applicability evidence uses native expandable controls; source text and existing missing-information/guard notices remain available. Review choices, full-source jumps, editable drafts, stale-report guards and all disclaimers remain intact. No backend, shared schema, model/prompt, session-state, quota, dependency or service configuration changed. This is not a new reasoning or deployment validation.
+
+Verification on Node 24.19.0: **62 unit/integration tests and 17 browser tests passed**, plus typecheck, lint, production build and the unchanged PDF trace check. Final browser tests ran against the actual local production build with live Gemini explicitly disabled. Real local extraction/AI-disabled handling remains covered. New UI tests use isolated synthetic transport fixtures, test unselected and keyboard-operable degree choices, adaptive placeholders, exact quotation retention and ordering, review/email behavior, loading/error/empty recovery and full-source access. Main input, gate and expanded result layouts were checked at 320, 375, 768, 1366 and 1920 px (existing tests also cover 390). No horizontal document overflow was found. Tested text/background pairs meet a 4.5:1 contrast ratio; key touch targets are at least 44 px and native degree choices show keyboard focus. This is targeted testing, not a claim of complete accessibility certification. No known blocking visual/accessibility issue remains in the tested states; project-owner visual review remains pending.
+
+Production-build screenshots are local, ignored artifacts: `test-results/editorial-home-1366.png`, `editorial-home-375.png`, `editorial-findings-1366.png`, `editorial-findings-375.png`, and their viewport/evidence variants. Dashboard screenshots are explicitly **offline design fixtures**, not new Gemini findings. The application has no fixture fallback. Both PRD/spec HTML companions contain the complete synchronized canonical Markdown; their existing document-viewer CSS/JavaScript is retained. The product's old dark design is superseded by the October 21 amendment, not by a technical architecture revision.
+
+No Gemini requests were made; cumulative usage remains **40** and access is disabled. No billing, public deployment, repository publication, Devpost submission or 6-ship occurred. Existing live degree-reasoning/provider-contract and hosted-only checks remain pending, along with the accepted tooling advisory and Hobby eligibility uncertainty. Local implementation and offline design review are complete on October 21; this adds no infrastructure or new API calls to the approved comparison workflow. The October 26 release target remains subject to the existing approval and verification gates.
+
+
+Exact visual revision files:
+
+- `README.md`
+- `devpost/checklist.md`
+- `devpost/prd.html`
+- `devpost/prd.md`
+- `devpost/spec.html`
+- `devpost/spec.md`
+- `src/app/globals.css`
+- `src/components/CompareForm.tsx`
+- `src/components/DegreeApplicability.tsx`
+- `src/components/FullSourceView.tsx`
+- `src/components/ResultsDashboard.tsx`
+- `src/components/Shell.tsx`
+- `tests/e2e/degree.spec.ts`
+- `tests/e2e/editorial.spec.ts`
+- `tests/e2e/local.spec.ts`
+- `tests/fixtures/editorial.ts`
+
+Local review: http://127.0.0.1:3000/. The revised visual-review box and degree live-validation gate remain pending; no release approval is implied.

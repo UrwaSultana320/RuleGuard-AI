@@ -18,6 +18,8 @@ Acceptance checks cover both matching degrees; opposite-only mismatches in eithe
 
 ## Run locally
 
+The October 21 visual revision uses a light editorial interface: ivory and white surfaces, charcoal text, emerald actions and restrained terracotta. Compact Compare/Findings navigation replaces the sidebar. Degree choices remain explicitly unselected; program examples adapt to the selection. Findings prioritize exact source quotations above clearly labeled AI interpretations, with native disclosures for applicability evidence and all existing review/email safeguards. This presentation revision does not change the backend, model, state, quotas, privacy or upload limits. Browser tests generate desktop/mobile screenshots in ignored `test-results/editorial-*.png`; dashboard captures use clearly labeled offline design fixtures, never runtime fallback reports.
+
 Use Node 24 LTS and VS Code/PowerShell. The package engine is pinned to `24.x` to match the approved Vercel runtime:
 
 ```

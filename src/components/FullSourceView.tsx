@@ -9,8 +9,8 @@ export function FullSourceView({ forReport = false }: { forReport?: boolean }) {
   return (
     <section className="panel sources" id="sources">
       <div className="section-heading">
-        <span className="section-icon">
-          <Icon name="eye" />
+        <span className="section-number" aria-hidden="true">
+          <Icon name="file" size={22} />
         </span>
         <div>
           <h2>Full extracted sources</h2>

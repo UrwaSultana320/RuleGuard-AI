@@ -142,26 +142,24 @@ export function CompareForm() {
   }
   return (
     <>
-      <div className="page-kicker">
-        <span className="dot" /> DOCUMENT COMPARISON
-      </div>
+      <div className="page-kicker">A LITTLE CLARITY FOR A BIG DECISION</div>
       <div className="hero-row">
         <div>
           <h1>
-            Compare the rules.
+            Compare the policies.
             <br />
-            <span>Keep the context.</span>
+            <span>See the evidence.</span>
           </h1>
-          <p className="hero-copy">
-            Explore English-language requirements across two sources.
-            <br className="desktop-break" />
-            Find the conditions, inspect the evidence, decide what to clarify.
-          </p>
         </div>
-        <div className="hero-emblem" aria-hidden="true">
-          <Icon name="shield" size={70} />
-          <span className="orbit-dot" />
-          <span className="orbit-dot second" />
+        <div className="hero-aside">
+          <p className="hero-copy">
+            AI-assisted requirement review for Bachelor&apos;s and Master&apos;s
+            applicants. Check document relevance, explore cited evidence, and
+            decide what needs clarification.
+          </p>
+          <p className="hero-caption">
+            Two sources. Your context. Human judgment.
+          </p>
         </div>
       </div>
       <div className="journey-line">
@@ -185,6 +183,9 @@ export function CompareForm() {
       >
         <section className="panel degree-selection">
           <div className="section-heading">
+            <span className="section-number" aria-hidden="true">
+              01
+            </span>
             <div>
               <h2>Start with your degree</h2>
               <p>
@@ -193,26 +194,38 @@ export function CompareForm() {
               </p>
             </div>
           </div>
-          <label>
-            Degree level <span className="required">Required</span>
-            <select
-              value={s.applicant.degree}
-              required
-              disabled={s.processing}
-              onChange={(e) => s.setField("degree", e.target.value)}
-            >
-              <option value="">Select a degree level</option>
-              <option value="Bachelor's">
-                Bachelor&apos;s / Undergraduate
-              </option>
-              <option value="Master's">Master&apos;s / Postgraduate</option>
-            </select>
-          </label>
+          <fieldset className="degree-options" disabled={s.processing}>
+            <legend>
+              Degree level <span className="required">Required</span>
+            </legend>
+            {(["Bachelor's", "Master's"] as const).map((degree) => (
+              <label
+                className={`degree-option ${s.applicant.degree === degree ? "is-selected" : ""}`}
+                key={degree}
+              >
+                <input
+                  type="radio"
+                  name="degree"
+                  value={degree}
+                  required
+                  checked={s.applicant.degree === degree}
+                  onChange={() => s.setField("degree", degree)}
+                />
+                <span>
+                  <strong>{degree}</strong>
+                  <small>
+                    {degree === "Bachelor's" ? "Undergraduate" : "Postgraduate"}
+                  </small>
+                </span>
+                <span className="radio-indicator" aria-hidden="true" />
+              </label>
+            ))}
+          </fieldset>
         </section>
-        <section className="panel">
+        <section className="panel upload-panel">
           <div className="section-heading">
-            <span className="section-icon">
-              <Icon name="file" />
+            <span className="section-number" aria-hidden="true">
+              02
             </span>
             <div>
               <h2>Your source documents</h2>
@@ -221,7 +234,6 @@ export function CompareForm() {
                 examples.
               </p>
             </div>
-            <span className="tag">2 sources</span>
           </div>
           <div className="upload-grid">
             <Upload index={0} />
@@ -247,10 +259,10 @@ export function CompareForm() {
             </p>
           )}
         </section>
-        <section className="panel">
+        <section className="panel context-panel">
           <div className="section-heading">
-            <span className="section-icon cyan">
-              <Icon name="shield" />
+            <span className="section-number" aria-hidden="true">
+              03
             </span>
             <div>
               <h2>The applicant context</h2>
@@ -261,13 +273,19 @@ export function CompareForm() {
             </div>
           </div>
           <div className="form-grid">
-            <label>
+            <label className="program-field">
               Intended program <span className="required">Required</span>
               <input
                 value={s.applicant.program}
                 maxLength={120}
                 required
-                placeholder="e.g. MSc Data Science"
+                placeholder={
+                  s.applicant.degree === "Bachelor's"
+                    ? "e.g. BSc Computer Science"
+                    : s.applicant.degree === "Master's"
+                      ? "e.g. MSc Data Science"
+                      : "Select your degree level first"
+                }
                 disabled={s.processing}
                 onChange={(e) => s.setField("program", e.target.value)}
               />
@@ -305,8 +323,7 @@ export function CompareForm() {
         />
         <section className="privacy">
           <div className="privacy-heading">
-            <Icon name="shield" />
-            <strong>A quick privacy check</strong>
+            <strong>Before you compare</strong>
           </div>
           <p>{PRIVACY}</p>
           <div className="privacy-links">
@@ -416,17 +433,14 @@ export function CompareForm() {
       <FullSourceView />
       <section className="trust-row">
         <div>
-          <Icon name="eye" />
           <strong>Trace the evidence</strong>
           <p>Inspect source text and page references.</p>
         </div>
         <div>
-          <Icon name="shield" />
           <strong>Review every suggestion</strong>
           <p>Accept, reject or mark it uncertain.</p>
         </div>
         <div>
-          <Icon name="mail" />
           <strong>Ask a clearer question</strong>
           <p>Prepare a draft for official clarification.</p>
         </div>

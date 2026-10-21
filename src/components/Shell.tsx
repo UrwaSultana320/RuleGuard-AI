@@ -11,65 +11,45 @@ export function Shell({ children }: { children: ReactNode }) {
     <>
       <header className="topbar">
         <Link className="brand" href="/">
-          <span className="brandmark">
-            <Icon name="shield" size={25} />
+          <span className="brandmark" aria-hidden="true">
+            r<span>g</span>
           </span>
           <span>
             RuleGuard<span className="brand-ai"> AI</span>
-            <small>CONTEXT. EVIDENCE. CLARITY.</small>
           </span>
         </Link>
-        <span className="header-note">
-          <span className="dot" />
-          Evidence-led. Human-reviewed.
-        </span>
-      </header>
-      <div className="workspace">
-        <aside className="sidebar">
-          <div className="nav-label">YOUR WORKSPACE</div>
-          <nav aria-label="Workspace">
+        <nav aria-label="Workspace">
+          <Link
+            className={path === "/" ? "nav-item selected" : "nav-item"}
+            aria-current={path === "/" ? "page" : undefined}
+            href="/"
+          >
+            Compare
+          </Link>
+          {s.report ? (
             <Link
-              className={path === "/" ? "nav-item selected" : "nav-item"}
-              href="/"
+              className={path === "/results" ? "nav-item selected" : "nav-item"}
+              href="/results"
+              aria-current={path === "/results" ? "page" : undefined}
             >
-              <Icon name="file" />
-              Compare documents<small>01</small>
+              Findings
             </Link>
-            {s.report ? (
-              <Link
-                className={
-                  path === "/results" ? "nav-item selected" : "nav-item"
-                }
-                href="/results"
-              >
-                <Icon name="spark" />
-                Findings<small>02</small>
-              </Link>
-            ) : (
-              <span className="nav-item unavailable">
-                <Icon name="spark" />
-                Findings<small>02</small>
-              </span>
-            )}
-          </nav>
-          <div className="sidebar-guide">
-            <Icon name="shield" size={27} />
-            <h3>Evidence before assumptions.</h3>
-            <p>
-              Two sources. Your context. Preliminary findings you can inspect
-              and review.
-            </p>
-            <span className="subtle-label">BUILT FOR A CAREFUL NEXT STEP</span>
-          </div>
-          <div className="session-note">
-            <Icon name="clock" />
-            <p>
-              <strong>Temporary session</strong>
-              <br />
-              Refreshing or closing this page clears all your work.
-            </p>
-          </div>
-        </aside>
+          ) : (
+            <span className="nav-item unavailable" aria-disabled="true">
+              Findings
+            </span>
+          )}
+        </nav>
+        <span className="header-note">An informed next step.</span>
+      </header>
+      <div className="session-strip">
+        <Icon name="clock" />
+        <p>
+          <strong>Just this session.</strong> Refreshing or closing this page
+          clears all your work.
+        </p>
+      </div>
+      <div className="workspace">
         <main id="main">{children}</main>
       </div>
       <footer className="app-footer">

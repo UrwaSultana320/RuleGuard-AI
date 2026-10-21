@@ -84,12 +84,21 @@ The three totals count all displayed, validated AI suggestions, including reject
 
 ## Look and Feel
 
+### Approved Visual Revision — 2026-10-21
+
+The project owner approved a substantial local visual redesign after reviewing the previous interface. This supersedes the dark navy/violet/cyan presentation only: use a premium light editorial product design, with warm ivory #F8F7F4, white surfaces, charcoal #202925, deep emerald #176B5B and restrained terracotta #C87855. Refine semantic status colors for accessible contrast; never rely on color alone. Remove the oversized sidebar, orbit graphics, purple gradients, glows and excessive badges. Use compact horizontal Compare/Findings navigation, a visible session-loss notice, deliberate serif/sans-serif typography, a consistent spacing system, readable text and comfortable controls. Use local system fonts without a font-service dependency.
+
+Keep the hero compact: “Compare the policies. See the evidence.” Explain Bachelor's/Master's support and preliminary AI review clearly. Make explicit, unselected degree options prominent; adapt the intended-program example to the selected degree. Style uploads, context, privacy, progress, errors and applicability gates consistently. Prioritize exact source quotations in the findings layout, visually distinguish AI interpretation from extracted evidence, retain side-by-side evidence where space permits, and keep review choices and clarification/email actions easy to understand. All conditions, disclaimers, full-source access and review safeguards remain available.
+
+This is presentation and related UX/copy only. Model/single-call behavior, degree validation and blocking, uncertainty acknowledgment, backend evidence verification, review state, privacy, session lifetime, quota guards and upload limits are unchanged. No new AI feature, service, live request, publication, billing or deployment is authorized; cumulative Gemini usage remains 40. Test the existing workflows and responsive states at 320, 375, 768, 1366 and 1920 px using offline report fixtures. Visible focus, reduced motion, readable text, contrast and touch targets are acceptance criteria. Revised live degree reasoning and hosted release checks remain outstanding.
+
+
 Source: `scope.md > Inspiration & Identity`, expanded by learner decisions on 2026-10-14.
 
 - Premium, modern SaaS presentation: professional, trustworthy, and visually distinctive.
-- Sophisticated dark navy theme with subtle violet and cyan accents.
-- Visual inspiration from modern SaaS applications such as Linear, while retaining RuleGuard AI's own identity. This is a learner-supplied reference, not a researched design specification.
-- Elegant typography, balanced spacing, refined cards, subtle gradients, soft borders, and tasteful icons.
+- Light warm ivory theme, white surfaces, charcoal text, deep emerald actions and restrained terracotta accents, approved October 21.
+- Custom editorial SaaS identity for students reviewing admissions policies; do not copy another company's exact design.
+- Deliberate serif/sans-serif typography, balanced spacing, refined cards, warm borders and restrained functional icons; avoid gradients, glows and decorative orbit graphics.
 - Smooth, minimal animations and responsive interactions.
 - Avoid excessive visual effects, clutter, and a generic chatbot appearance.
 - Prioritize accessibility, readability, intuitive navigation, clear loading states, helpful errors, and mobile responsiveness.
@@ -154,7 +163,7 @@ The decisions recorded in `spec.md` are backend PDF/TXT processing and genuine G
 
 Learner decisions recorded on 2026-10-14, developing the approved simple visual report and trust/readability priorities in `scope.md > Inspiration & Identity` and `What "Working" Looks Like`.
 
-The entire application must adapt across mobile, tablet, laptop, and desktop: landing/first screen, uploads, applicant forms, navigation, analysis progress, results dashboard, finding cards, and clarification questions. Layout, typography, cards, and controls adapt to available width while retaining dark navy, violet, and cyan styling. Buttons and inputs must be comfortable for touch interaction. Maintain accessible color contrast and visible keyboard focus states.
+The entire application must adapt across mobile, tablet, laptop, and desktop: landing/first screen, uploads, applicant forms, navigation, analysis progress, results dashboard, finding cards, and clarification questions. Layout, typography, cards, and controls adapt to available width while retaining the approved light editorial ivory/emerald styling. Buttons and inputs must be comfortable for touch interaction. Maintain accessible color contrast and visible keyboard focus states.
 
 On mobile and narrower screens, stack Document A and Document B evidence cards vertically. Each card shows its document name, page number when available, and exact supporting excerpt with relevant text highlighted. Place the AI explanation below both cards. Allow long excerpts to expand and collapse. Avoid tiny text and horizontal scrolling.
 
@@ -259,7 +268,7 @@ Review choices stay with their report in active-session memory across navigation
 - **Unreadable document:** Identify which document failed. Explain the reason when known, such as a scanned PDF, corrupted file, unsupported format, or empty document. Allow replacement of only the problematic document, preserving the other document and all applicant information.
 - **Analysis failure:** Clearly explain that the comparison could not be completed. Offer **Retry Analysis**, retaining both uploaded documents and applicant context. Never fabricate findings or mark incomplete analysis as successful.
 - **Partial analysis:** If part of the analysis succeeds, clearly label the results as incomplete and offer retry. Do not present them as a complete comparison. Partial results are a conditional failure state, not an additional required analysis capability.
-- **Recovery presentation:** Use clear, nontechnical messages with an optional technical details section, visible retry or replacement actions, and the established dark navy design.
+- **Recovery presentation:** Use clear, nontechnical messages with an optional technical details section, visible retry or replacement actions, and the approved light editorial design.
 - **Outdated report:** Any document or applicant-context change immediately marks the previous report **Outdated — Reanalysis Required**. Retain it for reference through reanalysis and failure, without presenting it as current or verified for revised inputs. Offer **Run Comparison Again**; replace it only after successful reanalysis.
 - **Active session:** Preserve inputs during errors and retries within the active browser session. Accounts and permanent document storage are not required.
 - **Missing or ambiguous evidence:** Explicitly identify what cannot be verified; do not invent evidence or assert an unsupported agreement or contradiction.
@@ -309,7 +318,7 @@ These are requirements for later development validation, not claims that the app
 
 - Verify all first-screen, navigation, upload, form, progress, dashboard, findings, evidence, error, outdated-report, and clarification states at **375px, 768px, 1366px, and 1920px**.
 - All controls remain functional and readable; there are no overlaps, clipped content, tiny text, or unwanted horizontal scrolling. Touch controls are comfortable; keyboard focus is visible; color contrast is accessible.
-- The dark navy theme with violet/cyan accents remains visually consistent. Animations stay smooth and minimal; visual effects do not obscure content or state.
+- The light ivory/emerald theme with restrained terracotta accents remains visually consistent. Animations stay smooth and minimal; visual effects do not obscure content or state.
 
 ### Empty Results, Verification, and Privacy
 
@@ -339,7 +348,7 @@ Source: `scope.md > Three Testable Demonstration Cases` and `What "Working" Look
 
 ## Product Decisions
 
-- Use a polished document intelligence identity, with dark navy and restrained violet/cyan accents, to communicate professionalism and trust.
+- Use a polished editorial document-review identity, with ivory surfaces, charcoal text, emerald actions and restrained terracotta accents, to communicate professionalism and trust.
 - Take inspiration from Linear and modern SaaS interfaces while preserving a distinct RuleGuard AI identity.
 - Put purpose, document input, applicant context, and the comparison action on the first screen to keep the journey intuitive.
 - Arrange upload cards side by side on desktop and stacked on mobile.
