@@ -14,7 +14,6 @@ devpost/human-review-amendment.html
 devpost/human-review-amendment.md
 devpost/prd.html
 devpost/prd.md
-devpost/release/demo-script.md
 devpost/release/dependency-licenses.json
 devpost/release/hosted-test-plan.md
 devpost/release/publication-files.txt

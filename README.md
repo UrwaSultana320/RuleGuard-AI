@@ -24,9 +24,10 @@ implementation history. The private learner profile is excluded from Git.
 
 Release materials include the [security/release report](devpost/release/security-release-check.md),
 [hosted-test plan](devpost/release/hosted-test-plan.md),
-[Devpost copy for owner review](devpost/release/submission-description.md) and
-[2:45 demo script](devpost/release/demo-script.md). Hosted tests, video recording
-and public link verification remain to be performed. Offline fixtures do not
+[Devpost copy for owner review](devpost/release/submission-description.md).
+The demonstration video is being prepared separately; the project owner maintains
+the recording script privately. Hosted tests, video recording and public link
+verification remain to be performed. Offline fixtures do not
 establish live AI accuracy.
 
 ## Devpost Learn Skill Pack
@@ -46,8 +47,8 @@ The six stages under `agent/skills/` come from the official
 5. [5-build](agent/skills/5-build/) — build and verify in steps:
    [build checklist](devpost/checklist.md) and [app map](devpost/app-map.html).
 6. [6-ship](agent/skills/6-ship/) — prepare the demo and publication:
-   [release checklist](devpost/release/release-checklist.md) and
-   [demo script](devpost/release/demo-script.md).
+   [release checklist](devpost/release/release-checklist.md). The project owner
+   maintains the recording script privately while preparing the separate video.
 
 The local `SKILL.md` files retain minor YAML line-wrapping and blank-line
 differences from upstream; their metadata meaning and workflow instructions

@@ -14,9 +14,10 @@ and authorized preparation only. New Gemini usage: **0**; cumulative: **40**.
   in [security-release-check.md](security-release-check.md).
 - [x] Vercel Hobby configuration, private environment-variable names, safe first
   deployment and quota/shutdown instructions in [DEPLOY.md](../../DEPLOY.md).
-- [x] [Hosted-test plan](hosted-test-plan.md), [submission description](submission-description.md)
-  and [2:45 demonstration script](demo-script.md) prepared with honest fixture/live
-  distinctions. No video or hosted verification is claimed complete.
+- [x] [Hosted-test plan](hosted-test-plan.md) and [submission description](submission-description.md)
+  prepared with honest fixture/live distinctions. The project owner maintains the
+  recording script privately; the demonstration video is being prepared separately.
+  No video or hosted verification is claimed complete.
 
 ## Still requires owner action or separate approval
 
@@ -40,7 +41,7 @@ and authorized preparation only. New Gemini usage: **0**; cumulative: **40**.
 
 ## Fastest safe submission route
 
-1. Review the prepared copy and script while authorizing the public GitHub repository.
+1. Review the prepared copy and the owner's private recording script while authorizing the public GitHub repository.
    Publish the inspected local release, confirm license detection and public access.
 2. Record the local application immediately using the truthful mode in the script;
    upload and verify the public video. Do not block required assets on optional hosting.
