@@ -29,6 +29,32 @@ Release materials include the [security/release report](devpost/release/security
 and public link verification remain to be performed. Offline fixtures do not
 establish live AI accuracy.
 
+## Devpost Learn Skill Pack
+
+The six stages under `agent/skills/` come from the official
+[Devpost Learn Skill Pack](https://github.com/challengepost/learn-ai-basics)
+(upstream commit `a0f065781873e8a7ed9a9a705a8dafa6a0810439`):
+
+1. [1-start](agent/skills/1-start/) — introduce the idea and learning context.
+   The resulting learner profile remains private and excluded from Git.
+2. [2-scope](agent/skills/2-scope/) — define the proof of concept:
+   [scope](devpost/scope.md).
+3. [3-prd](agent/skills/3-prd/) — define product behavior:
+   [product requirements](devpost/prd.md).
+4. [4-spec](agent/skills/4-spec/) — agree on the technical plan:
+   [technical specification](devpost/spec.md).
+5. [5-build](agent/skills/5-build/) — build and verify in steps:
+   [build checklist](devpost/checklist.md) and [app map](devpost/app-map.html).
+6. [6-ship](agent/skills/6-ship/) — prepare the demo and publication:
+   [release checklist](devpost/release/release-checklist.md) and
+   [demo script](devpost/release/demo-script.md).
+
+The local `SKILL.md` files retain minor YAML line-wrapping and blank-line
+differences from upstream; their metadata meaning and workflow instructions
+are unchanged. Templates and references match upstream byte for byte.
+The pack is MIT-licensed, Copyright (c) 2026 Devpost; the complete upstream
+notice is preserved in [the Skill Pack license](agent/skills/LICENSE).
+
 ## Admissions comparison scope
 
 Academic eligibility/GPA/prerequisites, English tests/exemptions, apostille/attestation/notarization/translations, transcripts/certificates, SOP/CV/references, deadlines/submission stages, fees/financial requirements and any other evidence-supported admissions topic are in scope. The topic list is open, not a whitelist. Compare degree, programme, applicant category, intake, exception, stage and institutional scope before suggesting a conflict.
