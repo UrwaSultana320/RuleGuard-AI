@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/gemini-unavailable";
 import { displayAssessments } from "../fixtures/degree";
 import { mkdir } from "node:fs/promises";
+import { quoteDisplay } from "@/shared/finding-display";
 
 // Offline browser verification: permit the local app only, never cloud services.
 test.beforeEach(async ({ page }) => {
@@ -13,9 +14,11 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("actual backend reads both synthetic sources, retains work on AI-disabled error, and clears on refresh", async ({
+test("actual backend reads both synthetic sources, retains work when the server key is missing, and clears on refresh", async ({
   page,
+  mockGeminiUnavailable,
 }) => {
+  await mockGeminiUnavailable();
   await page.goto("/");
   await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page.getByRole("button", { name: "Use synthetic samples" }).click();
@@ -32,8 +35,8 @@ test("actual backend reads both synthetic sources, retains work on AI-disabled e
   await expect(
     page.getByRole("heading", { name: "Full extracted sources" }),
   ).toBeVisible();
-  await expect(page.locator(".notice[role=alert]")).toContainText(
-    "no AI report was generated",
+  await expect(page.locator(".notice[role=status]")).toContainText(
+    "this server is not configured",
   );
   await page
     .locator(".source-tabs")
@@ -53,12 +56,14 @@ test("actual backend reads both synthetic sources, retains work on AI-disabled e
 
 test("frontend validates PDF pages and the actual backend extracts all approved Waikato pages with no AI", async ({
   page,
+  mockGeminiUnavailable,
 }) => {
   test.skip(
     !existsSync("tmp/pdfs/waikato-pg-english-2026.pdf") ||
       !existsSync("tmp/pdfs/waikato-college-english-2026.pdf"),
     "Download official Waikato sources as described in the README to run this PDF integration test.",
   );
+  await mockGeminiUnavailable();
   await page.goto("/");
   await page.getByRole("radio", { name: new RegExp("^" + "Master's") }).check();
   await page
@@ -192,20 +197,20 @@ test("review/evidence/email controls and stale-state behavior work with explicit
   await page.getByRole("button", { name: "Accept", exact: true }).click();
   await expect(page.getByText("Accepted by you")).toBeVisible();
   await page.getByRole("button", { name: "Reject", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Draft Email", exact: true }),
-  ).toBeDisabled();
-  await expect(page.locator(".metrics").first()).toContainText("1");
+  await page.locator(".clarification > summary").click();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
+  await expect(page.locator(".results-summary").first()).toContainText("1");
   await page.getByRole("button", { name: "Uncertain", exact: true }).click();
-  await page.getByRole("button", { name: "Draft Email", exact: true }).click();
-  await expect(
-    page.getByRole("link", { name: "Open editable email draft" }),
-  ).toHaveAttribute("href", /^mailto:/);
-  if ((await page.locator(".evidence").getAttribute("open")) === null)
-    await page.locator(".evidence summary").click();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
+  await page.getByRole("button", { name: "Accept", exact: true }).click();
+  await page.getByRole("button", { name: "Draft Clarification Email", exact: true }).click();
+  await expect(page.getByText(/A safe draft could not be prepared/)).toBeVisible();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open in mail app" })).toHaveCount(0);
+  await page.locator(".finding-details > summary").click();
   await expect(
     page
-      .getByText("Source match verified · reasoning remains preliminary")
+      .getByText("Source not verified · Lines 1–1")
       .first(),
   ).toBeVisible();
   await page.getByRole("link", { name: "Edit inputs" }).click();
@@ -365,8 +370,7 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
     })
     .click();
   await expect(page).toHaveURL("/results");
-  if ((await page.locator(".evidence").getAttribute("open")) === null)
-    await page.locator(".evidence summary").click();
+  await page.locator(".finding-details > summary").click();
   await expect(
     page.getByText("Conditions: not established", { exact: true }),
   ).toHaveCount(2);
@@ -383,11 +387,13 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
     saved.findings[0].unknowns[0],
   );
   const quotes = page.locator(".evidence blockquote pre");
-  for (let i = 0; i < 2; i++)
-    expect(await quotes.nth(i).textContent()).toBe(
-      manifest.sources[i].passages[0].text,
-    );
-  await page.getByRole("button", { name: "Draft Email", exact: true }).click();
+  for (let i = 0; i < 2; i++) {
+    const excerpt = quoteDisplay(manifest.sources[i].passages[0].text, "");
+    expect(await quotes.nth(i).textContent()).toBe(excerpt.before + excerpt.highlight + excerpt.after);
+  }
+  await page.locator(".clarification > summary").click();
+  await page.getByRole("button", { name: "Accept", exact: true }).click();
+  await page.getByRole("button", { name: "Draft Clarification Email", exact: true }).click();
   for (const width of [320, 375, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     const layout = await page.evaluate(() => ({
@@ -411,7 +417,10 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
           44,
         );
     }
-    await expect(page.getByLabel("Email draft text")).toBeVisible();
+    // Frozen historical report predates backend sourceVerified markers. Do not
+    // upgrade it in the browser or weaken current email evidence requirements.
+    await expect(page.getByText(/A safe draft could not be prepared/)).toBeVisible();
+    await expect(page.getByLabel("Email body")).toHaveCount(0);
     if (width === 375 || width === 1366) {
       await page.screenshot({
         path: `test-results/quality-replay-${width}.png`,
@@ -426,16 +435,13 @@ test("historical S01 findings with an explicitly constructed uncertain gate pres
   const sourceRegion = page.getByRole("region", {
     name: "Extracted source text",
   });
+  await page.locator(".full-source-disclosure > summary").click();
   await sourceRegion.focus();
   await expect(sourceRegion).toBeFocused();
   await page.getByRole("button", { name: "Reject", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Draft Email", exact: true }),
-  ).toBeDisabled();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
   await page.getByRole("button", { name: "Uncertain", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Draft Email", exact: true }),
-  ).toBeEnabled();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
   await page.getByRole("link", { name: "Edit inputs" }).click();
   await page.getByLabel("Intake", { exact: true }).fill("2028");
   await page.getByRole("link", { name: "View outdated report" }).click();

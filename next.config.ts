@@ -5,6 +5,7 @@ const config: NextConfig = {
   serverExternalPackages: ["pdfjs-dist"],
   outputFileTracingIncludes: {
     "/api/compare": [
+      "./public/samples/*synthetic-*.txt",
       "./node_modules/pdfjs-dist/standard_fonts/**/*",
       "./node_modules/pdfjs-dist/cmaps/**/*",
       "./node_modules/@napi-rs/canvas/**/*",

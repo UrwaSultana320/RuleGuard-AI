@@ -1,0 +1,16 @@
+# Keep private local material out of Vercel source uploads.
+.git
+.env
+.env.*
+!.env.example
+.vercel
+.agents
+.claude
+agent
+evaluation
+tmp
+devpost/learner-profile.md
+devpost/human-review-changes.diff
+test-results
+playwright-report
+coverage

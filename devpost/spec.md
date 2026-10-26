@@ -1,11 +1,81 @@
 ---
 doc: spec
 status: approved
-updated: 2026-10-20
+updated: 2026-10-26
 approval_gate: approved-with-documented-hobby-uncertainty
 ---
 
 # RuleGuard AI — Technical Specification
+
+## Admissions Comparison Expansion — 2026-10-26
+
+This approved local change supersedes earlier English-only comparison boundaries and the deferral of other admissions requirement domains. The original English-language benchmark remains a historical demonstration, with its recorded failures unchanged. The current product scope is comparison across admissions requirements supported by two uploaded university documents for a selected Bachelor's or Master's degree, programme, intake and applicant category.
+
+Analyze academic eligibility, GPA and prerequisites; English tests and exemptions; apostille, attestation, notarization and translations; transcripts and academic certificates; SOP, CV and recommendation letters; application deadlines and submission stages; application fees and relevant financial evidence; and any other supported admissions requirement. These examples are not a fixed category whitelist. Scholarship selection and unrelated policy advice remain outside this admissions scope.
+
+Identify applicable sections before comparison. Preserve source-specific degree, programme, applicant category, intake, exception and submission-stage conditions. Application, conditional offer, enrolment and original-document verification can have compatible differences. Same-stage apostille required versus explicitly not required can be a potential contradiction; silence does not establish a waiver. Compare GPA scales and calculation bases without conversion; compare deadlines for the same intake and event, preserving stated time zones. Different institutional scopes must not be assumed to form a common contradictory policy. Decisive unknown selectors require Insufficient Evidence, with the precise missing information stated.
+
+Retain Potential Contradiction, Different Applicable Conditions, Consistent and Insufficient Evidence, exact source-backed quotations, full-source inspection and human review. Accepted clarification-worthy findings and explicitly included Uncertain findings feed the improved deterministic email workflow. Compatible stage differences and consistent findings do not automatically become clarification issues.
+
+The implementation retains one combined reasoning response, existing countTokens preflight, bounded retries/fallback, quota protection, file/page/text/token limits, strict schema, degree gates, citation reconstruction and session privacy. It adds no AI call, institution rule, canned result, persistence or paid dependency. The prompt hash invalidates prior synthetic-example cache entries automatically. Gemini usage remains 40; no live verification, deployment, publication, billing or Devpost submission is authorized by this change.
+
+Offline fixtures verify extraction, transport, contracts, evidence identity, declared applicability safeguards, review and email behavior across these topics. Authored expected model outputs are not measured Gemini reasoning. Genuine broader extraction/classification, exception reconciliation, stage interpretation and completeness remain unverified. The backend checks references and structural consistency; it cannot independently prove semantic support or detect a stage mismatch that the model fails to disclose. Passage-sized quotations may include neighbouring requirements and produce long drafts; they retain exact source wording. Dense multi-topic output can hit the existing 8192-token limit and must fail as incomplete rather than silently truncate. No complete coverage, guaranteed accuracy or admissions eligibility is claimed.
+
+
+### Implementation audit and release impact
+
+The pre-expansion src/server/prompt.ts explicitly instructed Gemini to compare English-language proficiency only and used an English-evidence extraction example. The scope and PRD explicitly excluded other admissions domains; page metadata advertised English comparison. These were real restrictions, despite the broader product name. The historical English sample/quality suite did not verify other admissions topics. The professional email upgrade was already completed and mechanically verified before this work (see email-upgrade-report.md).
+
+The PDF/TXT extractor sends all supported readable text, split into approximately 900-character line-preserving passages. It has no English keyword filter or admissions topic selection. Long individual lines can exceed the passage target; unreadable PDFs, unsupported formats and over-limit inputs fail explicitly. The provider sends every passage; one combined reasoning response supplies degree assessments, rules, coverage and findings. Token-count preflight and the existing bounded retry/fallback attempts are separate provider requests, not a newly added reasoning pipeline.
+
+The strict response schema uses free-text requirements/topics, cited scope/conditions/exceptions and four classifications. It has no language-test-only fields or topic enum. Evidence reconstruction checks source and passage identity, same-source references, all-passage accounting, complete status, supported degree handling and structural classification consistency. It does not verify that free-text claims follow semantically from a cited passage, independently find omissions or prove the model's classification. Different stages are preserved in existing scope/condition clauses rather than a new stage field; missed or falsely declared stage alignment remains a model risk. A stronger independent semantic verifier would require a separately approved design and evaluation, not weakened validation.
+
+The dashboard, review state, finding summaries, quote emphasis and email input are topic-neutral. Sentence handling uses English locale but does not filter requirements by subject. The new email builder already uses generic admission wording, registry-checked quotations and explicit uncertainty inclusion. Its conservative content safety checks can still refuse a source passage that contains disallowed metadata or institution wording; this change does not bypass them. Whole-passage quotations can repeat context or include neighbouring unselected issues, although only eligible reviewed findings become email issues.
+
+The runtime changes in this expansion are limited to prompt scope/instructions and page metadata. No schema migration, new model call, category whitelist, university-specific rule or validation relaxation was needed. New tests use authored synthetic responses and real extraction/buildReport; the API integration mocks the provider and quota service, and browser tests intercept the analysis transport. Separate public samples admissions-A.txt and admissions-B.txt exercise multiple topics without replacing the built-in English demonstration or entering its cache allowlist. No saved historical benchmark result was relabeled as a success.
+
+Release recommendation: freeze further architecture changes for the October 26 submission. The local evidence-review workflow can demonstrate the broader contract with clearly labeled offline tests; comprehensive Gemini reasoning accuracy and complete coverage remain unverified. Existing S06, S09 and Waikato failures still apply. Do not claim a fully verified comprehensive comparison engine or final public-release readiness. Hosted parser/runtime verification and the owner's final review remain separate release work; no deployment or submission is performed here.
+
+### October 26 local release verification
+
+Node 24.19.0: 245/245 Vitest unit/integration tests passed across 17 files, including 27 admissions contract/sample regressions and the additional admissions-wide API integration. 28/28 Playwright tests passed against the local production app at 127.0.0.1:3011, including the new multi-topic review/email flow. There were no skipped cases in either run. Browser transport/provider outputs were intercepted or AI was disabled; no genuine Gemini request was made. Cumulative usage remains 40.
+
+Lint, TypeScript checks and the production build passed. The self-contained PDF trace and client-secret checks passed (534 traced parser files; 19 client/static HTML artifacts scanned). Canonical scope/PRD/spec HTML articles were regenerated from their Markdown while retaining companion CSS and scripts. Existing Vite future-configuration and Playwright color-environment warnings are non-fatal. These checks establish local workflow regressions, not hosted behavior or semantic model accuracy.
+
+Offline coverage includes same-stage apostille disagreement, compatible apostille and deadline stages, GPA threshold disagreement and unestablished scale equivalence, certified versus uncertified transcripts, conflicting same-event deadlines, selected/mixed degree handling, conditional translation and English exemptions, missing recommendation evidence, unknown applicability, SOP, CV, prerequisites, notarization/attestation, fees, financial evidence and an unlisted portfolio/interview topic. Multi-category pairs retain all independent topics. Source forgery and missing passage accounting are still rejected. Review selection and explicit uncertainty inclusion are tested through the real email builder.
+
+## Approved Evidence-Backed Email Upgrade — 2026-10-26
+
+This is an approved MVP requirement change to the existing clarification handoff. It supersedes earlier email eligibility and direct-mailto wording only. Degree-aware comparison, the approved light editorial theme, source safeguards, session privacy and unrelated approved requirements remain in force. No additional Gemini request, paid service, public deployment, repository publication or Devpost submission is authorized. Cumulative Gemini usage remains 40.
+
+### Existing implementation and architecture change
+
+The previous shared TypeScript template was already deterministic; no LLM email call is being replaced. It included reviewed Consistent findings, required an acceptance before uncertainty inclusion, hardcoded English-language wording, emitted filenames/line references and extra placeholders, and automatically replaced edits when review choices changed. Replace this handoff in src/shared/clarification-email.ts and src/components/ClarificationEmail.tsx; preserve the existing Gemini comparison adapter, backend buildReport evidence checks and degree gates.
+
+### Input/output contracts
+
+EmailContext contains the current Report, per-finding Review choices, the complete report-bound Source registry, currentRevision, outdated and includeUncertain (default false). prepareEmailInput derives EmailInput with reportId/revision; applicant programme, intake and category; include_uncertain; and findings carrying id, topic, type (contradiction | missing_information | unclear_exception), status (accepted | uncertain), verifiedSummary, exact quotations with sourceId/passageId provenance, existingClarificationQuestion and supported applicability. Existing model explanations/questions are retained as context where appropriate, but free model prose is not treated as verified email claims. Questions use deterministic topic-specific wording to avoid importing unsupported conditions. Applicant holdings, approvals and shared document scope are never asserted.
+
+Output is strictly { subject: string, body: string }, validated by emailDraftSchema (Zod, nonempty fields, subject at most 240 characters). Single subjects use a topic-specific short question; unusually long topics use a concise admission-requirement question. Missing programme/intake/category are omitted without substitutes. No new endpoint, storage, provider request, dependency or model contract is needed.
+
+### Provenance and independent validation
+
+Eligibility requires explicit Accepted review, or Uncertain plus opt-in, and a clarification-worthy mapped category. Exclude other-degree/non-applicable rules, blocked gates and stale revisions. Different Applicable Conditions requires both a documented permissive exception and explicit unresolved conditions/question; compatible differences do not become email issues. Every quotation must have sourceVerified, match its rule/source, and resolve to the same ID/text/page/line span in the current backend-issued registry. Exact source words are used; leading standalone preparation headers, including a non-operative preparation scope heading, can be omitted only as a contiguous prefix, retaining operative scope/conditions/negations. Unsafe quotations are omitted; a contradiction still requires both source positions, and every included finding requires at least one safe quotation. A missing-information finding may use one source with no fabricated second block.
+
+validateClarificationEmail runs on every normal/fallback generated draft. It independently reconstructs eligibility and input from the current report/reviews/registry, parses output sections, checks problem-before-evidence ordering, one allowed question, exact per-finding/source quotation association, subject counts, numbering, introduction, uncertainty wording, closing and strict output schema. Source-derived problem statements and a closed set of conservative templates prevent arbitrary unsupported model assertions; patterns alone do not certify semantics. The final structure must match a permitted normal or fallback assembly with no extra claims. exactQuotation supports exact substrings and ordered explicit omission markers; the production builder uses contiguous quotations without generated ellipses. Literal source ellipses remain literal. Reordered or rewritten words are rejected.
+
+Content checks reject institution/tool/fixture wording, source filenames, known institution names from source preparation headers, internal source references, page/line identifiers, unsafe URLs, Markdown markers and unapproved placeholders. Do not alter a programme abbreviation merely because it contains AI. Required evidence containing unsafe wording cannot be rewritten; fail closed if no compliant evidence remains. Exact provenance does not prove semantic entailment, complete extraction, policy currency or authentic authorship. Arbitrary unmarked proper names cannot be universally identified from the current source contract; user review remains necessary, and this limitation must be disclosed in the development report rather than claiming a general named-entity verifier.
+
+### Safe fallback, diagnostics and draft state
+
+On normal validation failure, render a shorter deterministic explanation/question using the same exact verified evidence, then run the identical validator. If source preparation itself is invalid, no source-backed fallback can be assembled; fail closed. Never weaken required provenance, category, content or revision checks. Failure returns no draft and a recoverable message. Fixed diagnostics are EMAIL_STALE, EMAIL_INPUT, EMAIL_CONTENT, EMAIL_STRUCTURE and EMAIL_EVIDENCE. Only these constant codes may be logged; never applicant fields, document bodies, quotes, exception messages or credentials.
+
+Generation runs on the explicit button event. Bind a draft to a signature of current report, source snapshot, reviews, revision and uncertainty opt-in. Changed inputs hide the editor and disable copy/mailto; a prior draft is labeled outdated and read-only. Retain manually edited state until explicit replacement, with an inline Replace edited draft / Keep previous draft choice. Never automatically regenerate on review edits. Manual user-authored edits are not claimed to retain generated-draft provenance and are clearly presented for review. Render text through React escaping; only four exact label lines use strong elements in the optional preview. Textareas, clipboard and mailto contain plain text. Session memory only; no new persisted content or recipient lookup.
+
+### Local release note and verification boundary
+
+Approved October 26: professional evidence-backed clarification drafting replaces the previous email template behavior. New source/input/output validation and regression coverage are part of this local change. Exact final counts, example outputs and limitations are recorded in email-upgrade-report.md and checklist.md after verification. No separate changelog is introduced because this repository keeps release history in the specification/checklist. No Devpost submission write-up currently exists. Gemini cumulative usage remains 40; no new requests, publishing or deployment are authorized. Local visual/functional review is distinct from release approval.
+
 
 ## Approved Degree-Aware Revision — 2026-10-20
 
@@ -50,7 +120,7 @@ Successful processing produces preliminary AI suggestions requiring human review
 
 ## Approved Decisions and Boundaries
 
-- English-language proficiency for international Bachelor's and Master's applicants; exactly two readable PDF/TXT documents. MOI versus IELTS/TOEFL is evidence-led, not hardcoded.
+- Evidence-supported admissions requirements for Bachelor's and Master's applicants; exactly two readable PDF/TXT documents. MOI versus IELTS/TOEFL is evidence-led, not hardcoded.
 - Next.js, React, TypeScript; one application containing frontend and backend. The stack choice includes learning these technologies rather than staying fully within familiar C#/.NET.
 - Single combined AI call as the initial benchmark design. A three-call pipeline is considered only if benchmark evidence shows meaningful quality improvement. Preserve the same pipeline interface so changing the implementation does not require rewriting the UI or evidence system.
 - Application-controlled citations, independently tested from AI reasoning.
@@ -269,6 +339,8 @@ Preserve the five labels and map visible transitions to real work:
 Mark a phase complete only when its operation ends. Stages 3–5 may be brief; never add artificial delays. A generic activity indicator is sufficient; no fabricated completion percentage. Transport can deliver actual progress events without making additional AI calls.
 
 ### Dashboard, Evidence and Clarification
+
+Email generation, eligibility, rendering and stale-state behavior are governed by the October 26 upgrade above; earlier direct-mailto/reference wording in this section is superseded for generated emails only.
 
 Implements `prd.md > Screens and Layout > Results Dashboard`, `Evidence and Next Steps`, and `Empty Results`.
 

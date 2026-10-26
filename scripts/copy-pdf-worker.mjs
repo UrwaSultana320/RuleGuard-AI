@@ -8,6 +8,7 @@ const notices = [];
 for (const [name, licenseFile] of [
   ["next", "license.md"], ["react", "LICENSE"], ["react-dom", "LICENSE"],
   ["@swc/helpers", "LICENSE"], ["pdfjs-dist", "LICENSE"],
+  ["zod", "LICENSE"], ["caniuse-lite", "LICENSE"],
 ]) {
   const root = `node_modules/${name}`;
   const metadata = JSON.parse(await readFile(`${root}/package.json`, "utf8"));

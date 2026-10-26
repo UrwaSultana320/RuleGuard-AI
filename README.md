@@ -1,84 +1,179 @@
 # RuleGuard AI
 
-An actual Next.js application for preliminary English-language admissions requirement comparison. Genuine Gemini integration, source-bound evidence, applicant context, human review and clarification drafts. Not an official admissions service; findings and extraction can be wrong or incomplete.
+[MIT license](LICENSE) · [Release checklist](devpost/release/release-checklist.md) ·
+[Deployment guide](DEPLOY.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-## Approved Degree-Aware Revision — 2026-10-20
+Compare university admissions requirements in two public or synthetic PDF/TXT
+documents for a selected degree, program, intake and applicant category. Review exact
+source quotations, Accept/Reject/Uncertain findings, then prepare an editable clarification
+email from accepted findings that need clarification. Uncertain findings require explicit opt-in; compatible/consistent findings do not automatically qualify. Nothing sends automatically.
 
-Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
+See [DEPLOY.md](DEPLOY.md) for beginner Vercel Hobby deployment instructions.
 
-Select the degree explicitly before uploading two readable PDF/TXT documents; neither degree is preselected. Retain program, intake and applicant category. Examine the complete supported extracted content of both documents, not filenames, titles or isolated keywords. Display a separate preliminary applicability assessment for each source, with backend-reconstructed quotations and PDF page / TXT line references: applicable to selected degree, explicitly another degree, multiple degrees, general policy applicable to selected degree, or uncertain.
+## Release preparation — October 26, 2026
 
-A clear, exclusively other-degree document with supporting references blocks comparison and requires replacement; acknowledgment cannot override it. Weak, ambiguous or conflicting mismatch evidence is uncertain. Mixed-degree documents are accepted only where the selected branch is supported; compare selected-degree rules and applicable general rules, conditions and exceptions only. Inventory other-degree rules for coverage, but do not include them in comparison findings. A genuinely general policy needs no degree-specific title. Never inherit rules across degrees or assume every postgraduate statement applies to every Master's program.
+Feature development is frozen and the comprehensive admissions update is accepted
+for release preparation. Public GitHub publication, public deployment and any new
+Gemini requests require separate owner approval. Billing and Devpost submission
+have not been enabled/performed. Cumulative Gemini requests remain **40**.
 
-For uncertainty, show **Degree applicability could not be confirmed**, available evidence and missing information before revealing findings. Require an explicit acknowledgment and Continue action. Reuse the same validated response in session memory, without another AI call; mark the resulting preliminary report **Degree applicability unverified**. Scope, condition satisfaction and contradiction remain separate concepts. Unknown rule-degree scope yields Insufficient Evidence. Human review and acknowledgment do not certify correctness, completeness, official status, authenticity or publication currency.
+The Skill Pack planning documents are [scope.md](devpost/scope.md),
+[prd.md](devpost/prd.md) and [spec.md](devpost/spec.md). The
+[build checklist](devpost/checklist.md) and [app map](devpost/app-map.html) retain
+implementation history. The private learner profile is excluded from Git.
 
-Every degree or document edit invalidates the applicability decision, acknowledgment, previous comparison and related review decisions. Full extracted sources remain inspectable, without a guarantee of extraction fidelity. Preserve original quotes, four finding categories, dashboard totals for AI-identified findings only, Accept/Reject/Uncertain controls, clarification drafts, privacy/session handling, all upload limits, backend-only credentials and free-tier global quotas. Existing Master's-only samples remain labeled Master's; provide separately labeled Bachelor's samples rather than relabeling them.
+Release materials include the [security/release report](devpost/release/security-release-check.md),
+[hosted-test plan](devpost/release/hosted-test-plan.md),
+[Devpost copy for owner review](devpost/release/submission-description.md) and
+[2:45 demo script](devpost/release/demo-script.md). Hosted tests, video recording
+and public link verification remain to be performed. Offline fixtures do not
+establish live AI accuracy.
 
-Acceptance checks cover both matching degrees; opposite-only mismatches in either direction; mixed sections; general policy; uncertainty and explicit continuation; non-overridable mismatch; invalid/cross-source applicability references; stale degree edits; degree-specific conditions/exceptions; and retained Master's behavior. Offline tests verify implementation and guards, not live Gemini degree reasoning. The revised feature is not release-ready solely because offline tests pass; local UI review and separately authorized live validation remain outstanding.
+## Admissions comparison scope
 
-## Run locally
+Academic eligibility/GPA/prerequisites, English tests/exemptions, apostille/attestation/notarization/translations, transcripts/certificates, SOP/CV/references, deadlines/submission stages, fees/financial requirements and any other evidence-supported admissions topic are in scope. The topic list is open, not a whitelist. Compare degree, programme, applicant category, intake, exception, stage and institutional scope before suggesting a conflict.
 
-The October 21 visual revision uses a light editorial interface: ivory and white surfaces, charcoal text, emerald actions and restrained terracotta. Compact Compare/Findings navigation replaces the sidebar. Degree choices remain explicitly unselected; program examples adapt to the selection. Findings prioritize exact source quotations above clearly labeled AI interpretations, with native disclosures for applicability evidence and all existing review/email safeguards. This presentation revision does not change the backend, model, state, quotas, privacy or upload limits. Browser tests generate desktop/mobile screenshots in ignored `test-results/editorial-*.png`; dashboard captures use clearly labeled offline design fixtures, never runtime fallback reports.
+The prompt was broadened locally on October 26. Offline authored fixtures test handling across these categories; they do not verify Gemini reasoning or complete extraction. Existing English benchmark failures remain recorded in devpost/spec.md. No further Gemini calls were made (cumulative usage 40). Exact passage quotations can include neighbouring requirements and make emails long. Dense outputs still fail closed at the existing response limit. See the October 26 expansion in the planning documents and release notes in devpost/spec.md.
 
-Use Node 24 LTS and VS Code/PowerShell. The package engine is pinned to `24.x` to match the approved Vercel runtime:
+## Local setup
 
-```
-npm ci
+Additional synthetic uploads: [admissions-A.txt](public/samples/admissions-A.txt) and
+[admissions-B.txt](public/samples/admissions-B.txt), for Master's / Computing /
+September 2026 / International applicant. They contain illustrative GPA, apostille,
+transcript, deadline, CV/reference, translation and fee requirements. They are separate
+from the built-in English example and are not real university guidance. Uploading
+them in the live app would request AI analysis; this change was tested offline only.
+
+October 26 local checks: 245 unit/integration tests and 28 Playwright tests passed;
+lint, typecheck, production build, PDF trace and client-secret checks passed.
+
+1. Install Node.js 24 and open a terminal in this project folder.
+2. Run `npm ci`. Postinstall copies the pinned PDF.js browser worker and license notices.
+3. Copy `.env.example` to `.env.local` using your editor; keep it private and out of Git.
+4. Configure the server variables below for live AI, or leave Gemini empty for extraction only.
+5. Run `npm run dev` and open `http://127.0.0.1:3000`.
+
+For release review without API permission, explicitly leave all credential values
+empty. An existing private `.env.local` may already contain working credentials:
+do not rely on the historical `GEMINI_REQUESTS_ENABLED` flag. On PowerShell,
+start a credential-free process with:
+
+```powershell
+$env:GEMINI_API_KEY = ''
+$env:UPSTASH_REDIS_REST_URL = ''
+$env:UPSTASH_REDIS_REST_TOKEN = ''
+$env:GEMINI_FALLBACK_MODEL = ''
 npm run dev
 ```
 
-Open http://127.0.0.1:3000. The root `.env.local` is private and ignored. **Do not replace an existing file.** `.env.example` lists backend credential names. Gemini calls default to disabled and require separate project-owner authorization before `GEMINI_REQUESTS_ENABLED=true` is configured. Never share keys in chat or commit them. Upstash uses its owned Free database with HTTPS/TLS, backend REST credentials and atomic global counters. No billing, trials or automatic upgrades.
+Without a Gemini key, extraction is available and comparison reports are unavailable.
+Normal live comparison requests may retry and consume more than two provider calls.
 
-The first local preview can read and inspect documents without contacting Google. If AI is disabled it displays a clear error and no generated findings. Runtime contains no canned-report fallback. The real adapter makes one token-count request and one combined generation request per comparison, each reserved separately, with no automatic retry. These **two external requests require authorization** before a live smoke test. A working UI is not evidence of successful deployed or live AI operation.
+Required for live analysis:
 
-## Tests
+- `GEMINI_API_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
 
-```
+Optional:
+
+- `GEMINI_FALLBACK_MODEL`
+
+Use the HTTPS REST URL and read/write token from Upstash. All variables are server-only;
+never add `NEXT_PUBLIC_`. A configured Gemini key enables actual calls, using the primary
+model `gemini-3.1-flash-lite`. The optional fallback must be available to your account.
+Live AI fails closed without working Redis quota protection. No enable flag is needed.
+
+## Checks and production start
+
+```text
 npm run typecheck
 npm run lint
 npm test
 npm run build
-npm run test:e2e
+node scripts/verify-release-trace.mjs
+node scripts/verify-client-secrets.mjs
+npm run start
 ```
 
-Run the local dev server before browser tests. To test a separate local production server, set `PLAYWRIGHT_BASE_URL` to its loopback URL. Playwright uses installed Windows Chrome by default; set `PLAYWRIGHT_CHROME_PATH` for another installed Chromium executable, or adapt the test configuration for your platform. Unit/integration tests prohibit real upstream requests; browser report tests explicitly intercept test-only outputs. Those fixtures are never available through the application. The Waikato extraction tests use the locally retained research PDFs; synthetic samples work without them. Optional quality tests replay the privately saved synthetic smoke response from ignored `tmp/smoke40-*.json` files; they skip explicitly when those files are absent. The browser replay intercepts test transport only and is never an application feature. No saved response, credential or private diagnostic file belongs in Git. Production: `npm run build`, then stop the dev server and `npm start`.
+Run `npm run test:e2e` in another terminal against the running app. Windows Chrome is
+the default; local-only `PLAYWRIGHT_CHROME_PATH` selects another installed Chromium
+executable and `PLAYWRIGHT_BASE_URL` selects another local port. Do not set these in
+Vercel. Unit tests deny external fetches; browser tests mock Gemini or use the real
+extraction handler with AI disabled. No test authorizes real provider calls. Optional
+research-PDF and historical-response tests skip when ignored local fixtures are absent.
+All source/test files must be UTF-8 without BOM; a unit test checks for encoding damage.
 
-## Boundaries and operation
+## Deployment and limits
 
-Two readable PDF/TXT files, 2,000,000 bytes/file, 15 pages/PDF, 4,100,000 bytes for the entire upload. Complete supported input only; no silent truncation. Current conservative operating gates are 60,000 extracted characters and 20,000 full input tokens; oversized/dense input produces an explicit limitation. PDF extraction preserves page indexes and full canonical text but cannot guarantee layout fidelity or missing-word detection.
+Vercel uses Node.js 24 and Fluid Compute (`vercel.json`). `/api/compare` declares a
+300-second maximum. The entire multipart request is limited to 4,100,000 bytes, below
+Vercel's 4.5 MB cap. Files are capped at 2,000,000 bytes and PDFs at 15 pages. There is
+no OCR. Corrupt, encrypted, unsupported or unreadable inputs are rejected server-side.
+Filename extension, PDF signature/parsing, strict UTF-8 text, sizes and page limits are
+checked on the server. The full pair is capped at 60,000 extracted characters and
+20,000 full input tokens; no content is silently truncated.
 
-Conditions and exceptions are AI-proposed groupings, not verified facts. Empty structured lists display **not established** rather than implying absence; all groupings require source review. Prohibitions must not be interpreted as exceptions. Unknown condition satisfaction is explained separately from policy applicability and any unverified AI uncertainty note. The generic prompt and schema descriptions reinforce these distinctions without adding inference calls or changing citation validation. These prompt changes have not been tested in a new live generation; offline rendering safeguards are verified independently.
+NDJSON stages and sources stream before the final report. Counting, generation, retries,
+optional fallback and backoff share a 210-second provider budget within the 240-second
+route operation budget. Retry-After is honored; retries require enough remaining time
+for a useful attempt and cannot reset the deadline. Slow requests may prevent fallback.
+Streaming does not extend Vercel's duration or request-size limit. See [DEPLOY.md](DEPLOY.md)
+for exact settings, budget details and hosted checks.
 
-AI suggestions require human review. Accept/Reject/Uncertain are independent review choices and cannot override evidence safeguards. Counts include rejected suggestions and are not exhaustive source coverage. Clarification email drafts are editable; nothing sends automatically. Inputs, sources, reports and reviews are browser-memory only; refresh/close clears them. Backend processing is temporary; no content logging, document database, permanent files or content in Redis. Google Free Tier data handling is separate and disclosed before acknowledgment.
+## Synthetic cache and quota protection
 
-Atomic Upstash guards: 100 generation attempts/provider Pacific day, 10 generation starts/rolling minute, 2 concurrent analyses, plus provider request/token limits. Failed/ambiguous upstream attempts count; uncertain completion conservatively retains a lease until expiry. Guard failure blocks Google calls. WAF is optional included-Free defense only. Actual hosted concurrency, lease behavior and judging-period availability remain release checks.
+Only the built-in synthetic-example action with exact server-checked bundled-file
+hashes qualifies for caching. The cache key hashes input bytes, every applicant field
+and prompt version. Verified synthetic analyses are stored in Upstash Redis with a
+24-hour expiry and may be reused after a later transient provider failure. Cached output
+is reverified against current sources and labeled as saved. Ordinary user uploads,
+including manually uploaded copies of the samples, never populate or read this cache.
 
-Use the clearly labeled synthetic sample button or download the official Waikato sources linked in `public/samples/README.txt`. The same pipeline processes samples and uploads; no university-specific answers are hardcoded. PDF.js worker is copied from the pinned dependency during installation; its license remains in the package. Model-selection benchmark files remain unchanged and the known Gemini 3.1 Flash Lite applicability/omission failures still apply.
+The optional cache falls back to bounded, instance-local memory if Redis is absent or
+unavailable. Memory disappears on cold starts. This does not bypass fail-closed Redis
+quota enforcement: 2 concurrent analyses, 100 generation attempts per provider Pacific
+day, 10 generation starts per rolling minute, plus provider request/token ceilings.
+Retries/fallback consume quota. Ambiguous provider failures retain leases until bounded
+expiry. Unrelated deployments should use separate databases for separate allowances.
 
-Only local implementation is authorized. Public deployment remains prohibited until separately approved; Vercel Hobby eligibility uncertainty was disclosed and accepted for planning, not certified by Vercel.
+## Privacy and limitations
 
-## Dependency audit
+Use public/synthetic documents and nonsensitive context only. Google receives the full
+supported extracted input under its own retention/Free Tier data-use terms. Ordinary
+user uploads are not persisted by this app. Browser inputs, reports and review choices
+are session-memory only; refresh/close clears them. Only synthetic example analyses
+are retained in the server cache. Application logs contain static error codes and
+provider-status metadata, not document text, applicant details, raw provider bodies or
+credentials. PDF parser diagnostics are disabled; do not enable body-capturing analytics.
 
-Fresh registry audit on October 20, 2026: `npm audit --omit=dev --json` reports **0 known production vulnerabilities**; the full audit reports **five high-severity package entries tracing to one unpatched development-tooling advisory**, [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), affecting `braces` through the Next ESLint/fast-glob/micromatch chain. `npm ls braces --omit=dev` contains no braces dependency. No application path sends uploaded text or applicant facts to glob/pattern tooling. This is a known residual development risk, not a production-runtime finding or a guarantee that every possible flaw is detected. Npm suggests a major downgrade to eslint-config-next 14.2.35; no compatible patched braces version is listed by the advisory. No forced downgrade, suppression or unnecessary upgrade was applied.
+Citation verification checks source identity, not complete extraction, correct policy
+interpretation, authenticity, currency, clause grouping or eligibility. Conditions and
+exceptions remain AI proposals. Unknown degree applicability requires acknowledgment;
+a supported exclusive mismatch blocks comparison. Human review choices do not override
+verification. Test fixtures are never runtime simulated results, and no university
+policy is hardcoded.
+
+Hobby is restricted to personal/non-commercial use. Confirm eligibility, provider model
+access and Upstash credentials. Local Windows checks cannot certify hosted Linux native
+PDF packaging or platform streaming; smoke-test both after deployment. Preparation does
+not publish the app or create external services.
+
+## Licenses and research notes
+
+Retain the PDF.js and third-party license notices generated by postinstall under
+`/licenses/pdfjs-LICENSE.txt` and `/licenses/third-party-notices.txt`. Native packages
+retain their supplied licenses. Official research-source links are in
+`public/samples/README.txt`; scope/specifications and known AI quality limitations are
+under `devpost/`. An October 20, 2026 audit recorded zero known production advisories
+and an unresolved development-tooling advisory; that historical result is not a fresh
+audit or guarantee. Offline npm audit does not provide an advisory security check.
 
 
-## Third-party licenses
+## Evidence-backed email drafting — October 26, 2026
 
-Installation preserves PDF.js's worker header and generates full browser-distribution license texts at `/licenses/pdfjs-LICENSE.txt` and `/licenses/third-party-notices.txt` from the installed pinned packages. They are regenerated by postinstall alongside the worker; do not remove them from the deployed public assets. Core packages use MIT/Apache-2.0 licenses. Optional native Sharp/libvips packages also contain LGPL-3.0-or-later components; retain their supplied licenses and obligations when redistributing native binaries. The application does not serve those binaries to browsers. Other transitive packages include BSD/ISC/0BSD and CC-BY-4.0 notices. This inventory is not a legal certification or a license choice for the project's own code.
+Review findings, optionally include uncertain findings, then click **Draft Clarification Email**. One deterministic subject/body covers all eligible current findings with the problem before exact registry-backed quotations and one clarification question per issue. The optional formatted preview bolds only the four section labels; editable text, clipboard and mailto stay plain text. Institution names, filenames, preparation metadata and internal source references are excluded. Missing information never receives invented evidence. No additional model request is made.
 
+Every generated normal/fallback draft passes source, selection, content, structure and revision validation. If no safe draft can be prepared, a recoverable error replaces export. Changed reviews or inputs make prior drafts read-only; edited drafts require deliberate replacement. A user can edit, copy or optionally enter a recipient and open their mail app; no sending integration is added. Long mailto drafts use full copy. Keep applicant and document information nonsensitive and review all wording before sending.
 
-## Release preflight
-
-Node 24.19.0 passed a clean cached `npm ci --offline --no-audit --no-fund` with engine-strict enabled, unit tests, lint, typecheck, production build and browser tests against the actual Node 24 production server. The isolated checkout contained no real credentials. After building, run `node scripts/verify-release-trace.mjs` to check that the comparison function includes PDF parser assets and native polyfills and traces no parent checkout or environment files. The Windows result does not certify Vercel's Linux native packaging.
-
-An offline `npm audit` is **not a vulnerability check**: the installed npm implementation skips advisory lookup in offline mode. The separately authorized registry review above is complete; its real production result is zero known vulnerabilities, while the development advisory remains. Do not use an offline zero as a release sign-off.
-
-Official Vercel documentation checked October 20, 2026 supports [Node 24.x](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions) and documents [4.5 MB request bodies, 300-second Hobby Fluid duration and 250 MB standard function bundles](https://vercel.com/docs/functions/limitations). The application uses 4,100,000-byte whole uploads, a 240-second operation timeout, a 300-second function declaration and a locally verified Windows trace of about 56.8 MB. These are compatible planning limits, not verification of the eventual project's Fluid settings or Linux bundle.
-
-Configure credentials as backend-only project [Secret environment variables](https://vercel.com/docs/environment-variables/sensitive-environment-variables), never NEXT_PUBLIC values. Keep Gemini disabled until a new live-call budget is explicitly approved. [Hobby WAF](https://vercel.com/docs/vercel-firewall/vercel-waf) documents up to three custom rules and three project IP blocks; the application does not require paid WAF or managed rules. Global quotas remain enforced in Upstash independently. [Hobby terms](https://vercel.com/docs/plans/hobby) restrict use to personal/non-commercial projects; the already accepted hackathon eligibility uncertainty remains unresolved by these docs. No account settings, environments or services were changed.
-
-## Degree-aware revision status — October 20, 2026
-
-Local implementation passed 62 unit/integration and 15 browser tests on Node 24, lint, typecheck, production build and PDF trace checks. Scope/PRD/spec and their HTML companions record the approved extension. See `devpost/spec.md > Degree-Aware Local Verification — 2026-10-20` for limitations and `devpost/checklist.md` for exact changed files. No dependency or service plan changed. The accepted development advisory remains a known risk.
-
-Select a degree first, then use the corresponding sample pair or upload two public/synthetic sources. AI remains disabled; local extraction and full-source inspection work, but no runtime simulated findings are provided. Degree-gate/dashboard browser tests explicitly intercept offline outputs; historical S01 replay adds a clearly test-only uncertain gate because the old genuine output predates the contract. Revised model reasoning and provider schema compatibility require separately authorized live validation. This is ready for local UI review, not final release approval. Additional Gemini requests and public deployment remain blocked; cumulative Gemini usage stays 40.
+See [the development report](devpost/email-upgrade-report.md) for examples, exact offline verification and limitations. Official requirements are synchronized in scope, PRD and spec with their HTML companions. This local work does not authorize deployment, publishing, billing, Devpost submission or additional Gemini requests; cumulative usage remains **40**. For credential-free local review, start Next with GEMINI_API_KEY, UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN explicitly empty in the process environment. The current runtime does not use the historical enable flag as an API block.

@@ -5,6 +5,50 @@ status: approved
 
 # RuleGuard AI — Product Requirements
 
+## Admissions Comparison Expansion — 2026-10-26
+
+This approved local change supersedes earlier English-only comparison boundaries and the deferral of other admissions requirement domains. The original English-language benchmark remains a historical demonstration, with its recorded failures unchanged. The current product scope is comparison across admissions requirements supported by two uploaded university documents for a selected Bachelor's or Master's degree, programme, intake and applicant category.
+
+Analyze academic eligibility, GPA and prerequisites; English tests and exemptions; apostille, attestation, notarization and translations; transcripts and academic certificates; SOP, CV and recommendation letters; application deadlines and submission stages; application fees and relevant financial evidence; and any other supported admissions requirement. These examples are not a fixed category whitelist. Scholarship selection and unrelated policy advice remain outside this admissions scope.
+
+Identify applicable sections before comparison. Preserve source-specific degree, programme, applicant category, intake, exception and submission-stage conditions. Application, conditional offer, enrolment and original-document verification can have compatible differences. Same-stage apostille required versus explicitly not required can be a potential contradiction; silence does not establish a waiver. Compare GPA scales and calculation bases without conversion; compare deadlines for the same intake and event, preserving stated time zones. Different institutional scopes must not be assumed to form a common contradictory policy. Decisive unknown selectors require Insufficient Evidence, with the precise missing information stated.
+
+Retain Potential Contradiction, Different Applicable Conditions, Consistent and Insufficient Evidence, exact source-backed quotations, full-source inspection and human review. Accepted clarification-worthy findings and explicitly included Uncertain findings feed the improved deterministic email workflow. Compatible stage differences and consistent findings do not automatically become clarification issues.
+
+The implementation retains one combined reasoning response, existing countTokens preflight, bounded retries/fallback, quota protection, file/page/text/token limits, strict schema, degree gates, citation reconstruction and session privacy. It adds no AI call, institution rule, canned result, persistence or paid dependency. The prompt hash invalidates prior synthetic-example cache entries automatically. Gemini usage remains 40; no live verification, deployment, publication, billing or Devpost submission is authorized by this change.
+
+Offline fixtures verify extraction, transport, contracts, evidence identity, declared applicability safeguards, review and email behavior across these topics. Authored expected model outputs are not measured Gemini reasoning. Genuine broader extraction/classification, exception reconciliation, stage interpretation and completeness remain unverified. The backend checks references and structural consistency; it cannot independently prove semantic support or detect a stage mismatch that the model fails to disclose. Passage-sized quotations may include neighbouring requirements and produce long drafts; they retain exact source wording. Dense multi-topic output can hit the existing 8192-token limit and must fail as incomplete rather than silently truncate. No complete coverage, guaranteed accuracy or admissions eligibility is claimed.
+
+
+## Approved Evidence-Backed Email Upgrade — 2026-10-26
+
+This is an approved MVP requirement change to the existing clarification handoff. It supersedes earlier email eligibility and direct-mailto wording only. Degree-aware comparison, the approved light editorial theme, source safeguards, session privacy and unrelated approved requirements remain in force. No additional Gemini request, paid service, public deployment, repository publication or Devpost submission is authorized. Cumulative Gemini usage remains 40.
+
+### Review-to-email journey
+
+1. Review exact evidence and select Accept, Reject or Uncertain independently of the comparison category.
+2. Optionally enable Include uncertain findings; it starts off and may enable an uncertain-only clarification request.
+3. Click Draft Clarification Email. Assemble one email from all eligible current findings. Consistent findings and compatible differences are excluded even if accepted. A documented exception with an unresolved condition and question may qualify as unclear_exception; Insufficient Evidence maps to missing_information or a documented unclear_exception, and Potential Contradiction maps to contradiction.
+4. Review and edit the subject/body, inspect the formatted preview, copy plain text, or optionally enter a recipient and open the mail app. No address is invented and nothing sends automatically. Long mailto URLs offer full copy instead of truncated evidence.
+5. Changed review choices, uncertainty inclusion, applicant details, degree, documents or report evidence invalidate the draft and remove current copy/mail actions. Preserve an edited previous draft for clearly labeled read-only reference; require an explicit Replace edited draft action before discarding edits. A new report begins a new draft session.
+
+### Required output and language
+
+For one finding, use programme and intake when known followed by a short accurate clarification question (fewer than 12 words where possible). For multiple findings use: programme, intake: clarification needed on n admission requirements. Count only included findings; omit unknown context naturally and avoid duplicate punctuation.
+
+Start exactly with Dear Admissions Team, then a natural applicant introduction and a brief request. For each finding, put The problem: before any evidence, then What the first document says: and What the second document says: only where exact verified quotations exist, followed by My question: and one specific question. Explain the two positions for contradictions without assuming shared applicability. Describe a gap in the available evidence for missing information, without claiming the entire policy is silent. Identify a documented exception and uncertain applicability for unclear exceptions. Request conditions for a permissive alternative only when evidence supports it. Number findings only when there is more than one. Uncertain findings add exactly: I may have misread this; please correct me if so.
+
+End with: I would be grateful for a written reply, as I will plan my application around your answer. Then Kind regards, followed by [Your full name] and Application reference: [if you have one]. These are the only permitted placeholders. The rendered preview bolds only the four labels above; clipboard and mailto use ordinary text without Markdown asterisks. Preserve legitimate programme abbreviations such as MSc AI. Aim for about 250 words for one finding and about 150 more per extra finding where exact evidence permits; never truncate operative conditions to meet a word target.
+
+Exclude institution names, filenames/extensions, source titles/URLs that leak prohibited content, fixture/debug identifiers, preparation headers, line/passage references, internal source labels, tool branding and confidence claims. Never rewrite words inside quotations. The generated email remains a preliminary handoff; user edits and admissions decisions require human review.
+
+### Empty states, failure and measurable acceptance
+
+No eligible findings means an explanatory empty state and disabled drafting. If required safe evidence is absent, or normal output validation fails, use a simpler deterministic fallback where verified inputs permit and revalidate with the same checks. If no safe fallback is possible, show: A safe draft could not be prepared. Review the source evidence and applicant details, then try again. Display/export no unsafe generated draft; record fixed diagnostic categories only.
+
+Offline acceptance requires: all three issue types; single and multiple finding counts/numbering; uncertain opt-in and uncertain-only selection; exclusion of Rejected/Pending/non-applicable/compatible findings; missing second evidence; exact/cross-source/altered quotations and ordered ellipses; metadata/placeholder/context-assertion rejection; fallback and fail-closed behavior; stale applicant/document/degree/review state; deliberate edited-draft replacement; plain clipboard/mailto text; and a complete desktop/mobile keyboard-operable Results journey. The S01 synthetic replay must verify the new subject/body without new model requests. A passing offline suite supports local review, not new model-accuracy or public-release claims.
+
+
 ## Approved Degree-Aware Revision — 2026-10-20
 
 Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
@@ -20,7 +64,7 @@ Every degree or document edit invalidates the applicability decision, acknowledg
 Acceptance checks cover both matching degrees; opposite-only mismatches in either direction; mixed sections; general policy; uncertainty and explicit continuation; non-overridable mismatch; invalid/cross-source applicability references; stale degree edits; degree-specific conditions/exceptions; and retained Master's behavior. Offline tests verify implementation and guards, not live Gemini degree reasoning. The revised feature is not release-ready solely because offline tests pass; local UI review and separately authorized live validation remain outstanding.
 
 
-Context-aware comparison of English-language proficiency requirements for international Bachelor's and Master's applicants, supported by verifiable evidence and visible uncertainty.
+Context-aware comparison of evidence-supported admissions requirements for international Bachelor's and Master's applicants, supported by verifiable evidence and visible uncertainty.
 
 Final product definition, approved by the learner on 2026-10-14. Markdown is canonical; `prd.html` is its offline visual review companion. All consequential product choices below come from the approved scope or the learner interview. The official Devpost Learn `3-prd` stage is complete. Its original handoff deferred `4-spec` and coding; final spec approval and local build authorization followed on October 20. The approved degree-aware revision above governs this controlled local extension.
 
@@ -123,7 +167,7 @@ Validate required fields and both uploaded documents before comparison. Show hel
 
 When intake or applicant category is unknown, compare using the available context. Never invent missing applicant details or assume a requirement applies. Clearly identify findings whose applicability cannot be determined. If missing information prevents a reliable conclusion, classify the finding as **Insufficient Evidence** and explain which applicant detail is needed.
 
-The demonstration remains English-language requirements for international Bachelor's and Master's applicants. These rules develop `scope.md > The Core Loop` and `Three Testable Demonstration Cases`, with learner decisions recorded on 2026-10-14.
+The historical demonstration uses English-language requirements; current comparison covers evidence-supported admissions requirements for Bachelor's and Master's applicants. These rules develop `scope.md > The Core Loop` and `Three Testable Demonstration Cases`, with learner decisions recorded on 2026-10-14.
 
 ### Context-Aware Comparison
 
@@ -199,6 +243,8 @@ The learner resolved the headline counting decision as follows:
 Observable acceptance criteria: the three classified comparison counts sum to AI-suggested requirements compared; Insufficient Evidence equals AI-suggested unresolved findings; adding the compared and unresolved totals produces AI-suggested topics assessed. No topic contributes to more than one primary category. No similarity percentages or unsupported AI confidence scores appear.
 
 ### Evidence and Next Steps
+
+The October 26 approved email upgrade above supersedes the original email interaction details below; evidence display and Copy Question behavior remain unchanged.
 
 Source: `scope.md > What "Working" Looks Like`.
 
@@ -310,6 +356,8 @@ These are requirements for later development validation, not claims that the app
 
 ### Clarification Handoff
 
+Current email behavior follows the October 26 approved upgrade above: only reviewed eligible findings, explicit drafting in the dashboard, then optional mail-app handoff. The original handoff bullets below are historical requirements superseded for email eligibility and draft entry.
+
 - Potential Contradiction and Insufficient Evidence findings whose review choice is not Rejected include a professional question, a short issue explanation, and relevant available document references.
 - **Copy Question** copies the displayed question; email text is also available to copy without a recipient address.
 - **Draft Email** opens the default email application with an editable, polite, concise subject/message explaining uncertainty without accusing the university of a mistake. No recipient is required and nothing is sent automatically.
@@ -391,13 +439,13 @@ Source: `scope.md > Three Testable Demonstration Cases` and `What "Working" Look
 
 Source: `scope.md > The POC Boundary`.
 
-One complete comparison journey for two official documents and applicant context, demonstrating English-language proficiency requirements. Validate genuine contradiction, different applicable conditions, and missing or ambiguous evidence using the approved demonstration cases, including program, intake, and applicant-category variations.
+One complete comparison journey for two official documents and applicant context, covering evidence-supported admissions requirements. Validate genuine contradiction, different applicable conditions, and missing or ambiguous evidence using the approved demonstration cases, including program, intake, and applicant-category variations.
 
 ## Deferred From the POC
 
 Source: `scope.md > Later` and `The POC Boundary`.
 
-Additional admission and scholarship requirement domains, scanned PDFs, images, Word documents, and website URLs remain deferred to keep the proof of concept focused.
+Scholarship selection, scanned PDFs, images, Word documents, and website URLs remain deferred. Other admissions requirement topics are now included when supported by the uploaded evidence.
 
 User accounts and permanent document storage are excluded from the MVP: preserving inputs during the active browser session is sufficient, per the learner decision.
 
@@ -423,7 +471,7 @@ The approved University of Waikato pair is the primary real-world benchmark cand
 
 Reviewed against the approved `scope.md` on 2026-10-14.
 
-- **The Unique Kernel / The POC Boundary:** Preserved. Comparison remains context-aware and evidence-led within English-language requirements for international Bachelor's and Master's applicants. MOI versus IELTS/TOEFL is illustrative, not hardcoded.
+- **The Unique Kernel / The POC Boundary:** Preserved. Comparison remains context-aware and evidence-led across supported admissions requirements for Bachelor's and Master's applicants. MOI versus IELTS/TOEFL is illustrative, not hardcoded.
 - **The Core Loop:** Preserved and made concrete through two uploads, applicant context, actual processing stages, a dedicated report, evidence review, and clarification handoff.
 - **What "Working" Looks Like:** Preserved through PDF page references, exact evidence, uncertainty, no automatic authority decision, and the one-minute demo criterion.
 - **Three Testable Demonstration Cases:** Fully restated as acceptance criteria, including separate program/intake/category variations. The approved Waikato pair and labeled synthetic fixtures supply the test inputs; benchmark failures remain recorded in spec.md.

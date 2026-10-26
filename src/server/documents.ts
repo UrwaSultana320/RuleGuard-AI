@@ -29,6 +29,7 @@ export async function extractDocument(file: File, id: string): Promise<Source> {
     const assets = path.join(process.cwd(), "node_modules/pdfjs-dist");
     const task = getDocument({
       data: bytes,
+      verbosity: 0, // Parser diagnostics must not echo untrusted document data.
       useSystemFonts: false,
       standardFontDataUrl:
         path.join(assets, "standard_fonts").replaceAll("\\", "/") + "/",

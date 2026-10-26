@@ -6,69 +6,82 @@ import { useSession } from "@/state/session";
 
 export function DegreeAssessments({
   assessments,
+  compact = false,
 }: {
   assessments: DegreeAssessment[];
+  compact?: boolean;
 }) {
   return (
-    <div className="degree-assessments">
+    <div className={`degree-assessments ${compact ? "degree-compact" : ""}`}>
       {assessments.map((a) => (
         <article className={`degree-card degree-${a.status}`} key={a.sourceId}>
-          <span className="preliminary-label">
-            Preliminary AI scope assessment
-          </span>
-          <h3>Document {a.sourceId}</h3>
-          <strong>{degreeLabels[a.status]}</strong>
-          <p>{a.explanation}</p>
-          {a.guardNotes.length > 0 && (
-            <div className="guard-note">
-              <p>
-                AI proposed: {degreeLabels[a.modelStatus]}. Scope remains
-                uncertain.
-              </p>
-              <ul>
-                {a.guardNotes.map((n) => (
-                  <li key={n}>{n}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {a.missingInformation.length > 0 && (
+          {compact ? (
+            <p className="degree-status-row"><strong>Document {a.sourceId}:</strong>{" "}
+              {a.status === "selected" || a.status === "general" || a.status === "multiple"
+                ? "Applicable" : degreeLabels[a.status]}
+            </p>
+          ) : (
             <>
-              <h4>Information to confirm</h4>
-              <ul>
-                {a.missingInformation.map((n) => (
-                  <li key={n}>{n}</li>
-                ))}
-              </ul>
+              <span className="preliminary-label">Preliminary AI scope assessment</span>
+              <h3>Document {a.sourceId}</h3>
+              <strong>{degreeLabels[a.status]}</strong>
             </>
           )}
-          <details className="degree-evidence">
-            <summary>
-              View applicability evidence{" "}
-              <span>
-                {a.evidence.length} cited passage
-                {a.evidence.length === 1 ? "" : "s"}
-              </span>
-            </summary>
-            {a.evidence.length ? (
-              a.evidence.map((e) => (
-                <blockquote key={e.id}>
-                  <p className="source-ref">
-                    {e.sourceName} ·{" "}
-                    {e.page === null
-                      ? `lines ${e.lineStart}–${e.lineEnd}`
-                      : `PDF page ${e.page}`}{" "}
-                    · {e.id}
-                  </p>
-                  <pre>{e.text}</pre>
-                </blockquote>
-              ))
-            ) : (
-              <p>
-                No supporting degree-scope passage was identified. Inspect the
-                full sources.
-              </p>
+          <details className="degree-details" open={compact ? undefined : true}>
+            <summary>Show applicability details · Document {a.sourceId}</summary>
+            {compact && <p>{degreeLabels[a.status]}</p>}
+            <p>{a.explanation}</p>
+            {a.guardNotes.length > 0 && (
+              <div className="guard-note">
+                <p>
+                  AI proposed: {degreeLabels[a.modelStatus]}. Scope remains
+                  uncertain.
+                </p>
+                <ul>
+                  {a.guardNotes.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </div>
             )}
+            {a.missingInformation.length > 0 && (
+              <>
+                <h4>Information to confirm</h4>
+                <ul>
+                  {a.missingInformation.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <details className="degree-evidence">
+              <summary>
+                View applicability evidence{" "}
+                <span>
+                  {a.evidence.length} cited passage
+                  {a.evidence.length === 1 ? "" : "s"}
+                </span>
+              </summary>
+              {a.evidence.length ? (
+                a.evidence.map((e) => (
+                  <blockquote key={e.id}>
+                    <p className="source-ref">
+                      {e.sourceName} ·{" "}
+                      {e.page === null
+                        ? `lines ${e.lineStart}–${e.lineEnd}`
+                        : `PDF page ${e.page}`}{" "}
+                      · {e.id}
+                    </p>
+                    <pre>{e.text}</pre>
+                  </blockquote>
+                ))
+              ) : (
+                <p>
+                  No supporting degree-scope passage was identified. Inspect the
+                  full sources.
+                </p>
+              )}
+            </details>
           </details>
         </article>
       ))}

@@ -1,11 +1,23 @@
 ---
 doc: checklist
 status: approved
-build_status: visual-revision-awaiting-review
+build_status: accepted-feature-frozen-release-preparation
 build_completed: 2026-10-20
 ---
 
 # RuleGuard AI Build Checklist
+
+## Current release authorization — October 26, 2026
+
+The owner explicitly accepted the comprehensive admissions-comparison update and
+authorized final 6-ship release preparation. Feature development is frozen: no
+new features or major refactoring. This supersedes earlier pending owner-review
+and 6-ship authorization notes below. It does not establish new live reasoning
+accuracy or a separate owner-operated browser test. Public repository publishing,
+public deployment and further Gemini requests each still need separate approval.
+No billing or Devpost submission is authorized. Cumulative Gemini usage remains 40.
+See `release/release-checklist.md` and `release/security-release-check.md` for the
+current release evidence and remaining external actions; older records are history.
 
 Build mode: fast implementation with an early local hands-on checkpoint and final review. Execution is explicitly authorized on October 20, 2026; the following order is derived from the approved scope/PRD/spec. The instruction to start implementation takes precedence over a further planning interview. This is not an authorization for Gemini calls or public deployment.
 
@@ -62,9 +74,9 @@ Current revision checkpoint: **degree-aware implementation mechanically verified
 
 ## Final Review
 
-- [ ] October 21 editorial visual revision reviewed by the project owner.
+- [x] Editorial revision accepted as part of the owner's October 26 acceptance of the comprehensive update for release preparation; no separate hands-on session claimed.
 
-- [ ] Degree-aware revision reviewed locally by the project owner; no live degree-reasoning validation or release approval is claimed.
+- [x] Degree-aware revision accepted as part of the owner's October 26 release-preparation approval; new live degree-reasoning and hosted validation remain unperformed.
 
 - [x] Final review complete — agreed fixes verified; project owner explicitly authorized completion conditional on passing final checks, now satisfied.
 
@@ -81,6 +93,8 @@ Reflection: No extra reflection question asked; the shared technical distinction
 Activity mode: Evidence-based recap, source-checked offline app map and running local app. Browser preview of file URLs was unavailable; no workaround or browser-rendered map check is claimed.
 
 ## Revisions
+
+- October 26 admissions expansion: user authorized a bounded local change after the verified email upgrade. Replaced the explicit English-only prompt scope with open-ended evidence-supported admissions comparison and stage/context guidance; retained the existing schema, verifier, one-response architecture and email workflow. Added multi-topic synthetic samples and offline unit/integration/browser coverage; updated scope/PRD/spec Markdown and HTML plus README. Local checks: 245 Vitest tests and 28 Playwright tests passed, lint/typecheck/build and release trace/client-secret checks passed. Authored fixture outputs do not establish Gemini reasoning accuracy. No new Gemini requests (usage remains 40), deployment, billing, publication or submission. Final owner review and hosted verification remain outstanding; no new release sign-off is inferred.
 
 - Local environment has Node 26.6.0; the documented deployment target remains Node 24 LTS. Verify compatibility and record actual runtime results rather than claiming parity before testing.
 
@@ -357,3 +371,20 @@ Exact visual revision files:
 Visual implementation checkpoint: `784c3b6`. Presentation and offline verification are complete; the project-owner visual-review box remains unchecked. This does not mark 5-build final review or release approval complete.
 
 Local review: http://127.0.0.1:3000/. The revised visual-review box and degree live-validation gate remain pending; no release approval is implied.
+
+
+## Professional Evidence-Backed Email Upgrade — 2026-10-26
+
+- [x] Approved local requirement change integrated into scope/PRD/spec and synchronized HTML companions, with original requirements and historical approvals retained.
+- [x] Existing deterministic email feature improved; no second model call or change to the Gemini comparison pipeline/backend source guards.
+- [x] Current accepted clarification-worthy findings only; uncertain findings require explicit opt-in, including uncertain-only requests. Rejected/Pending/compatible/non-applicable/outdated findings excluded.
+- [x] Professional one/multiple subject/body, exact safe evidence, issue-first explanation, one question, optional uncertainty sentence, required closing, approved placeholders and plain copy/mailto.
+- [x] Independent eligibility/provenance/content/structure/revision validation, same-check deterministic fallback, fixed privacy-safe diagnostics and fail-closed recoverable UI.
+- [x] Explicit drafting, formatted preview, retained manual editing, deliberate replacement and stale-export prevention; degree-aware/light-theme functionality preserved.
+- [x] Offline verification: **217/217 unit/integration tests (60 email regressions), 27/27 browser tests, no skipped tests**, typecheck, lint, production build, PDF trace and client-secret checks passed on Node 24.19.0. Browser tests used the actual local production server with credentials explicitly empty. No Gemini calls.
+- [x] 3/3 canonical Markdown/HTML companions synchronized; existing companion CSS/scripts unchanged. Updated README, app map, review-amendment companions, development report and local screenshots. No existing changelog/submission write-up required editing.
+- [ ] Project-owner visual and functional acceptance. Local implementation is ready to review, not marked publicly release-ready.
+
+See [email-upgrade-report.md](email-upgrade-report.md) for every updated documentation file, generated examples labeled SYNTHETIC TEST DATA outside email bodies, test details, initial failures/corrections and limitations. Institution-keyword/known-header-name detection is not a universal recognizer of arbitrary unmarked proper names; manual edits need review; drafts clear when leaving the composer; long evidence may exceed the word/mailto target. Existing live-reasoning, benchmark, tooling and hosted-only limitations remain disclosed.
+
+Local credential-free review server: http://127.0.0.1:3007/. Runtime API blocking uses explicitly empty Gemini/Redis credentials, not the obsolete enable flag. **0 new Gemini requests; cumulative usage 40.** No deployment, publication, billing, email sending, Devpost submission or additional feature development occurred or is authorized.

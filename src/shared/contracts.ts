@@ -25,7 +25,11 @@ export type Source = {
   pages: { number: number; text: string }[];
   passages: Passage[];
 };
-export type Evidence = Passage & { sourceName: string };
+export type Evidence = Passage & {
+  sourceName: string;
+  /** Issued by the backend only after resolving a validated source passage. */
+  sourceVerified?: true;
+};
 export type DegreeStatus =
   | "selected"
   | "other_degree"
@@ -77,12 +81,20 @@ export type Report = {
   findings: Finding[];
   limitations: string[];
   model: string;
+  savedExample?: true;
+};
+export type ProviderProgress = {
+  phase: "retry" | "fallback";
+  attempt: number;
+  delayMs: number;
 };
 export type Event = { requestId: string; revision: number } & (
   | { type: "stage"; stage: number }
+  | { type: "provider_progress"; progress: ProviderProgress }
   | { type: "sources"; sources: Source[] }
   | { type: "result"; report: Report }
   | { type: "applicability"; applicability: Applicability }
+  | { type: "info"; code: "AI_CONFIGURATION_MISSING"; message: string }
   | {
       type: "error";
       code: string;

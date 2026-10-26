@@ -5,6 +5,32 @@ status: approved
 
 # RuleGuard AI
 
+## Admissions Comparison Expansion — 2026-10-26
+
+This approved local change supersedes earlier English-only comparison boundaries and the deferral of other admissions requirement domains. The original English-language benchmark remains a historical demonstration, with its recorded failures unchanged. The current product scope is comparison across admissions requirements supported by two uploaded university documents for a selected Bachelor's or Master's degree, programme, intake and applicant category.
+
+Analyze academic eligibility, GPA and prerequisites; English tests and exemptions; apostille, attestation, notarization and translations; transcripts and academic certificates; SOP, CV and recommendation letters; application deadlines and submission stages; application fees and relevant financial evidence; and any other supported admissions requirement. These examples are not a fixed category whitelist. Scholarship selection and unrelated policy advice remain outside this admissions scope.
+
+Identify applicable sections before comparison. Preserve source-specific degree, programme, applicant category, intake, exception and submission-stage conditions. Application, conditional offer, enrolment and original-document verification can have compatible differences. Same-stage apostille required versus explicitly not required can be a potential contradiction; silence does not establish a waiver. Compare GPA scales and calculation bases without conversion; compare deadlines for the same intake and event, preserving stated time zones. Different institutional scopes must not be assumed to form a common contradictory policy. Decisive unknown selectors require Insufficient Evidence, with the precise missing information stated.
+
+Retain Potential Contradiction, Different Applicable Conditions, Consistent and Insufficient Evidence, exact source-backed quotations, full-source inspection and human review. Accepted clarification-worthy findings and explicitly included Uncertain findings feed the improved deterministic email workflow. Compatible stage differences and consistent findings do not automatically become clarification issues.
+
+The implementation retains one combined reasoning response, existing countTokens preflight, bounded retries/fallback, quota protection, file/page/text/token limits, strict schema, degree gates, citation reconstruction and session privacy. It adds no AI call, institution rule, canned result, persistence or paid dependency. The prompt hash invalidates prior synthetic-example cache entries automatically. Gemini usage remains 40; no live verification, deployment, publication, billing or Devpost submission is authorized by this change.
+
+Offline fixtures verify extraction, transport, contracts, evidence identity, declared applicability safeguards, review and email behavior across these topics. Authored expected model outputs are not measured Gemini reasoning. Genuine broader extraction/classification, exception reconciliation, stage interpretation and completeness remain unverified. The backend checks references and structural consistency; it cannot independently prove semantic support or detect a stage mismatch that the model fails to disclose. Passage-sized quotations may include neighbouring requirements and produce long drafts; they retain exact source wording. Dense multi-topic output can hit the existing 8192-token limit and must fail as incomplete rather than silently truncate. No complete coverage, guaranteed accuracy or admissions eligibility is claimed.
+
+
+## Approved Evidence-Backed Email Upgrade — 2026-10-26
+
+This is an approved MVP requirement change to the existing clarification handoff. It supersedes earlier email eligibility and direct-mailto wording only. Degree-aware comparison, the approved light editorial theme, source safeguards, session privacy and unrelated approved requirements remain in force. No additional Gemini request, paid service, public deployment, repository publication or Devpost submission is authorized. Cumulative Gemini usage remains 40.
+
+Evidence-backed clarification emails are an MVP deliverable: after reviewing findings, an applicant can prepare one professional, applicant-specific subject and complete editable body that explains the concern, presents exact available source quotations and asks a precise question for each eligible finding. This turns reviewed evidence into a useful request for a written admissions response. Drafts can address any admission-requirement topic already present in a validated report; this does not add a new comparison pipeline or extend the first English-language demonstration benchmark.
+
+Only explicitly Accepted clarification-worthy findings qualify by default. Uncertain findings require explicit opt-in, which defaults off. Rejected, Pending, non-applicable, outdated, Consistent and compatible Different Applicable Conditions findings do not automatically qualify. An unresolved documented exception may qualify; a compatible difference alone does not. Show a helpful empty state when nothing qualifies.
+
+Use a deterministic TypeScript builder and the existing report/source registry, without another model call. The output is one subject and body, using available programme/intake/category without invented facts. Verified quotations retain their wording; unavailable evidence is not fabricated. Institution names, uploaded filenames, internal references and preparation metadata are excluded from the email. Every generated draft and its simpler fallback must pass validation; otherwise show a recoverable failure. Keep the editable draft, copy and optional mail-app handoff, with no invented recipient and no automatic sending. Changes invalidate current export; edited drafts require deliberate replacement. All content stays in the active session.
+
+
 ## Approved Degree-Aware Revision — 2026-10-20
 
 Approved controlled extension of the previously completed 5-build: support international Bachelor's / Undergraduate and Master's / Postgraduate applicants. This explicitly supersedes the Master's-only boundary and fixed degree selection; unrelated approved requirements remain unchanged. Local implementation and offline tests are authorized. No additional Gemini requests, billing changes, public deployment, repository publication, Devpost submission or 6-ship are authorized. Cumulative Gemini usage remains 40.
@@ -61,14 +87,14 @@ These are planned input conditions and expected outcomes, not results from docum
 3. **Missing or ambiguous evidence:** A readable document omits MOI eligibility or does not clearly identify the applicable program, intake, or applicant category. **Pass:** identify what cannot be verified, cite the available relevant evidence, make the missing information or ambiguity explicit, and suggest a targeted clarification question. Do not invent evidence or assert an unsupported contradiction or agreement.
 
 ## The POC Boundary
-Demonstrate the core comparison capability through one narrow scenario: English-language proficiency requirements for international Bachelor's and Master's applicants. Use two official documents and applicant context covering program, intake, and applicant category. MOI acceptance versus IELTS/TOEFL requirements is an example to compare using the document evidence, not hardcoded product logic. Present exact supporting evidence and distinguish potential contradictions from differences in applicable conditions. The three demonstration cases validate this same journey; they do not add other requirement domains to the MVP.
+Demonstrate comparison across evidence-supported admissions requirements for Bachelor's and Master's applicants. English proficiency is one retained example. Use two official documents and applicant context covering program, intake, and applicant category. MOI acceptance versus IELTS/TOEFL requirements is an example to compare using the document evidence, not hardcoded product logic. Present exact supporting evidence and distinguish potential contradictions from differences in applicable conditions. The original demonstration cases validate the English example; the October 26 offline suite extends contract checks across other admissions topics.
 
 Accept two uploaded documents in PDF or TXT format. PDFs must contain readable text. Extract text while preserving source references, including page numbers for PDFs. If a document cannot be read, show a clear error rather than generate unreliable results. Prioritize accurate AI comparison and evidence-based explanations over broad format support.
 
-Include an in-session full extracted-text view and per-finding review choices. Keep the existing narrow English-language Bachelor's/Master's comparison scenario, two documents, and all format boundaries. Do not add a manual rules editor, document annotation platform, report history or additional requirement domains.
+Include an in-session full extracted-text view and per-finding review choices. Keep the Bachelor's/Master's selection, two documents and all format boundaries. Compare admissions topics supported by the evidence. Do not add a manual rules editor, document annotation platform or report history.
 
 ## Later
-Additional types of admission and scholarship requirements can be considered after the hackathon.
+Scholarship selection can be considered after the hackathon. Evidence-supported admissions topics are included by the October 26 expansion.
 
 Scanned PDFs, images, Word documents, and website URLs are future enhancements; they are excluded from this proof of concept to keep document support focused.
 

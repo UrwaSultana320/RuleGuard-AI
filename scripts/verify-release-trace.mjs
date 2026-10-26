@@ -10,6 +10,10 @@ for (const [label, predicate] of [
   ["PDF cmap assets", p => p.includes("/pdfjs-dist/cmaps/")],
   ["PDF Node canvas polyfills", p => p.endsWith("/@napi-rs/canvas/package.json")],
   ["PDF native canvas binding", p => /\/@napi-rs\/canvas-[^/]+\/[^/]+\.node$/.test(p)],
+  ["synthetic input A", p => p.endsWith("/public/samples/synthetic-A.txt")],
+  ["synthetic input B", p => p.endsWith("/public/samples/synthetic-B.txt")],
+  ["bachelor input A", p => p.endsWith("/public/samples/bachelor-synthetic-A.txt")],
+  ["bachelor input B", p => p.endsWith("/public/samples/bachelor-synthetic-B.txt")],
 ]) {
   if (!normalized.some(predicate)) throw new Error(`Release trace is missing ${label}`);
 }

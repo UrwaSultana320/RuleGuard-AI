@@ -109,6 +109,7 @@ describe("Complete extraction and reference validation", () => {
       ss[0].passages[0].text,
     );
     expect(r.findings[0].rules[0].evidence[0].page).toBe(null);
+    expect(r.findings[0].rules[0].evidence[0].sourceVerified).toBe(true);
   });
   it("rejects fabricated, cross-source, stale and missing coverage references", async () => {
     const ss = await sources();
@@ -166,22 +167,25 @@ describe("Complete extraction and reference validation", () => {
   );
 });
 describe("No accidental external requests and quota safety", () => {
-  it("never contacts Google while live calls are disabled", async () => {
-    vi.stubEnv("GEMINI_REQUESTS_ENABLED", "false");
+  it("never contacts Google or reserves quota when the key is missing", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "");
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const fetcher = vi.fn();
+    const reserve = vi.fn();
     vi.stubGlobal("fetch", fetcher);
     await expect(
       analyze(
         await sources(),
         applicant,
-        vi.fn(),
+        reserve,
         new AbortController().signal,
       ),
-    ).rejects.toThrow("not enabled");
+    ).rejects.toMatchObject({ code: "AI_CONFIGURATION_MISSING" });
+    expect(reserve).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("GEMINI_API_KEY is missing"));
     expect(fetcher).not.toHaveBeenCalled();
   });
   it("does not dispatch a generation when its atomic reservation fails; no automatic retries", async () => {
-    vi.stubEnv("GEMINI_REQUESTS_ENABLED", "true");
     vi.stubEnv("GEMINI_API_KEY", "test-only-not-a-real-key");
     const fetcher = vi
       .fn()
@@ -219,8 +223,9 @@ describe("No accidental external requests and quota safety", () => {
     expect(providerDay(new Date("2026-10-20T07:00:00Z"))).toBe("2026-10-20");
     expect(providerDay(new Date("2026-11-06T07:59:00Z"))).toBe("2026-11-05");
   });
-  it("streams full sources and an honest disabled-AI error with zero upstream calls", async () => {
-    vi.stubEnv("GEMINI_REQUESTS_ENABLED", "false");
+  it("streams full sources and neutral missing-configuration information with zero upstream calls", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "");
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const fetcher = vi.fn();
     vi.stubGlobal("fetch", fetcher);
     const form = new FormData();
@@ -246,9 +251,11 @@ describe("No accidental external requests and quota safety", () => {
     expect(events.some((e) => e.type === "sources")).toBe(true);
     expect(events.some((e) => e.type === "result")).toBe(false);
     expect(events.at(-1)).toMatchObject({
-      type: "error",
-      code: "AI_NOT_ENABLED",
+      type: "info",
+      code: "AI_CONFIGURATION_MISSING",
     });
+    expect(events.some((e) => e.type === "error")).toBe(false);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("GEMINI_API_KEY is missing"));
     expect(fetcher).not.toHaveBeenCalled();
   });
   it("rejects cross-origin submissions before reading documents", async () => {
@@ -261,4 +268,37 @@ describe("No accidental external requests and quota safety", () => {
     );
     expect(response.status).toBe(403);
   });
+});
+
+it("runs configured Gemini through the route without the obsolete flag and keeps credentials private", async () => {
+  const key = "test-only-gemini-secret";
+  const token = "test-only-redis-secret";
+  vi.stubEnv("GEMINI_API_KEY", key);
+  vi.stubEnv("GEMINI_REQUESTS_ENABLED", "false");
+  vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://test-only.upstash.io");
+  vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", token);
+  const ss = await sources();
+  const fetcher = vi.fn(async (url: string | URL, options?: RequestInit) => {
+    if (String(url).includes("test-only.upstash.io")) return Response.json({ result: [1, 0] });
+    expect(new Headers(options?.headers).get("x-goog-api-key")).toBe(key);
+    if (String(url).endsWith(":countTokens")) return Response.json({ totalTokens: 500 });
+    expect(String(url)).toBe("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent");
+    return Response.json({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: JSON.stringify(raw(ss)) }] } }] });
+  });
+  vi.stubGlobal("fetch", fetcher);
+  const form = new FormData();
+  ss.forEach((source, i) => form.append(i === 0 ? "documentA" : "documentB", new File([source.pages.map(p => p.text).join("")], source.name)));
+  form.append("context", JSON.stringify(applicant));
+  form.append("inputRevision", "0");
+  form.append("requestId", "configured-test");
+  form.append("privacyAcknowledged", "true");
+  const response = await POST(new Request("http://localhost:3000/api/compare", { method: "POST", body: form }));
+  const body = await response.text();
+  const events: Event[] = body.trim().split("\n").map(line => JSON.parse(line));
+  expect(events.at(-1)).toMatchObject({ type: "result", report: { model: "gemini-3.1-flash-lite", revision: 0 } });
+  expect(events.some(e => e.type === "error" || e.type === "info")).toBe(false);
+  expect(fetcher.mock.calls.filter(([url]) => String(url).includes("generativelanguage.googleapis.com"))).toHaveLength(2);
+  expect(fetcher).toHaveBeenCalledTimes(6); // Admission, two reservations, two Gemini calls, release.
+  expect(body).not.toContain(key);
+  expect(body).not.toContain(token);
 });

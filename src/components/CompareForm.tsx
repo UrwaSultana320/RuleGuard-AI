@@ -8,6 +8,12 @@ import { FullSourceView } from "./FullSourceView";
 import Link from "next/link";
 import { ApplicabilityReview } from "./DegreeApplicability";
 
+function fileSizeLabel(bytes: number) {
+  return bytes < 1000
+    ? `${bytes} ${bytes === 1 ? "byte" : "bytes"}`
+    : `${(bytes / 1000).toFixed(0)} KB`;
+}
+
 async function validateFile(file: File) {
   if (!file.size || file.size > LIMITS.fileBytes)
     throw Error("Choose a nonempty file up to 2 MB (2,000,000 bytes).");
@@ -90,7 +96,7 @@ function Upload({ index }: { index: number }) {
         </strong>
         <span>
           {file
-            ? `${(file.size / 1000).toFixed(0)} KB · Click to replace`
+            ? `${fileSizeLabel(file.size)} · Click to replace`
             : "Click to browse or drag a file here"}
         </span>
         <small>PDF or TXT · Up to 2 MB · 15 PDF pages</small>
@@ -107,6 +113,41 @@ export function CompareForm() {
   const s = useSession();
   const router = useRouter();
   const [sampleError, setSampleError] = useState("");
+  const [loadingExample, setLoadingExample] = useState(false);
+  const exampleBusy = useRef(false);
+  async function tryLiveExample() {
+    if (exampleBusy.current || s.processing) return;
+    exampleBusy.current = true;
+    setLoadingExample(true);
+    setSampleError("");
+    try {
+      const files = await Promise.all(
+        ["A", "B"].map(async (id) => {
+          const response = await fetch(`/samples/synthetic-${id}.txt`);
+          if (!response.ok) throw Error("Sample unavailable");
+          const file = new File([await response.text()], `Synthetic-policy-${id}.txt`, {
+            type: "text/plain",
+          });
+          await validateFile(file);
+          return file;
+        }),
+      );
+      if (await s.compare({
+        files,
+        applicant: {
+          degree: "Master's",
+          program: "Artificial Intelligence",
+          intake: "September 2026",
+          category: "International applicant",
+        },
+      })) router.push("/results");
+    } catch {
+      setSampleError("Sample documents could not be loaded. Please try again or use the sample links below.");
+    } finally {
+      exampleBusy.current = false;
+      setLoadingExample(false);
+    }
+  }
   async function loadSample() {
     setSampleError("");
     if (!s.applicant.degree) {
@@ -131,6 +172,7 @@ export function CompareForm() {
         }),
       );
       results.forEach((f, i) => s.setFile(i, f));
+      s.markBuiltInFiles(results);
       s.setField("program", `${s.applicant.degree} in Artificial Intelligence`);
       s.setField("intake", "September 2026");
       s.setField("category", "International applicant");
@@ -159,6 +201,19 @@ export function CompareForm() {
           </p>
           <p className="hero-caption">
             Two sources. Your context. Human judgment.
+          </p>
+          <button
+            type="button"
+            className="primary-button"
+            disabled={loadingExample || s.processing}
+            onClick={() => void tryLiveExample()}
+          >
+            {loadingExample ? "Starting live example…" : "Try a live example"}
+            <Icon name="arrow" />
+          </button>
+          <p className="hero-caption">
+            Runs AI analysis on fictional synthetic policies and acknowledges
+            the data handling notice below.
           </p>
         </div>
       </div>
@@ -361,14 +416,20 @@ export function CompareForm() {
             </div>
           </div>
         )}
+        {s.info && (
+          <div className="notice info" role="status">
+            <div>
+              <strong>Your sources are ready to inspect</strong>
+              <p>{s.info}</p>
+            </div>
+          </div>
+        )}
         {s.error && (
           <div className="notice error" role="alert">
             <Icon name="alert" />
             <div>
               <strong>
-                {s.error.code === "AI_NOT_ENABLED"
-                  ? "Your sources are ready to inspect"
-                  : "Comparison could not be completed"}
+                Comparison could not be completed
               </strong>
               <p>{s.error.message}</p>
               {s.error.diagnosticCode && (
@@ -387,12 +448,24 @@ export function CompareForm() {
           <section className="progress" aria-live="polite">
             <p>
               <span className="spinner" />{" "}
-              {STAGES[s.stage] ?? "Preparing analysis"}
+              {s.providerProgress
+                ? s.providerProgress.phase === "fallback"
+                  ? "The AI service is busy, trying the configured fallback..."
+                  : "The AI service is busy, retrying..."
+                : STAGES[s.stage] ?? "Preparing analysis"}
             </p>
+            {s.providerProgress && (
+              <small>
+                {s.providerProgress.phase === "retry"
+                  ? `Retry ${s.providerProgress.attempt} of 3`
+                  : "Fallback attempt 1 of 1"}
+                {s.providerProgress.delayMs > 0 &&
+                  ` · Waiting at least ${Math.ceil(s.providerProgress.delayMs / 1000)} seconds`}
+              </small>
+            )}
             {s.stage === 1 && (
               <small>
-                One AI request examines requirements, conditions and comparisons
-                together.
+                Each analysis attempt examines requirements, conditions and comparisons together.
               </small>
             )}
             <ol>
@@ -423,7 +496,7 @@ export function CompareForm() {
               ? "Processing…"
               : s.outdated
                 ? "Run Comparison Again"
-                : s.error
+                : s.error?.analysisFailed
                   ? "Retry Analysis"
                   : "Compare Requirements"}
             <Icon name="arrow" />

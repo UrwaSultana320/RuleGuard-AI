@@ -110,3 +110,8 @@ Only two consequential planning approvals remain after this amendment: finalize 
 ## Review boundary
 
 Approving this proposal authorizes applying these targeted amendments to scope.md, prd.md and spec.md and synchronizing their HTML companions. Preserve unrelated approved requirements and benchmark history; record the amendment approval separately from original approvals. Keep spec.md DRAFT until separately approved. Until then, all six original planning files remain unchanged. No Gemini request, application coding, package installation or deployment was performed for this proposal.
+
+
+## Current email handoff — 2026-10-26
+
+The project owner approved the professional evidence-backed email upgrade now recorded in scope.md, prd.md and spec.md. It supersedes earlier generated-email eligibility/direct-mailto wording only. Human review never certifies correctness. Explicit Accepted findings requiring clarification qualify; Uncertain needs opt-in; Rejected/Pending/compatible findings are excluded. Draft once in the dashboard with exact safe evidence, validate normal and fallback output, preserve edits through deliberate replacement, and keep stale drafts out of current export. No extra model request or automatic sending. Original review requirements and historical approvals remain intact.

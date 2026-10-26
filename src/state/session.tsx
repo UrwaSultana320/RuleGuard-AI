@@ -11,6 +11,7 @@ import type {
   Applicability,
   Event,
   Report,
+  ProviderProgress,
   Review,
   Source,
 } from "@/shared/contracts";
@@ -21,9 +22,11 @@ type WorkError = {
   code?: string;
   diagnosticCode?: string;
   retryAfter?: number;
+  analysisFailed?: boolean;
 };
 function useWork() {
   const [files, setFiles] = useState<(File | null)[]>([null, null]);
+  const builtInFiles = useRef<File[] | null>(null);
   const [fileErrors, setFileErrors] = useState<string[]>(["", ""]);
   const [applicant, setApplicant] = useState<
     Omit<Applicant, "degree"> & { degree: Applicant["degree"] | "" }
@@ -50,13 +53,16 @@ function useWork() {
   const [processing, setProcessing] = useState(false);
   const busy = useRef(false);
   const [stage, setStage] = useState(-1);
+  const [providerProgress, setProviderProgress] = useState<ProviderProgress | null>(null);
   const [error, setError] = useState<WorkError | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const current = useRef("");
   const [activeSource, setActiveSource] = useState("A");
   const change = () => {
     revisionRef.current++;
     setRevision(revisionRef.current);
     setError(null);
+    setInfo(null);
     setPendingReport(null);
     setApplicability(null);
     setDegreeAcknowledged(false);
@@ -69,18 +75,33 @@ function useWork() {
     setApplicant((a) => ({ ...a, [key]: value }));
   };
   const setFile = (index: number, file: File | null, error = "") => {
+    builtInFiles.current = null;
     change();
     setFiles((f) => f.map((v, i) => (i === index ? file : v)));
     setFileErrors((f) => f.map((v, i) => (i === index ? error : v)));
   };
-  async function compare() {
+  async function compare(example?: { files: File[]; applicant: Applicant }) {
     if (busy.current) return false;
+    // Use the same snapshot for the form and request; React state updates are batched.
+    const inputFiles = example?.files ?? files;
+    const inputApplicant = example?.applicant ?? applicant;
+    const inputConsent = example ? true : consent;
+    const builtInExample = !!example || (!!builtInFiles.current &&
+      inputFiles.every((file, i) => file === builtInFiles.current![i]));
+    if (example) {
+      builtInFiles.current = inputFiles as File[];
+      change();
+      setFiles(inputFiles);
+      setFileErrors(["", ""]);
+      setApplicant(inputApplicant);
+      setConsent(true);
+    }
     if (
-      !files.every(Boolean) ||
-      !applicant.degree ||
-      fileErrors.some(Boolean) ||
-      !applicant.program.trim() ||
-      !consent
+      !inputFiles.every(Boolean) ||
+      !inputApplicant.degree ||
+      (!example && fileErrors.some(Boolean)) ||
+      !inputApplicant.program.trim() ||
+      !inputConsent
     ) {
       setError({
         message:
@@ -91,22 +112,25 @@ function useWork() {
     busy.current = true;
     setProcessing(true);
     setError(null);
+    setInfo(null);
     setDegreeAcknowledged(false);
     setStage(0);
+    setProviderProgress(null);
     const id = crypto.randomUUID();
     current.current = id;
     const rev = revisionRef.current;
     const form = new FormData();
-    files.forEach((file, i) =>
+    if (builtInExample) form.append("exampleOrigin", "built-in-synthetic");
+    inputFiles.forEach((file, i) =>
       form.append(i === 0 ? "documentA" : "documentB", file!),
     );
     form.append(
       "context",
       JSON.stringify({
-        ...applicant,
-        program: applicant.program.trim(),
-        intake: applicant.intake.trim() || "Not sure",
-        category: applicant.category.trim() || "Not sure",
+        ...inputApplicant,
+        program: inputApplicant.program.trim(),
+        intake: inputApplicant.intake.trim() || "Not sure",
+        category: inputApplicant.category.trim() || "Not sure",
       }),
     );
     form.append("inputRevision", String(rev));
@@ -154,7 +178,11 @@ function useWork() {
           throw new Error(
             "The response contained conflicting completion events. No new report was created.",
           );
-        if (e.type === "stage") setStage(e.stage);
+        if (e.type === "stage") {
+          setStage(e.stage);
+          setProviderProgress(null);
+        }
+        if (e.type === "provider_progress") setProviderProgress(e.progress);
         if (e.type === "sources") {
           if (
             e.sources.length !== 2 ||
@@ -183,7 +211,11 @@ function useWork() {
           terminal = true;
         }
         if (e.type === "error") {
-          setError(e);
+          setError({ ...e, analysisFailed: true });
+          terminal = true;
+        }
+        if (e.type === "info") {
+          setInfo(e.message);
           terminal = true;
         }
       }
@@ -207,6 +239,18 @@ function useWork() {
         revisionRef.current === rev
       ) {
         const outcome = completion.event;
+        if (
+          example &&
+          outcome.type === "result" &&
+          canReveal(outcome.report.applicability, false)
+        ) {
+          setReport(outcome.report);
+          setReportSources(latestSources.current);
+          setPendingReport(null);
+          setApplicability(outcome.report.applicability);
+          setReviews({});
+          return true;
+        }
         setPendingReport(outcome.type === "result" ? outcome.report : null);
         setApplicability(
           outcome.type === "result"
@@ -219,6 +263,7 @@ function useWork() {
       }
     } catch (e) {
       setError({
+        analysisFailed: true,
         message:
           e instanceof Error
             ? e.message
@@ -228,6 +273,7 @@ function useWork() {
       busy.current = false;
       setProcessing(false);
       setStage(-1);
+      setProviderProgress(null);
     }
     return false;
   }
@@ -261,6 +307,7 @@ function useWork() {
     files,
     fileErrors,
     setFile,
+    markBuiltInFiles: (sampleFiles: File[]) => { builtInFiles.current = sampleFiles; },
     applicant,
     setField,
     consent,
@@ -271,7 +318,9 @@ function useWork() {
     report,
     processing,
     stage,
+    providerProgress,
     error,
+    info,
     compare,
     review,
     reviewOf,

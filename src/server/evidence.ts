@@ -47,7 +47,9 @@ export function buildReport(
     );
   const registry = new Map(
     sources.flatMap((s) =>
-      s.passages.map((p) => [p.id, { ...p, sourceName: s.name }] as const),
+      s.passages.map((p) =>
+        [p.id, { ...p, sourceName: s.name, sourceVerified: true as const }] as const,
+      ),
     ),
   );
   function fail(diagnosticCode: ValidationDiagnostic): never {

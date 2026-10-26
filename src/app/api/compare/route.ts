@@ -4,18 +4,26 @@ import type { Event } from "@/shared/contracts";
 import { extractDocument } from "@/server/documents";
 import { AppError, safeError } from "@/server/errors";
 import { acquire, redisClient } from "@/server/quota";
-import { analyze } from "@/server/gemini";
+import { analyze, hasGeminiKey, missingGeminiConfiguration } from "@/server/gemini";
 import { buildReport } from "@/server/evidence";
+import { exampleCache, exampleCacheKey } from "@/server/example-cache";
 export const runtime = "nodejs";
+// Hobby Fluid Compute maximum; internal operation/provider budgets are smaller.
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 const headers = {
   "Content-Type": "application/x-ndjson; charset=utf-8",
-  "Cache-Control": "private, no-store, max-age=0",
+  "Cache-Control": "private, no-store, no-transform, max-age=0",
+  "X-Accel-Buffering": "no",
   "X-Content-Type-Options": "nosniff",
 };
 let localReads = 0;
 export async function POST(request: Request) {
+  const deadlineAt = Date.now() + LIMITS.timeoutMs;
+  const signal = AbortSignal.any([
+    request.signal,
+    AbortSignal.timeout(LIMITS.timeoutMs),
+  ]);
   const origin = request.headers.get("origin");
   if (origin) {
     let matches = false;
@@ -46,18 +54,26 @@ export async function POST(request: Request) {
     const chunks: Uint8Array[] = [];
     let size = 0;
     const reader = request.body.getReader();
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      size += value.length;
-      if (size > LIMITS.bodyBytes) {
-        await reader.cancel();
-        return Response.json(
-          { message: "Combined upload exceeds the safe request limit." },
-          { status: 413 },
-        );
+    const cancelRead = () => { void reader.cancel().catch(() => {}); };
+    signal.addEventListener("abort", cancelRead, { once: true });
+    try {
+      while (true) {
+        signal.throwIfAborted();
+        const { value, done } = await reader.read();
+        signal.throwIfAborted();
+        if (done) break;
+        size += value.length;
+        if (size > LIMITS.bodyBytes) {
+          await reader.cancel();
+          return Response.json(
+            { message: "Combined upload exceeds the safe request limit." },
+            { status: 413 },
+          );
+        }
+        chunks.push(value);
       }
-      chunks.push(value);
+    } finally {
+      signal.removeEventListener("abort", cancelRead);
     }
     bytes = new Uint8Array(size);
     let offset = 0;
@@ -108,16 +124,12 @@ export async function POST(request: Request) {
       { message: "Add both documents and acknowledge the privacy notice." },
       { status: 400 },
     );
-  const signal = AbortSignal.any([
-    request.signal,
-    AbortSignal.timeout(LIMITS.timeoutMs),
-  ]);
   return new Response(
     new ReadableStream({
       async start(controller) {
         let closed = false;
         const emit = (event: Omit<Event, "revision" | "requestId">) => {
-          if (!closed && !signal.aborted)
+          if (!closed && !request.signal.aborted)
             try {
               controller.enqueue(
                 new TextEncoder().encode(
@@ -132,7 +144,8 @@ export async function POST(request: Request) {
         let preview = false;
         let uncertainUpstream = false;
         try {
-          const live = process.env.GEMINI_REQUESTS_ENABLED === "true";
+          const live = hasGeminiKey();
+          const configurationMessage = live ? null : missingGeminiConfiguration();
           if (live) lease = await acquire(redisClient());
           else {
             if (localReads >= 2)
@@ -165,16 +178,40 @@ export async function POST(request: Request) {
               "The full pair exceeds the supported text capacity. No content was omitted.",
             );
           emit({ type: "sources", sources } as Event);
-          if (!live)
-            throw new AppError(
-              "AI_NOT_ENABLED",
-              "AI analysis is not enabled in this local preview yet. Inspect your extracted sources below; no AI report was generated.",
-            );
+          if (!live) {
+            emit({ type: "info", code: "AI_CONFIGURATION_MISSING", message: configurationMessage! } as Event);
+            return;
+          }
           emit({ type: "stage", stage: 1 } as Event);
-          const raw = await analyze(sources, applicant, lease!.reserve, signal);
-          uncertainUpstream = false;
+          const cacheKey = await exampleCacheKey(form.get("exampleOrigin"), sources, applicant);
+          let modelUsed: string | undefined;
+          let raw: unknown;
+          let savedExample = false;
+          try {
+            raw = await analyze(sources, applicant, lease!.reserve, signal, {
+              deadlineAt,
+              onProgress: (progress) => emit({ type: "provider_progress", progress } as Event),
+              onModelUsed: (model) => { modelUsed = model; },
+            });
+          } catch (error) {
+            const transient = error instanceof AppError && [
+              "PROVIDER_UNAVAILABLE", "PROVIDER_RATE_LIMIT", "PROVIDER_TIMEOUT", "UPSTREAM_UNCERTAIN",
+            ].includes(error.code);
+            const saved = transient && !request.signal.aborted ? await exampleCache.get(cacheKey) : undefined;
+            if (!saved) throw error;
+            raw = saved.raw;
+            modelUsed = saved.model;
+            savedExample = true;
+            uncertainUpstream = error instanceof AppError && error.code === "UPSTREAM_UNCERTAIN";
+          }
           emit({ type: "stage", stage: 2 } as Event);
+          // Reconstruct and verify saved evidence against the current extracted
+          // sources too; never replay a report or its old revision/review state.
           const report = buildReport(raw, sources, applicant, revision);
+          if (modelUsed) report.model = modelUsed;
+          if (savedExample) report.savedExample = true;
+          else if (!signal.aborted && report.applicability.gate !== "blocked")
+            await exampleCache.put(cacheKey, { raw, model: report.model });
           emit({ type: "stage", stage: 3 } as Event);
           // Source identity, applicability prerequisites and counts were checked locally, not separate AI calls.
           emit({ type: "stage", stage: 4 } as Event);
@@ -185,8 +222,11 @@ export async function POST(request: Request) {
             } as Event);
           else emit({ type: "result", report } as Event);
         } catch (error) {
-          uncertainUpstream =
-            error instanceof AppError && error.code === "UPSTREAM_UNCERTAIN";
+          console.error("[RuleGuard compare]", {
+            code: error instanceof AppError ? error.code : "INCOMPLETE_ANALYSIS",
+            ...(error instanceof AppError ? error.providerDiagnostic : undefined),
+          });
+          uncertainUpstream ||= error instanceof AppError && error.code === "UPSTREAM_UNCERTAIN";
           emit({ type: "error", ...safeError(error) } as Event);
         } finally {
           if (preview) localReads--;

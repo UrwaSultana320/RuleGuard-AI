@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { test, expect } from "../fixtures/gemini-unavailable";
 import type { Degree, Report, Source } from "@/shared/contracts";
 import { displayAssessments } from "../fixtures/degree";
 
@@ -140,7 +141,9 @@ async function intercept(
 
 test("degree is never preselected; accurately labeled undergraduate samples pass real local extraction with AI off", async ({
   page,
+  mockGeminiUnavailable,
 }) => {
+  await mockGeminiUnavailable();
   await page.goto("/");
   await expect(page.getByRole("radio", { checked: true })).toHaveCount(0);
   await expect(page.locator("#file-0")).toBeDisabled();
@@ -162,8 +165,8 @@ test("degree is never preselected; accurately labeled undergraduate samples pass
     .getByRole("button", { name: "Compare Requirements", exact: true })
     .click();
   await expect(page.locator(".source-scroll")).toContainText("Bachelor's");
-  await expect(page.locator(".notice[role=alert]")).toContainText(
-    "no AI report was generated",
+  await expect(page.locator(".notice[role=status]")).toContainText(
+    "this server is not configured",
   );
 });
 

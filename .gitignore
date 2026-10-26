@@ -19,3 +19,7 @@ test-results/
 /public/pdf.worker.min.mjs
 
 /public/licenses/
+
+# Local hosting metadata and downloaded production environment files.
+/.vercel/
+/devpost/human-review-changes.diff

@@ -50,7 +50,7 @@ function rules(
     conditionStatus: "unknown",
     conditions,
     exceptions,
-    evidence: [{ ...s.passages[line - 1], sourceName: s.name }],
+    evidence: [{ ...s.passages[line - 1], sourceName: s.name, sourceVerified: true as const }],
   }));
 }
 const findings: Finding[] = [
@@ -60,7 +60,7 @@ const findings: Finding[] = [
     classification: "Potential Contradiction",
     modelClassification: "Potential Contradiction",
     explanation:
-      "One policy permits a certificate-based alternative with approval; the programme guide rejects that substitute. Ask admissions which rule applies before relying on a waiver.",
+      "Document A permits a certificate-based alternative to IELTS with admissions approval; Document B rejects an English-medium instruction certificate as a substitute for IELTS. Ask admissions which rule applies before relying on a waiver.",
     clarificationQuestion:
       "For international Master's applicants to Computing in September 2026, can an official English-medium instruction certificate replace IELTS, and what approval is required?",
     unknowns: [
@@ -82,7 +82,7 @@ const findings: Finding[] = [
     classification: "Consistent",
     modelClassification: "Consistent",
     explanation:
-      "Both supplied texts state the same overall and component minimums. This does not establish that the applicant has achieved them.",
+      "Document A requires IELTS Academic overall 6.5 with each component at least 6.0; Document B states the same minimums. This does not establish that the applicant has achieved them.",
     clarificationQuestion: "",
     unknowns: [],
     guardNotes: [],
@@ -99,7 +99,7 @@ const findings: Finding[] = [
     classification: "Different Applicable Conditions",
     modelClassification: "Different Applicable Conditions",
     explanation:
-      "Course-entry evidence and final degree-entry evidence serve different purposes. Starting a course does not establish its completion or an admission exemption.",
+      "Document A requires IELTS 5.5 for conditional course entry; Document B requires confirmation of Academic English completion and the required final grade by admissions. Starting a course does not establish its completion or an admission exemption.",
     clarificationQuestion: "",
     unknowns: [],
     guardNotes: [],
@@ -118,7 +118,7 @@ const findings: Finding[] = [
     classification: "Insufficient Evidence",
     modelClassification: "Insufficient Evidence",
     explanation:
-      "The supplied text does not establish that differently named English qualifications are equivalent. No automatic exemption should be assumed.",
+      "Document A describes conditional Academic English course entry; Document B requires confirmation of the completed qualification and final grade without identifying equivalent certificate names. The supplied text does not establish qualification equivalence; no automatic exemption should be assumed.",
     clarificationQuestion:
       "Which exact Academic English qualification and final result are accepted for this programme?",
     unknowns: [
@@ -139,7 +139,7 @@ export function editorialReport(revision: number): Report {
     revision,
     applicant: {
       degree: "Master's",
-      program: "MSc Computing · Offline visual fixture",
+      program: "MSc Computing",
       intake: "September 2026",
       category: "International applicant",
     },

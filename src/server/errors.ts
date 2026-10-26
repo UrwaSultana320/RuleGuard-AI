@@ -29,6 +29,8 @@ export type ValidationDiagnostic =
   | "ANALYSIS_SCHEMA_INVALID";
 
 export class AppError extends Error {
+  // Server-only diagnostics; safeError deliberately never serializes this field.
+  providerDiagnostic?: { model: string; method: string; httpStatus: number | null; message: string };
   constructor(
     public code: string,
     message: string,

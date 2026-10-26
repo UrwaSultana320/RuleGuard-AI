@@ -4,4 +4,4 @@ Fixture: S01-contradiction; Source: B
 Prepared for benchmark review: 2026-10-15
 Scope: Master's in Artificial Intelligence; September 2026 intake; international applicants.
 
-Every applicant must submit IELTS Academic or TOEFL iBT. An MOI certificate is not accepted as a substitute. There are no waivers or exceptions for the stated program, intake, and applicant category.
+All international applicants must submit IELTS Academic or TOEFL iBT. An MOI certificate is not accepted as a substitute. There are no waivers or exceptions for the stated program, intake, and applicant category.

@@ -84,7 +84,9 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
     .click();
   await expect(page).toHaveURL("/results");
   const first = page.locator(".finding").first();
-  await expect(first.locator(".evidence")).toHaveAttribute("open", "");
+  await expect(first.locator(".evidence")).toBeVisible();
+  await expect(first.locator(".finding-details")).not.toHaveAttribute("open", "");
+  await first.locator(".finding-details > summary").click();
   expect(
     await first.locator(".evidence blockquote pre").first().textContent(),
   ).toBe(editorialSources[0].passages[2].text);
@@ -94,19 +96,21 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
       .first()
       .evaluate((el) => {
         const quote = el.querySelector("blockquote")!,
-          interpretation = el.querySelector(".ai-interpretation")!;
+          interpretation = el.closest(".finding")!.querySelector(".ai-interpretation")!;
         return !!(
           quote.compareDocumentPosition(interpretation) &
           Node.DOCUMENT_POSITION_FOLLOWING
         );
       }),
   ).toBe(true);
-  await first.getByRole("button", { name: "Draft Email", exact: true }).click();
-  await first
-    .getByLabel("Email draft text")
+  await first.locator(".clarification > summary").click();
+  await first.getByRole("button", { name: "Accept", exact: true }).click();
+  await page.getByRole("button", { name: "Draft Clarification Email", exact: true }).click();
+  await page
+    .getByLabel("Email body")
     .fill("Edited offline draft. Please confirm the applicable policy.");
   await expect(
-    first.getByRole("link", { name: "Open editable email draft" }),
+    page.getByRole("link", { name: "Open in mail app" }),
   ).toHaveAttribute("href", /Edited%20offline/);
   for (const width of [320, 375, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -119,7 +123,7 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
       .evaluate(
         (el) => getComputedStyle(el).gridTemplateColumns.split(" ").length,
       );
-    expect(layout).toBe(width >= 1366 ? 2 : 1);
+    expect(layout).toBe(width >= 768 ? 2 : 1);
     for (const name of ["Accept", "Reject", "Uncertain"])
       expect(
         (await first.getByRole("button", { name, exact: true }).boundingBox())!
@@ -135,7 +139,8 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
         path: `test-results/editorial-findings-overview-${width}.png`,
       });
       await first
-        .locator(".evidence summary")
+        .locator(".source-title")
+        .first()
         .evaluate((el) =>
           el.scrollIntoView({ block: "start", behavior: "instant" }),
         );
@@ -147,7 +152,7 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
   await page.setViewportSize({ width: 1366, height: 1000 });
   const pairs = await page
     .locator(
-      ".hero-copy, .notice.preliminary, .source-title, .category-label, .primary-button:not(:disabled), .quote-source, .preliminary-label",
+      ".hero-copy, .notice.preliminary, .source-title, .category-label, .primary-button:not(:disabled), .quote-source, .preliminary-label, .source-verified, .summary-type, .summary-verification p, .classification-detail, .finding-reasoning",
     )
     .evaluateAll((els) =>
       els.map((el) => {
@@ -185,13 +190,9 @@ test("editorial design: responsive inputs, keyboard degree choices, evidence-fir
     ).toBeGreaterThanOrEqual(4.5);
   }
   await first.getByRole("button", { name: "Reject", exact: true }).click();
-  await expect(
-    first.getByRole("button", { name: "Draft Email", exact: true }),
-  ).toBeDisabled();
+  await expect(page.getByText("Accept a finding to draft your email.")).toBeVisible();
   await first.getByRole("button", { name: "Uncertain", exact: true }).click();
-  await expect(
-    first.getByRole("button", { name: "Draft Email", exact: true }),
-  ).toBeEnabled();
+  await expect(page.getByLabel("Email body")).toHaveCount(0);
   expect(requests).toBe(1); // One intercepted local POST; zero provider requests.
 });
 
@@ -277,12 +278,12 @@ test("editorial loading, error and empty states remain readable and preserve sou
     .click();
   await expect(
     page.getByRole("heading", {
-      name: "AI suggested no relevant requirement topics.",
+      name: "No contradictions found. Check the original documents.",
     }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Full extracted sources" }),
-  ).toBeVisible();
+  await expect(page.locator(".source-scroll")).not.toBeVisible();
+  await page.locator(".full-source-disclosure > summary").click();
+  await expect(page.getByRole("heading", { name: "Full extracted sources" })).toBeVisible();
   for (const width of [320, 375, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(

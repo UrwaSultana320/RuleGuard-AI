@@ -1,46 +1,59 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Finding, Review } from "@/shared/contracts";
+import { findingSummary, quoteDisplay } from "@/shared/finding-display";
+import { resultsVerdict } from "@/shared/results-verdict";
+import { emailIssueType } from "@/shared/clarification-email";
 import { CATEGORIES } from "@/shared/limits";
 import { useSession } from "@/state/session";
 import { FullSourceView } from "./FullSourceView";
 import { Icon } from "./Icons";
 import { RuleInterpretation, UncertaintyNotes } from "./RuleInterpretation";
 import { DegreeAssessments } from "./DegreeApplicability";
-export function emailText(f: Finding, program: string) {
-  const refs = Array.from(
-    new Set(
-      f.rules.flatMap((r) =>
-        r.evidence.map(
-          (e) =>
-            `${e.sourceName} — ${e.page ? `PDF page ${e.page}` : `lines ${e.lineStart}–${e.lineEnd}`}`,
-        ),
-      ),
-    ),
-  );
-  return `Dear Admissions Team,\n\nI am reviewing English-language requirements for ${program}. I would appreciate clarification on the following preliminary question:\n\n${f.clarificationQuestion}\n\nSources I am reviewing:\n${refs.map((r) => "- " + r).join("\n")}\n\nCould you confirm the applicable conditions and any relevant exceptions? I am seeking official guidance rather than assuming an exemption or a conflict.\n\nThank you.`;
+import { ClarificationEmail } from "./ClarificationEmail";
+const findingTypes = {
+  Consistent: { label: "Consistent", icon: "check" },
+  "Potential Contradiction": { label: "Contradiction", icon: "alert" },
+  "Different Applicable Conditions": { label: "Exception", icon: "arrow" },
+  "Insufficient Evidence": { label: "Missing information", icon: "eye" },
+} as const;
+const countLabels = {
+  Consistent: ["consistent finding", "consistent findings"],
+  "Potential Contradiction": ["contradiction", "contradictions"],
+  "Different Applicable Conditions": ["exception", "exceptions"],
+  "Insufficient Evidence": ["missing information finding", "missing information findings"],
+} as const;
+
+function focusEmail(event: MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
+  document.getElementById("clarification-email")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("clarification-email-heading")?.focus({ preventScroll: true });
 }
+
+function reference(e: Finding["rules"][number]["evidence"][number]) {
+  return e.page ? `PDF page ${e.page}` : `Lines ${e.lineStart}–${e.lineEnd}`;
+}
+
 function FindingCard({
   finding: f,
   index,
+  onAccept,
 }: {
   finding: Finding;
   index: number;
+  onAccept: () => void;
 }) {
   const s = useSession();
   const review = s.reviewOf(f.id);
+  const type = findingTypes[f.classification];
   const [copyState, setCopyState] = useState("");
-  const [draftOpen, setDraftOpen] = useState(false);
   const canClarify = [
     "Potential Contradiction",
     "Insufficient Evidence",
   ].includes(f.classification);
   const disabled = review === "Rejected" || s.outdated;
-  const [email, setEmail] = useState(() =>
-    emailText(f, s.report!.applicant.program),
-  );
   async function copy(text: string, label: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -53,6 +66,8 @@ function FindingCard({
   }
   function jump(id: string, sourceId: string) {
     s.setActiveSource(sourceId);
+    const disclosure = document.getElementById("full-source-disclosure") as HTMLDetailsElement | null;
+    if (disclosure) disclosure.open = true;
     setTimeout(
       () =>
         document
@@ -63,6 +78,7 @@ function FindingCard({
   }
   return (
     <article
+      aria-labelledby={`title-${f.id}`}
       className={`finding category-${CATEGORIES.indexOf(f.classification)} ${review === "Rejected" ? "rejected" : ""}`}
     >
       <div className="finding-top">
@@ -70,35 +86,18 @@ function FindingCard({
           <span className="finding-number">
             Finding {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="category-label">{f.classification}</span>
-          <span className="preliminary-label">Preliminary AI finding</span>
-          <h3>{f.topic}</h3>
+          <span className="category-label">
+            <Icon name={type.icon} size={16} /> {type.label}
+          </span>
+          <span className="preliminary-label">AI interpretation, check against source</span>
+          <h3 id={`title-${f.id}`}>{f.topic}</h3>
         </div>
         <span className={`review-badge review-${review.toLowerCase()}`}>
           {review === "Pending" ? "Pending review" : `${review} by you`}
         </span>
       </div>
-      <p>{f.explanation}</p>
-      {f.guardNotes.length > 0 && (
-        <div className="guard-note">
-          <strong>Evidence/applicability safeguard</strong>
-          <p>
-            The model suggested {f.modelClassification}; the system retained
-            this topic as Insufficient Evidence. This does not repair the AI
-            reasoning.
-          </p>
-          <ul>
-            {f.guardNotes.map((n) => (
-              <li key={n}>{n}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <details className="evidence" open={index === 0}>
-        <summary>
-          <Icon name="eye" size={17} />
-          View Evidence<span>Source text & conditions</span>
-        </summary>
+      <p className="finding-explanation">{findingSummary(f)}</p>
+      <div className="evidence" aria-label="Source quotations">
         <div className="evidence-grid">
           {["A", "B"].map((sourceId) => {
             const rules = f.rules.filter((r) => r.sourceId === sourceId);
@@ -113,37 +112,43 @@ function FindingCard({
                 ) : (
                   rules.map((r) => (
                     <section key={r.id}>
-                      {r.evidence.map((e) => (
-                        <blockquote key={e.id}>
-                          <div className="quote-source">
-                            <Icon name="file" size={15} />
-                            <span>
-                              {e.sourceName} ·{" "}
-                              {e.page
-                                ? `PDF page ${e.page}`
-                                : `Lines ${e.lineStart}–${e.lineEnd}`}
-                            </span>
-                          </div>
-                          <pre>{e.text}</pre>
-                          <button
-                            type="button"
-                            className="text-button"
-                            onClick={() => jump(e.id, e.sourceId)}
-                          >
-                            View full extracted source{" "}
-                            <Icon name="arrow" size={14} />
-                          </button>
-                          <small>
-                            Source match verified · reasoning remains
-                            preliminary
-                          </small>
-                        </blockquote>
-                      ))}
-                      <div className="ai-interpretation">
-                        <h4>AI interpretation · check against source</h4>
-                        <p>{r.description}</p>
-                        <RuleInterpretation rule={r} />
-                      </div>
+                      {r.evidence.map((e) => {
+                        const quote = quoteDisplay(e.text, `${f.topic} ${r.description}`);
+                        return (
+                          <blockquote key={e.id}>
+                            <div className="quote-source">
+                              <Icon name="file" size={15} />
+                              <span>
+                                {e.sourceName} ·{" "}
+                                {e.page
+                                  ? `PDF page ${e.page}`
+                                  : `Lines ${e.lineStart}–${e.lineEnd}`}
+                              </span>
+                            </div>
+                            <pre>{quote.before}<mark>{quote.highlight}</mark>{quote.after}</pre>
+                            {quote.trimmed && <small>Header omitted from display; citation covers the full cited passage.</small>}
+                            <button
+                              type="button"
+                              className="text-button"
+                              onClick={() => jump(e.id, e.sourceId)}
+                            >
+                              View full extracted source{" "}
+                              <Icon name="arrow" size={14} />
+                            </button>
+                            {e.sourceVerified === true ? (
+                              <span className="source-verified">
+                                <Icon name="check" size={16} />
+                                Source verified · {reference(e)}
+                              </span>
+                            ) : (
+                              <span className="source-unverified">
+                                <Icon name="alert" size={16} />
+                                Source not verified · {reference(e)}
+                              </span>
+                            )}
+                          </blockquote>
+                        );
+                      })}
                     </section>
                   ))
                 )}
@@ -151,8 +156,41 @@ function FindingCard({
             );
           })}
         </div>
+      </div>
+      <details className="finding-details">
+        <summary>Show details</summary>
+        <h4>Full AI explanation · {f.classification}</h4>
+        <p>{f.explanation}</p>
+        {f.guardNotes.length > 0 && (
+          <div className="guard-note">
+            <strong>Evidence/applicability safeguard</strong>
+            <p>
+              The model suggested {f.modelClassification}; the system retained
+              this topic as Insufficient Evidence. This does not repair the AI
+              reasoning.
+            </p>
+            <ul>
+              {f.guardNotes.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {f.rules.map(r => (
+          <section className="ai-interpretation" key={r.id}>
+            <h4>Document {r.sourceId} · AI interpretation</h4>
+            <p>{r.description}</p>
+            <RuleInterpretation rule={r} />
+            {r.evidence.filter(e => quoteDisplay(e.text, `${f.topic} ${r.description}`).trimmed).map(e => (
+              <div className="original-quotation" key={e.id}>
+                <h4>Full cited passage · {e.sourceName} · {reference(e)}</h4>
+                <pre>{e.text}</pre>
+              </div>
+            ))}
+          </section>
+        ))}
+        <UncertaintyNotes finding={f} />
       </details>
-      <UncertaintyNotes finding={f} />
       <fieldset className="review-controls" disabled={s.outdated}>
         <legend>Your review · not independent verification</legend>
         {(["Accepted", "Rejected", "Uncertain"] as Review[]).map((value) => (
@@ -160,7 +198,10 @@ function FindingCard({
             key={value}
             type="button"
             aria-pressed={review === value}
-            onClick={() => s.review(f.id, value)}
+            onClick={() => {
+              s.review(f.id, value);
+              if (value === "Accepted") onAccept();
+            }}
           >
             <Icon
               name={
@@ -190,7 +231,8 @@ function FindingCard({
         )}
       </fieldset>
       {canClarify && (
-        <div className="clarification">
+        <details className="clarification">
+          <summary>Official clarification</summary>
           <div className="privacy-heading">
             <Icon name="mail" />
             <strong>A question for official clarification</strong>
@@ -211,46 +253,14 @@ function FindingCard({
               <Icon name="file" size={16} />
               Copy Question
             </button>
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => setDraftOpen((v) => !v)}
-            >
-              <Icon name="mail" size={16} />
-              Draft Email
-            </button>
           </div>
           {review === "Rejected" && (
             <p>Clarification actions are disabled for a rejected finding.</p>
           )}
-          {draftOpen && !disabled && (
-            <div className="email-draft">
-              <textarea
-                aria-label="Email draft text"
-                rows={12}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <p>
-                <a
-                  className="secondary-button"
-                  href={`mailto:?subject=${encodeURIComponent(`Clarification of English-language requirements — ${s.report!.applicant.program}`)}&body=${encodeURIComponent(email)}`}
-                >
-                  Open editable email draft
-                </a>
-                <button
-                  type="button"
-                  onClick={() => void copy(email, "Email text copied.")}
-                >
-                  Copy email text
-                </button>
-              </p>
-            </div>
-          )}
           <p className="copy-status" role="status">
             {copyState}
           </p>
-        </div>
+        </details>
       )}
     </article>
   );
@@ -258,16 +268,39 @@ function FindingCard({
 export function ResultsDashboard() {
   const s = useSession();
   const router = useRouter();
+  const [emailRevealRequest, setEmailRevealRequest] = useState(0);
   useEffect(() => {
     if (!s.report) router.replace("/");
   }, [s.report, router]);
+  useEffect(() => {
+    if (!emailRevealRequest) return;
+    document.getElementById("clarification-email")?.scrollIntoView({ behavior: "instant", block: "start" });
+    document.getElementById("clarification-email-heading")?.focus({ preventScroll: true });
+  }, [emailRevealRequest]);
   if (!s.report) return <p>Open a comparison to view findings.</p>;
   const report = s.report;
-  const unresolved = report.findings.filter(
-    (f) => f.classification === "Insufficient Evidence",
-  ).length;
+  const quotes = report.findings.flatMap((f) => f.rules.flatMap((r) => r.evidence));
+  const verifiedQuotes = quotes.filter((e) => e.sourceVerified === true).length;
+  const verdict = resultsVerdict(report.findings);
+  const counts = CATEGORIES.map((category, index) => ({
+    category, index, count: report.findings.filter(f => f.classification === category).length,
+  }));
+  const emailReady = !s.outdated && report.findings.some(f => s.reviewOf(f.id) === "Accepted" && emailIssueType(f));
   return (
     <>
+      <section className={`results-verdict verdict-${verdict.kind}`} aria-labelledby="verdict-heading">
+        <Icon name={verdict.kind === "clear" ? "check" : "alert"} size={28} />
+        <div>
+          <h2 id="verdict-heading">{verdict.title}</h2>
+          {verdict.summary && <p className="verdict-summary">{verdict.summary}</p>}
+          <p className="verdict-context">Based on source-verified evidence · AI interpretation requires review.</p>
+          {verdict.unverified && <p>Some finding evidence is not source-verified; a direct conflict is not established for those findings.</p>}
+          {s.outdated && <p>These results apply to earlier inputs. Run comparison again before relying on them.</p>}
+          <a className="primary-button" href="#clarification-email" onClick={focusEmail}>
+            Review and send email <Icon name="mail" size={18} />
+          </a>
+        </div>
+      </section>
       <div className="page-kicker">YOUR DOCUMENT REVIEW</div>
       <div className="results-heading">
         <div>
@@ -283,6 +316,33 @@ export function ResultsDashboard() {
           Edit inputs <Icon name="arrow" size={16} />
         </Link>
       </div>
+      {report.savedExample && (
+        <p className="saved-example-notice" role="status">
+          <Icon name="clock" size={16} /> Showing a saved result for this example.
+        </p>
+      )}
+      <section className="results-summary" aria-label="Finding summary">
+        <div className="summary-types">
+          {counts.filter(item => item.count > 0).map(({ category, index, count }) => (
+            <div key={category} className={`summary-type summary-chip category-${index}`}>
+              <Icon name={findingTypes[category].icon} size={18} />
+              <strong>{count}</strong> <span>{countLabels[category][count === 1 ? 0 : 1]}</span>
+            </div>
+          ))}
+          {counts.filter(item => item.count === 0).map(({ category }) => (
+            <small key={category} className="summary-zero">0 {countLabels[category][1]}</small>
+          ))}
+        </div>
+        <div className="summary-verification">
+          <Icon name="shield" size={20} />
+          <div>
+            <strong>
+              {verifiedQuotes} of {quotes.length} quotes verified
+            </strong>
+            <p>Counts describe displayed AI suggestions; source matching does not verify conclusions.</p>
+          </div>
+        </div>
+      </section>
       {s.outdated && (
         <div className="notice warning">
           <Icon name="alert" />
@@ -302,50 +362,23 @@ export function ResultsDashboard() {
           <p>
             Findings may be incorrect or incomplete. Check conditions and
             exceptions in the full extracted sources. Accepting a finding does
-            not confirm accuracy or admissions eligibility.
+            not confirm accuracy or admissions eligibility. Source matching verifies quoted text, not AI reasoning, structure, authenticity or completeness.
           </p>
         </div>
       </div>
-      <section className="panel report-applicability">
-        <div className="report-section-label">01 / DOCUMENT RELEVANCE</div>
-        <h2>
-          {report.degreeVerification === "unverified"
-            ? "Degree applicability unverified"
-            : "Degree applicability — preliminary AI assessment"}
-        </h2>
-        <p>
-          These scope interpretations require human review. Traceable quotations
-          do not guarantee correct degree identification.
-        </p>
-        <DegreeAssessments assessments={report.applicability.assessments} />
-      </section>
       <div className="report-section-heading">
         <div>
           <div className="report-section-label">
-            02 / PRELIMINARY COMPARISON
+            01 / PRELIMINARY COMPARISON
           </div>
           <h2>What the AI identified</h2>
         </div>
-        <a className="text-link" href="#sources">
+        <a className="text-link" href="#full-source-disclosure" onClick={() => {
+          const details = document.getElementById("full-source-disclosure") as HTMLDetailsElement | null;
+          if (details) details.open = true;
+        }}>
           Inspect full sources <Icon name="arrow" size={16} />
         </a>
-      </div>
-      <div className="metrics">
-        <div>
-          <span>AI-suggested requirements compared</span>
-          <strong>{report.findings.length - unresolved}</strong>
-          <small>Consistent + contradictions + different conditions</small>
-        </div>
-        <div>
-          <span>AI-suggested unresolved findings</span>
-          <strong>{unresolved}</strong>
-          <small>Topics with insufficient evidence</small>
-        </div>
-        <div>
-          <span>AI-suggested topics assessed</span>
-          <strong>{report.findings.length}</strong>
-          <small>Compared + unresolved findings</small>
-        </div>
       </div>
       <p className="metrics-note">
         Totals include all displayed suggestions, including rejected ones. They
@@ -367,23 +400,10 @@ export function ResultsDashboard() {
           ),
         )}
       </div>
-      <div className="category-summary">
-        {CATEGORIES.map((category, i) => (
-          <div key={category} className={"category-" + i}>
-            <span>{category}</span>
-            <strong>
-              {
-                report.findings.filter((f) => f.classification === category)
-                  .length
-              }
-            </strong>
-          </div>
-        ))}
-      </div>
       {!report.findings.length && (
         <div className="panel empty-state">
           <Icon name="eye" size={30} />
-          <h2>AI suggested no relevant requirement topics.</h2>
+          <h2>No contradictions found. Check the original documents.</h2>
           <p>
             Review the full extracted sources; relevant requirements may have
             been missed. This does not establish agreement or absence of
@@ -400,9 +420,18 @@ export function ResultsDashboard() {
               Number(a.classification === "Potential Contradiction"),
           )
           .map((f, index) => (
-            <FindingCard key={report.id + f.id} finding={f} index={index} />
+            <FindingCard key={report.id + f.id} finding={f} index={index}
+              onAccept={() => setEmailRevealRequest(request => request + 1)} />
           ))}
       </div>
+      <ClarificationEmail key={report.id} report={report} reviewOf={s.reviewOf} outdated={s.outdated} sources={s.reportSources} currentRevision={s.revision} />
+      {emailReady && (
+        <div className="email-ready-prompt" role="status">
+          <Icon name="mail" size={20} />
+          <strong>Ready to draft</strong>
+          <a href="#clarification-email" onClick={focusEmail}>Review email <Icon name="arrow" size={16} /></a>
+        </div>
+      )}
       {report.limitations.length > 0 && (
         <details className="limitations">
           <summary>Analysis limitations</summary>
@@ -413,7 +442,23 @@ export function ResultsDashboard() {
           </ul>
         </details>
       )}
-      <FullSourceView forReport />
+      <section className="panel report-applicability">
+        <div className="report-section-label">02 / DOCUMENT RELEVANCE</div>
+        <h2>
+          {report.degreeVerification === "unverified"
+            ? "Degree applicability unverified"
+            : "Degree applicability — preliminary AI assessment"}
+        </h2>
+        <p>
+          These scope interpretations require human review. Traceable quotations
+          do not guarantee correct degree identification.
+        </p>
+        <DegreeAssessments assessments={report.applicability.assessments} compact />
+      </section>
+      <details className="full-source-disclosure" id="full-source-disclosure">
+        <summary>View full extracted source</summary>
+        <FullSourceView forReport />
+      </details>
       <p className="report-footer">
         Generated with {report.model}. Source references are reconstructed by
         RuleGuard; conclusions remain preliminary.
