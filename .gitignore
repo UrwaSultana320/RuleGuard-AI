@@ -9,6 +9,11 @@ coverage/
 playwright-report/
 test-results/
 *.tsbuildinfo
+*.log
+*.tmp
+.eslintcache
+.cache/
+.turbo/
 /tmp/
 /.agents/
 /.claude/

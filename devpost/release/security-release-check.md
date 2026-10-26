@@ -1,5 +1,104 @@
 # Final security and release check — October 26, 2026
 
+## GitHub prepublication recheck — October 26, 2026
+
+This section records the later combined GitHub preparation request. Publication
+is still pending explicit owner approval. No commit, remote change, repository
+creation, push, deployment, billing change or Devpost submission was performed.
+No Gemini or Upstash service request was made; cumulative Gemini usage remains 40.
+
+### Git and intended destination
+
+- Branch: `master`; HEAD: `e69253099964ebdcce59a13aa2702bd17a6a5917`.
+  All 14 existing branch commits are preserved. The working tree was clean when
+  this recheck began. No remote is configured.
+- Intended public URL: https://github.com/UrwaSultana320/RuleGuard-AI
+  and HTTPS remote: `https://github.com/UrwaSultana320/RuleGuard-AI.git`.
+  These are planned destinations, not an existing published repository.
+- The connected GitHub account and local Git Credential Manager credential both
+  authenticated as `UrwaSultana320`. A read-only authenticated `/user` request
+  verified the local credential without displaying it. GitHub CLI is not installed;
+  Git Credential Manager is configured. Repository-creation/push permission has
+  not been exercised.
+- The intended repository returned 404 and was absent from the connected account's
+  owner-filtered repository list. Recheck immediately before approved creation to
+  avoid a duplicate. Planned visibility is public; current visibility is not
+  applicable because no accessible repository was found.
+
+### Publication contents and security findings
+
+- Exactly **125 tracked files**: 29 in src, 32 in tests, 36 in devpost, 7 in public,
+  3 in scripts, and 18 root files. The exact path list remains
+  [publication-files.txt](publication-files.txt), verified against `git ls-files`.
+  This includes package/lockfile, source/configuration, safe fixtures, scope/PRD/spec
+  with HTML companions, README, MIT LICENSE, notices and release materials.
+- `.env.example` contains blank credential values only. `.env.local` and other
+  environment files, node_modules, .next, tmp, test-results, coverage, Playwright
+  reports, TypeScript cache, local hosting metadata and private learner material
+  remain excluded. No tracked file matches the ignore rules.
+- `.agents`, `.claude`, `agent`, evaluation resources and skills-lock stay local.
+  Required Skill Pack planning documents and the usage explanation remain public;
+  README and notices disclose the Skill Pack and link its source. All three tracked
+  scripts are needed for worker/notices generation or release verification.
+- Added ignore rules for `*.log`, `*.tmp`, `.eslintcache`, `.cache/` and `.turbo/`.
+  No local file was deleted or untracked. Application code and dependencies are
+  unchanged. Only `.gitignore` and this report are intentionally edited, uncommitted.
+- Fresh scan of **14 commits / 294 unique reachable historical file blobs** and
+  all 125 current publication candidates found no configured credential values or
+  selected Google/GitHub token, JWT or private-key patterns. Three configured values
+  were compared privately. Commit messages/identity metadata also had no matches.
+  A supplementary current-file scan found no long literal password/API-key/token/
+  client-secret assignment candidates. No secret values or snippets were printed.
+- A separate filename review across every reachable commit found no private env,
+  private agent/evaluation/research path, generated output, log or key file. Commit
+  identities are `Codex <codex@local.invalid>`. No symlinks or bundled real university
+  PDFs are tracked; bundled upload samples visibly identify themselves as synthetic.
+- No exposure requiring a history rewrite was found. This is a bounded review,
+  not proof that arbitrary unknown secrets or personal facts cannot exist. Reflogs,
+  unreachable objects and external repositories were not audited. Publish the
+  approved `master` branch only; do not mirror internal Codex checkpoint refs.
+
+### Documentation, licenses and verification
+
+- README describes the accepted comprehensive admissions comparison and improved
+  deterministic email workflow, setup, Node 24, environment names, privacy and
+  known model limitations. Required planning documents, hosted-test plan, demo
+  script and submission/Skill Pack draft are present. No feature work is needed.
+- All **480** dependency inventory entries match lockfile versions/license metadata.
+  Root MIT and third-party notices are present, including PDF.js Apache-2.0,
+  optional native LGPL obligations and caniuse-lite attribution. Real publications
+  are linked with provenance rather than redistributed. This is metadata review,
+  not a legal certification.
+- Fresh network-backed full `npm audit`: **0 advisories**, including development
+  dependencies. No dependency upgrade was performed during this recheck.
+- Fresh lint and unit/integration tests: **245 passed / 17 files** using the default
+  local Node 26.6.0. Vite emitted its future config-loader compatibility warning;
+  no tooling migration was made under feature freeze.
+- Production build and TypeScript: passed using the already cached **Node 24.22.1**.
+  PDF trace: **534 files / 56,786,948 bytes**. Client/static secret check: **19
+  artifacts passed**. Build/server external fetch was blocked by a local-only
+  temporary guard; production server and browser test processes had blank/whitespace
+  credentials so private environment files could not enable Gemini requests.
+- Loopback production smoke: home/results and both license URLs returned 200;
+  private environment/profile/response URLs returned 404; foreign Origin POST
+  returned 403. A real production multipart upload of both synthetic admissions
+  TXT documents returned two extracted sources and AI_CONFIGURATION_MISSING,
+  with no report or provider request.
+- Fresh Playwright verification: **28/28 passed** in 2.7 minutes against the Node 24
+  production server on loopback port 3117. Genuine local PDF parsing ran; model
+  responses were mocked or AI was disabled. This does not measure Gemini accuracy.
+
+Recommendation: after reviewing this report, explicitly approve committing these
+two preparation edits, creating `UrwaSultana320/RuleGuard-AI` as public, configuring
+origin and pushing the preserved `master` history. Then verify anonymous repository
+access, exact published paths, license detection and planning documents. Deployment
+and any new Gemini usage remain separate approval gates. Hosted Linux execution
+and broader genuine model accuracy remain unverified.
+
+---
+
+## Earlier release-preparation record
+
 Outcome: **local release preparation passed, with the limitations below**.
 Public publishing, deployment, billing and submission were not performed. Feature
 development is frozen. No new Gemini or Upstash service requests were made during
